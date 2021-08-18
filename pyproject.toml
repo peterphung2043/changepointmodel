@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ashrae"
+version = "0.1.0"
+description = "changepoint analysis library for energy modeling"
+authors = ["cunybpl <dev@cunybpl.org>"]
+
+[tool.poetry.dependencies]
+python = ">=3.7, <3.10"
+curvefit-estimator = { git = "https://github.com/cunybpl/curvefit-estimator.git", tag = "v0.2.0"}
+pydantic = "^1.8.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.4"
+pytest-cov = "^2.12.1"
+pytest-mock = "^3.6.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
