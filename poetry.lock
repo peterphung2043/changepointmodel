@@ -91,6 +91,21 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "nptyping"
+version = "1.4.3"
+description = "Type hints for Numpy."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+numpy = "*"
+typish = ">=1.7.0"
+
+[package.extras]
+test = ["pycodestyle", "pylint", "pytest", "coverage", "codecov", "scons", "radon", "xenon", "autoflake", "isort"]
+
+[[package]]
 name = "numpy"
 version = "1.21.2"
 description = "NumPy is the fundamental package for array computing with Python."
@@ -262,6 +277,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "typish"
+version = "1.9.3"
+description = "Functionality for types"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+test = ["numpy", "nptyping (>=1.3.0)", "pycodestyle", "pylint", "mypy", "pytest", "coverage", "codecov"]
+
+[[package]]
 name = "zipp"
 version = "3.5.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -276,7 +302,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7, <3.10"
-content-hash = "179696f3a62713a9701a9599916815291235faacee9b14e655102ec6e16578cd"
+content-hash = "f33bcac09b829bb2c88754ebe935c9b403f506887db7699d4d13fab311887956"
 
 [metadata.files]
 atomicwrites = [
@@ -357,6 +383,9 @@ iniconfig = [
 joblib = [
     {file = "joblib-1.0.1-py3-none-any.whl", hash = "sha256:feeb1ec69c4d45129954f1b7034954241eedfd6ba39b5e9e4b6883be3332d5e5"},
     {file = "joblib-1.0.1.tar.gz", hash = "sha256:9c17567692206d2f3fb9ecf5e991084254fe631665c450b443761c4186a613f7"},
+]
+nptyping = [
+    {file = "nptyping-1.4.3-py3-none-any.whl", hash = "sha256:5631e9f767fcae2541a121baeb4482f7649bc52d26ff1fb2d85da21c8bb61a37"},
 ]
 numpy = [
     {file = "numpy-1.21.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:52a664323273c08f3b473548bf87c8145b7513afd63e4ebba8496ecd3853df13"},
@@ -510,6 +539,9 @@ typing-extensions = [
     {file = "typing_extensions-3.10.0.0-py2-none-any.whl", hash = "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497"},
     {file = "typing_extensions-3.10.0.0-py3-none-any.whl", hash = "sha256:779383f6086d90c99ae41cf0ff39aac8a7937a9283ce0a414e5dd782f4c94a84"},
     {file = "typing_extensions-3.10.0.0.tar.gz", hash = "sha256:50b6f157849174217d0656f99dc82fe932884fb250826c18350e159ec6cdf342"},
+]
+typish = [
+    {file = "typish-1.9.3-py3-none-any.whl", hash = "sha256:03cfee5e6eb856dbf90244e18f4e4c41044c8790d5779f4e775f63f982e2f896"},
 ]
 zipp = [
     {file = "zipp-3.5.0-py3-none-any.whl", hash = "sha256:957cfda87797e389580cb8b9e3870841ca991e2125350677b2ca83a0e99390a3"},
