@@ -1,4 +1,4 @@
-"""
+""" A custom scoring interface.
 """
 
 import abc
@@ -34,8 +34,8 @@ class Scorer(object):
         self._score_functions = score_functions
         
 
-    def score(self, y: np.array, y_pred: np.array, **kwargs) -> List[Score]: 
-        return [s(y, y_pred, **kwargs) for s in self._score_function]
+    def score(self, y: np.array, y_pred: np.array, **kwargs) -> Dict[str, Score]: # added dict here for lookup
+        return dict([s(y, y_pred, **kwargs) for s in self._score_functions])
 
 
 
@@ -43,7 +43,7 @@ class Scorer(object):
 ## TODO model r2, mse, rmse, cvrmse from the ashrae/bema calcs
 
 
-class Rsquared(ScoringFunction): 
+class R2(ScoringFunction): 
 
     def calc(self, y: np.array, y_pred: np.array, **kwargs) -> float: 
         return metrics.r2_score(y, y_pred, **kwargs)

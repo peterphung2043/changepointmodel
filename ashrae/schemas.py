@@ -8,18 +8,18 @@ import numpy as np
 from typing import Any, Dict, Optional
 
 import pydantic
-from ..base_types import NumpyArray
+from .base import AnyByAnyNDArray, NByOneNDArray
 
 
 class CurvefitEstimatorData(pydantic.BaseModel): 
-    X: NumpyArray
-    y: Optional[NumpyArray]   # NOTE this is optional so that different X values may be passed to a fit model
-    sigma: Optional[NumpyArray]=None
+    X: AnyByAnyNDArray
+    y: Optional[NByOneNDArray]   # NOTE this is optional so that different X values may be passed to a fit model
+    sigma: Optional[NByOneNDArray]=None
     absolute_sigma: Optional[bool]=None
 
 
     @pydantic.validator('X')
-    def validate_X(cls, v: NumpyArray) -> NumpyArray: # we don't want to overdo this check... but a basic reshape here is extremely helpful for processing
+    def validate_X(cls, v: AnyByAnyNDArray) -> AnyByAnyNDArray: # we don't want to overdo this check... but a basic reshape here is extremely helpful for processing
         if v.ndim == 1:  # assure 1d is reshaped according skl spec
             return v.reshape(-1, 1)        
         return np.atleast_2d(v)   # assure that anything else is at least 2d .. NOTE will not check for nested data... just know what your doing...

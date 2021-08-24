@@ -1,3 +1,7 @@
+# XXX possibly we don't need any of this but I am leaving it here 
+# for now till I find a home for it... YearMonth would be useful on a server for deserializing monthly data
+# I believe NDArray from nptyping could replace the custom NumpyArray field
+
 from typing import Any, List, NamedTuple, Optional, TypeVar
 import pydantic 
 import datetime
@@ -7,6 +11,7 @@ import re
 Metadata = TypeVar('Metadata', Optional[Any])
 
 _ym_re = re.compile(r'[0-9]{4}-[0-9]{2}')
+
 
 class YearMonth(NamedTuple):
     """A custom YearMonth type. Can validate against YYYY-MM, ('YYYY', 'MM') or (int, int). 
