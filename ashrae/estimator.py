@@ -1,3 +1,4 @@
+from ashrae._lib.energy import ashrae_relative_uncertainty_avoided_energy_use
 from typing import List, Optional
 
 from ashrae.base import AbstractEnergyParameterModel, Load, NByOneNDArray, OneDimNDArray
@@ -107,17 +108,8 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         return self._estimator.predict(X) 
 
 
-    # XXX todo... option-c stuff works in here.
-    def adjust(self, other: 'EnergyChangepointEstimator', **kwargs):  # returns some adjusted type
-        """ creates an adjusted prediction along with ashrae formulas... 
-        This would treat this model as the `post`
-        """
-        # we need an api that excepts two fit models pre and post and defines entrypoints 
-        pass 
-  
 
     # Probably better to make these their own class that excepts a fit estimator? 
-    @functools.cached_property
     def load(self) -> Load: 
         """ Generate a load response from the fit model
 
@@ -128,6 +120,19 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
             Load : The response tuple for the load on the fit changepoint model
         """
         return self.model.load(self.X.squeeze(), self.pred_y, self.total_y, *self.coeffs) # TODO 
+
+
+    def adjust(self, other: 'EnergyChangepointEstimator') -> OneDimNDArray:
+        """ A convenience method that predicts using the X values of another EnergyChangepointEstimator. 
+        In option-c methodology this other would be the post retrofit model, making this calling instance the pre model.
+
+        Args:
+            other (EnergyChangepointEstimator): [description]
+
+        Returns:
+            OneDimNDArray: [description]
+        """
+        return self.predict(other.X)
 
 
     @property 
@@ -172,6 +177,9 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
     def total_y(self): 
         return sum(self.estimator_.y_)
 
-    
+
+    @functools.cached_property 
+    def len_y(self): 
+        return len(self.estimator_.y_)
 
 
