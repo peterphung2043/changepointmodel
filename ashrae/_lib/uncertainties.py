@@ -23,8 +23,8 @@ def relative_uncertainty_avoided_energy_use(
     cvrmse: float, 
     f: float, 
     p: int, 
-    n_months_pre: int,  
-    n_months_post: int) -> float: 
+    n_pre: int,  
+    n_post: int) -> float: 
     """
      ASHARE Guideline 14 2014, Annex B
      Modified Eq. B-28
@@ -35,24 +35,24 @@ def relative_uncertainty_avoided_energy_use(
         cvrmse (float): cvrmse of baseline model as a fraction 
         f (float): savings as a fraction of annual adjusted baseline
         p (int): number of model parameters. depends on model complexity and number of independent variables.
-        len_months_pre (int): number of months of data used to create baseline model
-        len_months_post (int): number of months in the reporting period.
+        len_pre (int): number of points pre 
+        len_post (int): number of points post
 
     Returns:
         float: [description]
     """
 
-    tstat = stats.t.interval(conf_interval, n_months_pre-p)[1]
-    return 1.26 * tstat * cvrmse * np.sqrt((1/n_months_post) * (1 + 2/n_months_pre))/f
+    tstat = stats.t.interval(conf_interval, n_pre-p)[1]
+    return 1.26 * tstat * cvrmse * np.sqrt((1/n_post) * (1 + 2/n_pre))/f
 
 
 def relative_uncertainty_normalized_period(
     conf_interval: float, 
-    n_months: int, 
+    n: int, 
     cvrmse: float, 
     gross_norm: float, 
     p: int, 
-    n_norm_months=12) -> float: 
+    n_norm: int) -> float: 
     
     """
      ASHARE Guideline 14 2014, Annex B
@@ -62,15 +62,15 @@ def relative_uncertainty_normalized_period(
 
     Args:
         conf_interval ([type]): desired confidence interval 
-        n_months ([type]): number of months of data used to create the model
+        n ([type]): number of points of data used to create the model
         cvrmse ([type]): model cvrmse as a fraction
         gross_norm ([type]): sum of normalized consumption for the number of cny months 
         p ([type]): number of parameters. Depends on model complexity and number of independent variables.
-        n_norm_months ([type]): number of months in normal period (default to 12)
+        n_norm ([type]): number of points in normal period 
 
     Returns:
         float: uncertainty for sum of normalized consumption for that period
     """ 
 
-    tstat = stats.t.interval(conf_interval, n_months - p)[1]
-    return 1.26 * tstat * gross_norm * cvrmse * np.sqrt((1/n_norm_months) * (1 + 2/n_months))
+    tstat = stats.t.interval(conf_interval, n - p)[1]
+    return 1.26 * tstat * gross_norm * cvrmse * np.sqrt((1/n_norm) * (1 + 2/n))

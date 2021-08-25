@@ -12,13 +12,7 @@ NByOneNDArray = TypeVar('NByOneNDArray', NDArray[(Any, 1,), float])  # [[1.], [2
 OneDimNDArray = TypeVar('OneDimNDArray', NDArray[(Any,), float])  # [ 1., 2., 3., ...]
 
 
-# Return types for abstract classes
-Load = NamedTuple('Load', [    # holds calculated loads from methodogy and places slopes into energy related context
-    ('baseload', float), 
-    ('heating', float), 
-    ('cooling', float), 
-    ('heating_sensitivity', float), 
-    ('cooling_sensitivity', float)])
+
 Bound = NamedTuple('Bound', [('lower', Tuple[float]), ('upper', Tuple[float])])  # tuple size changes based on n params
 Tstat = NamedTuple('Tstat', [('slopes', Tuple[float])])  # There is a tuple of floats for each coefficient 
 

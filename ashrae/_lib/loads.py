@@ -6,10 +6,10 @@ import numpy as np
 from ..base import OneDimNDArray
 
 
+# XXX possibly remove this... possibly use absolute value here .. tynabot do research...
+# XXX we should use triangles ...  cooling [min_y -> changepoint] and heating [ changepoint  -> max_y ]
 def _postive_sum(arr: OneDimNDArray) -> float:
     return np.sum(arr * (arr > 0))
-
-
 
 def heatload(X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: float=np.inf) -> Optional[float]:
     if slope is None or slope > 0:

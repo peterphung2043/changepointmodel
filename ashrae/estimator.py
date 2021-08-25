@@ -1,5 +1,5 @@
 from ashrae._lib.energy import ashrae_relative_uncertainty_avoided_energy_use
-from typing import List, Optional
+from typing import List, NamedTuple, Optional
 
 from ashrae.base import AbstractEnergyParameterModel, Load, NByOneNDArray, OneDimNDArray
 from curvefit_estimator import CurvefitEstimator
@@ -13,6 +13,21 @@ from sklearn.base import BaseEstimator, RegressorMixin
 
 # support skl regressor interface -> need to test interop with GridsearchCV and cross val score. 
 # class methods support working without cross validation 
+
+
+# Return types for abstract classes
+Load = NamedTuple('Load', [    # holds calculated loads from methodogy and places slopes into energy related context
+    ('baseload', float), 
+    ('heating', float), 
+    ('cooling', float),
+    ('heating_sensitivity', float), 
+    ('cooling_sensitivity', float)])
+
+
+# Load = NamedTuple('Load', [ ('name', str,), ('value', float) )])
+
+# Load('baseload', 24.0)
+# Slope('heating', 42.0)
 
 class EnergyChangepointEstimator(BaseEstimator, RegressorMixin): 
     """A container object for a changepoint model. After a model is fit you can access scores and 
@@ -181,5 +196,3 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
     @functools.cached_property 
     def len_y(self): 
         return len(self.estimator_.y_)
-
-

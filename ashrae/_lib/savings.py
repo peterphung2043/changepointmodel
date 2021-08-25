@@ -42,13 +42,14 @@ def weather_normalized(gross_normalized_y_pre: float,
     pre_n: int, 
     post_n: int, 
     pre_p: int, 
-    post_p: int, 
+    post_p: int,
+    n_norm: int,  
     confidence_interval: float=0.8):
 
     total_savings =  gross_normalized_y_pre - gross_normalized_y_post #this seems to return wrong value
     percent_savings = total_savings / gross_normalized_y_pre
 
-    n_norm_months = 12 # formula makes this assumption... therefore there should be an assertion somewhere that the data being passed is correct.
+    #n_norm_months = 12 # formula makes this assumption... therefore there should be an assertion somewhere that the data being passed is correct.
 
     pre_rel_unc = uncertainties.relative_uncertainty_normalized_period(
         confidence_interval, 
@@ -56,7 +57,7 @@ def weather_normalized(gross_normalized_y_pre: float,
         pre_cvrmse, 
         gross_normalized_y_pre, 
         pre_p, 
-        n_norm_months=n_norm_months)  
+        n_norm)  
 
     post_rel_unc = uncertainties.relative_uncertainty_normalized_period(
         confidence_interval, 
@@ -64,11 +65,11 @@ def weather_normalized(gross_normalized_y_pre: float,
         post_cvrmse,
         gross_normalized_y_post, 
         post_p, 
-        n_norm_months=n_norm_months)
+        n_norm)
 
     absolute_savings_uncertainty = np.sqrt((pre_rel_unc)**2 + (post_rel_unc)**2)
     percent_savings_uncertainty = np.absolute(absolute_savings_uncertainty / total_savings)
-    average_monthly_savings = total_savings / n_norm_months
+    average_monthly_savings = total_savings / n_norm
 
     return total_savings, average_monthly_savings, percent_savings, percent_savings_uncertainty
 

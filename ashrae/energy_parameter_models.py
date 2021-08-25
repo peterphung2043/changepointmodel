@@ -4,6 +4,9 @@ from .base import AbstractEnergyParameterModel, Load, Bound, NByOneNDArray, OneD
 from ._lib import models, bounds, loads 
 
 
+#XXX the Load API needs to be rewritten to behave more like the scoring functions 
+
+
 class TwoParameterEnergyChangepointModel(AbstractEnergyParameterModel):
 
     _name = "twop"
@@ -22,6 +25,8 @@ class TwoParameterEnergyChangepointModel(AbstractEnergyParameterModel):
         pred_y: OneDimNDArray, 
         total_y: float, 
         *coeffs) -> Load:
+
+        ### XXX this interface should be more like 
         yint, slope = coeffs
         hl = loads.heatload(X, pred_y, slope, yint)
         cl = loads.coolingload(X, pred_y, slope, yint)

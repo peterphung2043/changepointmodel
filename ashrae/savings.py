@@ -39,8 +39,7 @@ class INormalized(abc.ABC):
     def save(self, 
         pre: EnergyChangepointEstimator, 
         post: EnergyChangepointEstimator,  
-        Xpre: NByOneNDArray, 
-        Xpost: NByOneNDArray) -> SavingsResult: ...
+        X: NByOneNDArray) -> SavingsResult: ...
 
 
 class AbstractSavings(abc.ABC):
@@ -61,10 +60,8 @@ class AshraeAdjustedSavings(AbstractSavings, IAdjusted):
         pre_cvrmse = cvrmse_score(pre.y, pre.pred_y) # XXX this is expensive... :/ 
         pre_p = len(pre.coeffs)
         
-        pre_n = pre.len_y # XXX this assumes months but if data is in days/hours we need to calculate n using some date math... regardless it shouldn't live here. it should be accessible here. 
+        pre_n = pre.len_y 
         post_n = post.len_y 
-        
-        # XXX maybe pre_n and post_n should be the same ? assert ? 
                  
         gross_adjusted_y = np.sum(adjusted_y)  # annual_adjusted_baseline in old code (?)
         gross_post_y = post.total_y      # annual_measured_reporting in old code(?)
@@ -99,13 +96,14 @@ class AshraeNormalizedSavings(AbstractSavings, INormalized):
         pre_cvrmse = cvrmse_score(pre.y, pre.pred_y)  # XXX expensive :(
         post_cvrmse = cvrmse_score(post.y, post.pred_y)
 
-        pre_n = pre.len_y  # XXX same as above need an accessor that does some date math to assure it is in months no matter what the time scale.
+        pre_n = pre.len_y 
         post_n = post.len_y 
 
         pre_p = len(pre.coeffs)
         post_p = len(post.coeffs)
 
-        
+        n_norm = len(X)
+
         return ashraesavings.weather_normalized(
             gross_normalized_y_pre, 
             gross_normalized_y_post, 
@@ -115,4 +113,5 @@ class AshraeNormalizedSavings(AbstractSavings, INormalized):
             post_n, 
             pre_p, 
             post_p, 
+            n_norm,
             self._confidence_interval)

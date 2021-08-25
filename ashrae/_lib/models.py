@@ -3,6 +3,7 @@
 
 from ..base import NByOneFloatNDArray, OneDimNDArray
 
+# XXX change these to ycp ? or yint? 
 
 def twop(X:NByOneFloatNDArray, yint: float, m: float) -> OneDimNDArray: 
     return (m * X + yint).squeeze()
