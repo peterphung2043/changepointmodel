@@ -5,6 +5,8 @@ import abc
 from typing import Any, TypeVar
 from nptyping import NDArray 
 
+from sklearn.base import BaseEstimator
+
 AnyByAnyNDArray = TypeVar('AnyByAnyNDArray', NDArray[(Any, ...), float])
 NByOneNDArray = TypeVar('NByOneNDArray', NDArray[(Any, 1,), float])  # [[1.], [2.], [3.], ...]
 OneDimNDArray = TypeVar('OneDimNDArray', NDArray[(Any,), float])  # [ 1., 2., 3., ...]
@@ -41,17 +43,6 @@ ComparableType = TypeVar('ComparableType', bound=IComparable)
 
 
 
-class ArgSortable(object): 
-
-    def sort(self, X: np.array, y: np.array) -> Tuple[np.array]: 
-        if X.ndim != 1:
-            order = np.argsort(X.squeeze())
-        else:
-            order = np.argsort(X)  # this should work for 1d arrays
-        return X[order], y[order]
-
-
-
 class IModelFunction(abc.ABC): 
 
     _name : str = ""
@@ -74,5 +65,5 @@ class IModelFunction(abc.ABC):
 
 
 # an energy parameter 
-class AbstractEnergyParameterModel(IModelFunction, ILoad, ArgSortable): 
+class AbstractEnergyParameterModel(IModelFunction, ILoad): 
     pass
