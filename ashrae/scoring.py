@@ -16,6 +16,7 @@ from .estimator import EnergyChangepointEstimator
 
 Score = NamedTuple('Score', [('name', str), ('score', Union[float, NDArray[float]])])
 SklScoreReturnType =  Union[float, NDArray[Any, ...], Any]
+Comparator = TypeVar('Comparator', Callable[[IComparable, IComparable], bool])
 
 
 class ScoringFunction(abc.ABC):
@@ -62,9 +63,6 @@ class Cvrmse(ScoringFunction):
     def calc(self, y: OneDimNDArray, y_pred: OneDimNDArray, **kwargs) -> SklScoreReturnType: 
         return metrics.cvrmse(y, y_pred, **kwargs)
 
-
-
-Comparator = TypeVar('Comparator', Callable[[IComparable, IComparable], bool])
 
 
 class AbstractScoreFilter(abc.ABC): 

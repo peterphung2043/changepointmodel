@@ -17,7 +17,7 @@ def heatload(X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float,
 
     predicted_loads = (X < changepoint) * (pred_y - yint)
     return _postive_sum(predicted_loads)
-
+    
 
 def coolingload(X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: float=-np.inf) -> Optional[float]:
     if  slope is None or slope < 0:
@@ -25,6 +25,7 @@ def coolingload(X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: flo
 
     predicted_loads = (X > changepoint) * (pred_y - yint)
     return _postive_sum(predicted_loads)
+
 
 
 def baseload(total_consumption: float, heatload: Optional[float], coolingload: Optional[float]) -> float: 

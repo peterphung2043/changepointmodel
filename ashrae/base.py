@@ -13,20 +13,6 @@ OneDimNDArray = TypeVar('OneDimNDArray', NDArray[(Any,), float])  # [ 1., 2., 3.
 
 
 
-Bound = NamedTuple('Bound', [('lower', Tuple[float]), ('upper', Tuple[float])])  # tuple size changes based on n params
-Tstat = NamedTuple('Tstat', [('slopes', Tuple[float])])  # There is a tuple of floats for each coefficient 
-
-
-class ILoad(abc.ABC):
-
-    @abc.abstractmethod
-    def load(self, 
-        X: NByOneNDArray, 
-        y: NByOneNDArray, 
-        pred_y: NByOneNDArray, 
-        total_y: float, 
-        *coeffs) -> Optional[Load]: ... # see above 
-
 
 class IComparable(abc.ABC):  # trick to declare a Comparable type... py3 all comparability is implemented in terms of < so this is a safe descriptor
 
@@ -36,28 +22,3 @@ class IComparable(abc.ABC):  # trick to declare a Comparable type... py3 all com
 ComparableType = TypeVar('ComparableType', bound=IComparable)
 
 
-
-class IModelFunction(abc.ABC): 
-
-    _name : str = ""
-
-    def name(self):
-        assert self._name != "", 'Must provide a model name' 
-        return self._name
-
-
-    @abc.abstractstaticmethod
-    def f(X: NByOneNDArray, *coeffs) -> OneDimNDArray: ... 
-        # the function we wish to model. Must return  y array for curve_fit
-        # NOTE that data possibly needs to be reshaped here into long(array) form... this is because sklearn interface only accepts [[],...] for X
-
-
-    @abc.abstractstaticmethod
-    def bounds(X: np.array) -> Optional[Bound]: ...
-        # we model dependent bounds calculation for curve_fit
-
-
-
-# an energy parameter 
-class AbstractEnergyParameterModel(IModelFunction, ILoad): 
-    pass
