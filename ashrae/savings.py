@@ -2,7 +2,7 @@
 """
 
 import numpy as np
-from ashrae.base import NByOneNDArray
+from ashrae.base import NByOneNDArray, OneDimNDArray
 from typing import NamedTuple, Optional
 from ashrae.estimator import EnergyChangepointEstimator
 from ._lib import savings as ashraesavings
@@ -12,35 +12,30 @@ cvrmse_score = Cvrmse()
 
 import abc 
 
-# XXX after building this out I think it might need to be decoupled... 
 
-# The calling scripts below should take numerical data. 
-# We can create a factory method for `normalized` and `adjusted` that can act as a wrapper to clean up the public facing API 
-# This would allow to return an object that has both adjusted y data and x data. 
+AdjustedSavingsResult = NamedTuple('SavingsResult', [
+    ('adjusted_y', OneDimNDArray),
+    ('total_savings', float), 
+    ('average_monthly_savings', float), 
+    ('percent_savings', float), 
+    ('percent_savings_uncertainty', float)])
 
-
-
-SavingsResult = NamedTuple('SavingsResult', [
+NormalizedSavingsResult = NamedTuple('NormalizedSavingsResult', [
+    ('normalized_X', NByOneNDArray),
+    ('normalized_y_pre', OneDimNDArray),
+    ('normalized_y_post', OneDimNDArray), 
     ('total_savings', float), 
     ('average_monthly_savings', float), 
     ('percent_savings', float), 
     ('percent_savings_uncertainty', float)])
 
 
-class IAdjusted(abc.ABC): 
+class ISavingsCalculator(abc.ABC): 
     
     def save(self, 
         pre: EnergyChangepointEstimator, 
-        post: EnergyChangepointEstimator) -> SavingsResult: ...
+        post: EnergyChangepointEstimator) -> AdjustedSavingsResult: ...
     
-
-class INormalized(abc.ABC): 
-
-    def save(self, 
-        pre: EnergyChangepointEstimator, 
-        post: EnergyChangepointEstimator,  
-        X: NByOneNDArray) -> SavingsResult: ...
-
 
 class AbstractSavings(abc.ABC):
 
@@ -49,12 +44,12 @@ class AbstractSavings(abc.ABC):
 
 
 
-class AshraeAdjustedSavings(AbstractSavings, IAdjusted): 
+class AshraeAdjustedSavingsCalculator(AbstractSavings, ISavingsCalculator): 
     
     
     def save(self, 
         pre: EnergyChangepointEstimator, 
-        post: EnergyChangepointEstimator) -> SavingsResult:
+        post: EnergyChangepointEstimator) -> AdjustedSavingsResult:
 
         adjusted_y = pre.adjust(post)# XXX this is expensive... :/ 
         pre_cvrmse = cvrmse_score(pre.y, pre.pred_y) # XXX this is expensive... :/ 
@@ -66,7 +61,7 @@ class AshraeAdjustedSavings(AbstractSavings, IAdjusted):
         gross_adjusted_y = np.sum(adjusted_y)  # annual_adjusted_baseline in old code (?)
         gross_post_y = post.total_y      # annual_measured_reporting in old code(?)
 
-        return ashraesavings.adjusted(
+        savings = ashraesavings.adjusted(
             gross_adjusted_y, 
             gross_post_y, 
             pre_cvrmse, 
@@ -74,26 +69,32 @@ class AshraeAdjustedSavings(AbstractSavings, IAdjusted):
             pre_n, 
             post_n, 
             self._confidence_interval)
+        return adjusted_y, *savings
 
-        
 
-# XXX for this to work the data has to be perfect... Xpre and Xpost must be somehow joined to ydata... how to do this without adding datetime objs?
-class AshraeNormalizedSavings(AbstractSavings, INormalized): 
+
+
+class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator): 
     
+    def __init__(self, X_pre: NByOneNDArray, X_post: NByOneNDArray, **kwargs): 
+        super().__init__(**kwargs)
+        self._X_pre = X_pre 
+        self._X_post = X_post
+
 
     def save(self, 
         pre: EnergyChangepointEstimator, 
         post: EnergyChangepointEstimator,  
-        X: NByOneNDArray) -> SavingsResult:  # X is an array of normalized temperature data
+        ) -> NormalizedSavingsResult:  # X is an array of normalized temperature data
 
         # setup
-        normalized_y_pre = pre.predict(X)   # XXX expensive :(
-        normalized_y_post = post.predict(X)
+        normalized_pred_y_pre = pre.predict(self._X_pre)   # XXX expensive :(
+        normalized_pred_y_post = post.predict(self._X_post)
         
-        gross_normalized_y_pre = np.sum(normalized_y_pre)
-        gross_normalized_y_post = np.sum(normalized_y_post)
+        gross_normalized_y_pre = np.sum(normalized_pred_y_pre)
+        gross_normalized_y_post = np.sum(normalized_pred_y_post)
 
-        pre_cvrmse = cvrmse_score(pre.y, pre.pred_y)  # XXX expensive :(
+        pre_cvrmse = cvrmse_score(pre.y, pre.pred_y)  # XXX expensive :( -- NOTE also this is from the original model on the actual X
         post_cvrmse = cvrmse_score(post.y, post.pred_y)
 
         pre_n = pre.len_y 
@@ -102,9 +103,9 @@ class AshraeNormalizedSavings(AbstractSavings, INormalized):
         pre_p = len(pre.coeffs)
         post_p = len(post.coeffs)
 
-        n_norm = len(X)
+        n_norm = len(normalized_X)
 
-        return ashraesavings.weather_normalized(
+        savings = ashraesavings.weather_normalized(
             gross_normalized_y_pre, 
             gross_normalized_y_post, 
             pre_cvrmse, 
@@ -115,3 +116,5 @@ class AshraeNormalizedSavings(AbstractSavings, INormalized):
             post_p, 
             n_norm,
             self._confidence_interval)
+        
+        return normalized_X, normalized_pred_y_pre, normalized_pred_y_post, *savings 

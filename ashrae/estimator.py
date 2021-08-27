@@ -1,4 +1,3 @@
-from ashrae._lib.energy import ashrae_relative_uncertainty_avoided_energy_use
 from typing import List, NamedTuple, Optional
 
 from ashrae.base import AbstractEnergyParameterModel, Load, NByOneNDArray, OneDimNDArray
@@ -15,26 +14,12 @@ from sklearn.base import BaseEstimator, RegressorMixin
 # class methods support working without cross validation 
 
 
-# Return types for abstract classes
-Load = NamedTuple('Load', [    # holds calculated loads from methodogy and places slopes into energy related context
-    ('baseload', float), 
-    ('heating', float), 
-    ('cooling', float),
-    ('heating_sensitivity', float), 
-    ('cooling_sensitivity', float)])
-
-
-# Load = NamedTuple('Load', [ ('name', str,), ('value', float) )])
-
-# Load('baseload', 24.0)
-# Slope('heating', 42.0)
-
 class EnergyChangepointEstimator(BaseEstimator, RegressorMixin): 
     """A container object for a changepoint model. After a model is fit you can access scores and 
     load calculations via propeties. 
     """
 
-    def __init__(self, model: AbstractEnergyParameterModel=None): 
+    def __init__(self, model: Optional[AbstractEnergyParameterModel]=None): 
         self.model = model  
 
     @classmethod
@@ -49,7 +34,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
     def fit_many(cls, models: List[AbstractEnergyParameterModel], 
         data: CurvefitEstimatorData,
         sort: bool=True, 
-        **estimator_kwargs) -> List[Optional[AbstractEnergyParameterModel]]:
+        **estimator_kwargs) -> List[Optional['EnergyChangepointEstimator']]:
         """ Fits a list of 
         """ 
         
@@ -70,7 +55,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
     def fit_one(cls, model: AbstractEnergyParameterModel, 
         data: CurvefitEstimatorData,
         sort: bool=True, 
-        **estimator_kwargs) -> Optional[AbstractEnergyParameterModel]: 
+        **estimator_kwargs) -> Optional['EnergyChangepointEstimator']: 
         """Fits a single model using CurvefitEstimatorData as an entry point. Will sort data if needed.
 
         Args:
@@ -94,7 +79,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         X: NByOneNDArray, 
         y: OneDimNDArray, 
         sigma: Optional[OneDimNDArray]=None, 
-        absolute_sigma: bool=True, 
+        absolute_sigma: Optional[bool]=None, 
         **estimator_kwargs) -> 'EnergyChangepointEstimator':
         """This is wrapper around CurvefitEstimator.fit and allows interoperability with sklearn
 
@@ -102,11 +87,12 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
             data (CurvefitEstimatorInputData): [description]
             reshape (Optional[Tuple[int]], optional): [description]. Defaults to None.
         """
-
-
         self.estimator_ = CurvefitEstimator(model_func=self._model.f, bounds=self._model.bounds, **estimator_kwargs)
         self.pred_y_ = self.estimator_.fit(X, y, sigma, absolute_sigma).predict(X)  # call estimator fit  # XXX scipy/skl error in our own here.
-        self.X_, self.y_ = self.estimator_.X_, self.estimator_.y_
+        self.X_, self.y_ = self.estimator_.X_, self.estimator_.y_  # XXX I think these need to be here for interop with skl cv
+        self.sigma_ = sigma 
+        self.absolute_sigma_ = absolute_sigma
+        
         return self
 
 
@@ -121,20 +107,6 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
             np.array : predicted y values
         """  
         return self._estimator.predict(X) 
-
-
-
-    # Probably better to make these their own class that excepts a fit estimator? 
-    def load(self) -> Load: 
-        """ Generate a load response from the fit model
-
-        Raises:
-            TypeError: [description]
-
-        Returns:
-            Load : The response tuple for the load on the fit changepoint model
-        """
-        return self.model.load(self.X.squeeze(), self.pred_y, self.total_y, *self.coeffs) # TODO 
 
 
     def adjust(self, other: 'EnergyChangepointEstimator') -> OneDimNDArray:
@@ -168,6 +140,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
     def coeffs(self): # tuple
         return self.estimator_.popt_
 
+
     @property 
     def cov(self): 
         return self.estimator_.pcov_
@@ -183,16 +156,25 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         return len(self.coeffs)
 
 
-    @functools.cached_property 
+    @property 
     def total_pred_y(self): 
         return sum(self.pred_y_)
 
 
-    @functools.cached_property 
+    @property 
     def total_y(self): 
         return sum(self.estimator_.y_)
 
 
-    @functools.cached_property 
+    @property 
     def len_y(self): 
         return len(self.estimator_.y_)
+
+    @property
+    def sigma(self): 
+        return self.sigma_ 
+    
+
+    @property 
+    def absolute_sigma(self): 
+        return self.absolute_sigma_

@@ -4,18 +4,21 @@ can be used on their own.
 
 import abc
 
-from curvefit_estimator import estimator
-from ashrae.base import IComparable, OneDimNDArray
-import numpy as np
+from ashrae.base import OneDimNDArray
 from nptyping import NDArray
-from typing import Any, Callable, Dict, List, NamedTuple, Tuple, TypeVar, Union
-from sklearn import metrics
-from ._lib import metrics
+from typing import Any, Callable, List, NamedTuple, TypeVar, Union
+from ._lib import metrics as ashraemetrics
 from .estimator import EnergyChangepointEstimator
 
+class IComparable(abc.ABC):  # trick to declare a Comparable type... py3 all comparability is implemented in terms of < so this is a safe descriptor
 
-Score = NamedTuple('Score', [('name', str), ('score', Union[float, NDArray[float]])])
+    @abc.abstractmethod
+    def __lt__(self, other: Any) -> bool: ...
+
+ComparableType = TypeVar('ComparableType', bound=IComparable)
+
 SklScoreReturnType =  Union[float, NDArray[Any, ...], Any]
+Score = NamedTuple('Score', [('name', str), ('score', SklScoreReturnType), ('pass', bool)])
 Comparator = TypeVar('Comparator', Callable[[IComparable, IComparable], bool])
 
 
@@ -49,23 +52,23 @@ class ScoringFunction(abc.ABC):
 class R2(ScoringFunction): 
 
     def calc(self, y: OneDimNDArray, y_pred: OneDimNDArray, **kwargs) -> SklScoreReturnType:
-        return metrics.r2_score(y, y_pred, **kwargs)
+        return ashraemetrics.r2_score(y, y_pred, **kwargs)
 
 
 class Rmse(ScoringFunction): 
 
     def calc(self, y: OneDimNDArray, y_pred: OneDimNDArray, **kwargs) -> SklScoreReturnType: 
-        return metrics.rmse(y, y_pred, **kwargs)
+        return ashraemetrics.rmse(y, y_pred, **kwargs)
 
 
 class Cvrmse(ScoringFunction): 
 
     def calc(self, y: OneDimNDArray, y_pred: OneDimNDArray, **kwargs) -> SklScoreReturnType: 
-        return metrics.cvrmse(y, y_pred, **kwargs)
+        return ashraemetrics.cvrmse(y, y_pred, **kwargs)
 
 
 
-class AbstractScoreFilter(abc.ABC): 
+class AbstractScoreEval(abc.ABC): 
 
     def __init__(self, scorer: ScoringFunction, threshold: float, method: Comparator): 
         self._scorer = scorer
@@ -77,15 +80,15 @@ class AbstractScoreFilter(abc.ABC):
 
 
 
-class ScoreFilter(AbstractScoreFilter): 
+class ScoreEval(AbstractScoreEval): 
 
-    def ok(self, estimator: EnergyChangepointEstimator) -> Tuple[str, bool]:
+    def ok(self, estimator: EnergyChangepointEstimator) -> Score:
         est_val = self._scorer(estimator.y, estimator.pred_y)
-        return (self._scorer.name, self._method(est_val, self._threshold), )
+        return self._scorer.name, est_val, self._method(est_val, self._threshold) 
 
 
 
-class ScoreFilters(object): 
+class Scorer(object): 
 
-    def check(self, estimator: EnergyChangepointEstimator, filters: List[ScoreFilter]) -> List[Tuple[str, bool]]: 
-        return [f.ok(estimator) for f in filters]
+    def check(self, estimator: EnergyChangepointEstimator, evals: List[ScoreEval]) -> List[Score]: 
+        return [e.ok(estimator) for e in evals]

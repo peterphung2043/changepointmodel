@@ -5,24 +5,12 @@ from .base import AbstractEnergyParameterModel, Bound, NByOneNDArray, OneDimNDAr
 
 from ._lib import models, bounds, loads 
 
-Load = NamedTuple('Load', [('base', Optional[float]),('heating', Optional[float]), ('cooling', Optional[float]),])
+
 Bound = NamedTuple('Bound', [('lower', Tuple[float]), ('upper', Tuple[float])])  # tuple size changes based on n params
-Coeffs = NamedTuple('Coeffs', [ ('yint', float), ('slopes', List[float]), ('changepoints', List[float]) ])
+EnergyParameterModelCoefficients = NamedTuple('ChangepointChangepointCoefficients', [ ('yint', float), ('slopes', List[float]), ('changepoints', Optional[List[float]]) ])
+# XXX coeffs replaces sensitivities which are basically just alias
 
-
-#XXX the Load API needs to be rewritten to behave more like the scoring functions 
-class ILoad(abc.ABC):
-
-    @abc.abstractmethod
-    def load(self, 
-        X: NByOneNDArray, 
-        y: NByOneNDArray, 
-        pred_y: NByOneNDArray, 
-        total_y: float, 
-        *coeffs) -> Optional[Load]: ... # see above 
-
-
-class IModelFunction(abc.ABC): 
+class IChangepointModelFunction(abc.ABC): 
 
     _name : str = ""
 
@@ -30,25 +18,41 @@ class IModelFunction(abc.ABC):
         assert self._name != "", 'Must provide a model name' 
         return self._name
 
-    
-    @abc.abstractmethod
-    def parse_coeffs(self, *coeffs) -> Coeffs: ...
-        # split yint/ycp
-
     @abc.abstractstaticmethod
     def f(X: NByOneNDArray, *coeffs) -> OneDimNDArray: ... 
-        # the function we wish to model. Must return  y array for curve_fit
-        # NOTE that data possibly needs to be reshaped here into long(array) form... this is because sklearn interface only accepts [[],...] for X
-
 
     @abc.abstractstaticmethod
     def bounds(X: OneDimNDArray) -> Optional[Bound]: ...
-        # we model dependent bounds calculation for curve_fit
 
 
+# an EnergyParameterModel must provide methods that find the energy(domain) specific components from the model coefficients
+class IEnergyParameterModel(abc.ABC): 
+
+        
+    @abc.abstractmethod
+    def parse_coeffs(self, *coeffs) -> EnergyParameterModelCoefficients: ...
+
+    @abc.abstracmethod 
+    def yint(self, coeffs: EnergyParameterModelCoefficients) -> float: ...
+
+    @abc.abstractmethod  
+    def cooling_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]: ... 
+
+    @abc.abstractmethod 
+    def heating_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]: ... 
+
+    @abc.abstractmethod
+    def cooling_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]: ...
+
+    @abc.abstractmethod 
+    def heating_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]: ...
+ 
+    
 # an energy parameter 
-class AbstractEnergyParameterModel(IModelFunction, ILoad): 
-    pass
+class AbstractEnergyParameterModel(IEnergyParameterModel, IEnergyParameterModel): 
+    
+    def yint(self, coeffs: EnergyParameterModelCoefficients) -> float: # yintercept is always
+        return coeffs[0]
 
 
 class TwoParameterEnergyChangepointModel(AbstractEnergyParameterModel):
@@ -64,24 +68,27 @@ class TwoParameterEnergyChangepointModel(AbstractEnergyParameterModel):
         return bounds.twop()
     
 
-    def parse_coeffs(self, coeffs: Tuple[float, ...]) -> Coeffs: 
+    def parse_coeffs(self, coeffs: Tuple[float, ...]) -> EnergyParameterModelCoefficients: 
         yint, slope = coeffs 
-        return yint, [slope]
+        return yint, [slope], None
 
-    def load(self, 
-        X: OneDimNDArray, 
-        y: OneDimNDArray, 
-        pred_y: OneDimNDArray, 
-        total_y: float, 
-        coeffs: Tuple[float, ...]) -> Load:
 
-        ### XXX this interface should be more like 
-        yint, slope = self.parse_coeffs(coeffs)
-        hl = loads.heatload(X, pred_y, slope, yint)
-        cl = loads.coolingload(X, pred_y, slope, yint)
-        bl = loads.baseload(total_y, hl, cl)
-        
-        return Load(bl, hl, cl)
+    def cooling_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        if coeffs.slopes[0] > 0:
+            return coeffs.slopes[0]
+
+
+    def heating_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        if coeffs.slopes[0] < 0:
+            return coeffs.slopes[0]
+
+
+    def cooling_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:  # changepoint is a noop in 2P (linear)
+        return
+
+
+    def heating_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return
 
 
 class ThreeParameterCoolingEnergyChangepointModel(AbstractEnergyParameterModel): 
@@ -96,23 +103,25 @@ class ThreeParameterCoolingEnergyChangepointModel(AbstractEnergyParameterModel):
     def bounds(X: OneDimNDArray) -> Optional[Bound]: 
         return bounds.threepc(X)
     
-    def parse_coeffs(self, coeffs: Tuple[float, ...]) -> Coeffs: 
+    def parse_coeffs(self, coeffs: Tuple[float, ...]) -> EnergyParameterModelCoefficients: 
         yint, slope, changepoint = coeffs 
         return yint, [slope], [changepoint]
 
-    def load(self, 
-        X: OneDimNDArray, 
-        y: OneDimNDArray, 
-        pred_y: OneDimNDArray, 
-        total_y: float, 
-        coeffs: Tuple[float, ...]) -> Load:
 
-        yint, slope, changepoint = self.parse_coeffs(coeffs)
+    def cooling_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.slopes[0]
 
-        hl = None 
-        cl = loads.coolingload(X, pred_y, slope, yint, changepoint)
-        bl = loads.baseload(total_y, hl, cl)
-        return Load(bl, hl, cl)
+
+    def heating_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return
+
+
+    def cooling_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.changepoints[0]
+
+
+    def heating_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.changepoints[0] 
 
 
 class ThreeParameterHeatingEnergyChangepointModel(AbstractEnergyParameterModel): 
@@ -127,24 +136,27 @@ class ThreeParameterHeatingEnergyChangepointModel(AbstractEnergyParameterModel):
     def bounds(X: OneDimNDArray) -> Optional[Bound]: 
         return bounds.threepc(X)
 
-    def parse_coeffs(self, coeffs: Tuple[float, ...]) -> Coeffs: 
+    def parse_coeffs(self, coeffs: Tuple[float, ...]) -> EnergyParameterModelCoefficients: 
         yint, slope, changepoint = coeffs 
         return yint, [slope], [changepoint]
+
+
+    def cooling_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return 
+
+
+    def heating_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.slopes[0]
+
+
+    def cooling_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.changepoints[0]
+
+
+    def heating_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.changepoints[0]
     
-    def load(self, 
-        X: OneDimNDArray, 
-        y: OneDimNDArray, 
-        pred_y: OneDimNDArray, 
-        total_y: float, 
-        coeffs: Tuple[float, ...]) -> Load:
-        
-        yint, slope, changepoint = self.parse_coeffs(coeffs) 
-
-        hl = loads.heatload(X, pred_y, slope, yint, changepoint)
-        cl = None
-        bl = loads.baseload(total_y, hl, cl)
-        return Load(bl, hl, cl)
-
+    
 
 class FourParameterEnergyChangepointModel(AbstractEnergyParameterModel): 
 
@@ -158,24 +170,25 @@ class FourParameterEnergyChangepointModel(AbstractEnergyParameterModel):
     def bounds(X: OneDimNDArray) -> Optional[Bound]: 
         return bounds.fourp(X)
     
-    def parse_coeffs(self, coeffs: Tuple[float, ...]) -> Coeffs: 
+    def parse_coeffs(self, coeffs: Tuple[float, ...]) -> EnergyParameterModelCoefficients: 
         yint, ls, rs, changepoint = coeffs 
         return yint, [ls, rs], [changepoint]
 
-    def load(self, 
-        X: OneDimNDArray, 
-        y: OneDimNDArray, 
-        pred_y: OneDimNDArray, 
-        total_y: float, 
-        coeffs: Tuple[float, ...]) -> Load:
-        
-        yint, ls, rs, changepoint = self.parse_coeffs(coeffs) 
+    
+    def cooling_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.slopes[0]
 
-        hl = loads.heatload(X, pred_y, ls, yint, changepoint)
-        cl = loads.coolingload(X, pred_y, rs, yint, changepoint)
-        bl = loads.baseload(total_y, hl, cl)
-        return Load(bl, hl, cl)
 
+    def heating_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.slopes[1]
+
+
+    def cooling_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:   # cooling and heating changepoint are equal in 4P
+        return coeffs.changepoints[0]
+
+
+    def heating_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.changepoints[0]
 
 
 class FiveParameterEnergyChangepointModel(AbstractEnergyParameterModel): 
@@ -191,21 +204,22 @@ class FiveParameterEnergyChangepointModel(AbstractEnergyParameterModel):
         return bounds.fivep(X)
     
     
-    def parse_coeffs(self, coeffs: Tuple[float, ...]) -> Coeffs: 
+    def parse_coeffs(self, coeffs: Tuple[float, ...]) -> EnergyParameterModelCoefficients: 
         yint, ls, rs, lcp, rcp = coeffs 
         return yint, [ls, rs], [lcp, rcp]
 
 
-    def load(self, 
-        X: OneDimNDArray, 
-        y: OneDimNDArray, 
-        pred_y: OneDimNDArray, 
-        total_y: float, 
-        coeffs: Tuple[float, ...]) -> Load:   
+    def cooling_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.slopes[0]
 
-        yint, ls, rs, lcp, rcp = self.parse_coeffs(coeffs)  
 
-        hl = loads.heatload(X, pred_y, ls, yint, lcp)
-        cl = loads.coolingload(X, pred_y, rs, yint, rcp) 
-        bl = loads.baseload(total_y, hl, cl)
-        return Load(bl, hl, cl)
+    def heating_slope(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.slopes[1]
+
+
+    def cooling_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:   # cooling and heating changepoint are equal in 4P
+        return coeffs.changepoints[0]
+
+
+    def heating_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
+        return coeffs.changepoints[0]
