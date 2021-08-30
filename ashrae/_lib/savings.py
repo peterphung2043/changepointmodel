@@ -29,10 +29,10 @@ def adjusted(gross_adjusted_y: float,
     absolute_uncertainty_of_total_savings = rel_unc * np.absolute(total_savings)
     
     average_monthly_savings = total_savings/post_n
-    relative_uncertainty_of_total_savings = absolute_uncertainty_of_total_savings /\
+    percent_savings_uncertainty = absolute_uncertainty_of_total_savings /\
             np.absolute(total_savings)
 
-    return total_savings, average_monthly_savings, percent_savings, relative_uncertainty_of_total_savings
+    return total_savings, average_monthly_savings, percent_savings, percent_savings_uncertainty
 
 
 def weather_normalized(gross_normalized_y_pre: float, 

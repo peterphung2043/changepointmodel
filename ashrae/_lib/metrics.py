@@ -5,7 +5,7 @@ from typing import Any, Union
 import numpy as np
 from sklearn import metrics as sklmetrics
 
-from ..base import OneDimNDArray
+from ..nptypes import OneDimNDArray
 
 #XXX use nptyping here.
 

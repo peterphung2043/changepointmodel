@@ -3,8 +3,8 @@ can be used on their own.
 """
 
 import abc
-
-from ashrae.base import OneDimNDArray
+from dataclasses import dataclass
+from ashrae.nptypes import AnyByAnyNDArray, AnyByAnyNDArrayField, OneDimNDArray
 from nptyping import NDArray
 from typing import Any, Callable, List, NamedTuple, TypeVar, Union
 from ._lib import metrics as ashraemetrics
@@ -16,10 +16,15 @@ class IComparable(abc.ABC):  # trick to declare a Comparable type... py3 all com
     def __lt__(self, other: Any) -> bool: ...
 
 ComparableType = TypeVar('ComparableType', bound=IComparable)
+SklScoreReturnType =  Union[float, AnyByAnyNDArrayField, Any]
+Comparator = Callable[[IComparable, IComparable], bool]
 
-SklScoreReturnType =  Union[float, NDArray[Any, ...], Any]
-Score = NamedTuple('Score', [('name', str), ('score', SklScoreReturnType), ('pass', bool)])
-Comparator = TypeVar('Comparator', Callable[[IComparable, IComparable], bool])
+@dataclass 
+class Score(object): 
+    name: str 
+    value: SklScoreReturnType 
+    threshold: float 
+    ok: bool 
 
 
 class ScoringFunction(abc.ABC):
@@ -84,7 +89,7 @@ class ScoreEval(AbstractScoreEval):
 
     def ok(self, estimator: EnergyChangepointEstimator) -> Score:
         est_val = self._scorer(estimator.y, estimator.pred_y)
-        return self._scorer.name, est_val, self._method(est_val, self._threshold) 
+        return Score(self._scorer.name, est_val, self._threshold, self._method(est_val, self._threshold))
 
 
 

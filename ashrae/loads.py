@@ -3,7 +3,7 @@
 import abc
 from ashrae.energy_parameter_models import EnergyParameterModelCoefficients, IEnergyParameterModel
 import numpy as np
-from ashrae.base import NByOneNDArray, OneDimNDArray
+from ashrae.nptypes import NByOneNDArray, OneDimNDArray
 from typing import List, NamedTuple, Optional
 from .estimator import EnergyChangepointEstimator
 from .scoring import ScoringFunction
@@ -12,7 +12,16 @@ from ._lib import loads as _loads
 
 from .energy_parameter_models import AbstractEnergyParameterModel
 
-EnergyChangepointLoad = NamedTuple('EnergyChangepointLoad', [('base', float), ('heating', float), ('cooling',float)])
+#EnergyChangepointLoad = NamedTuple('EnergyChangepointLoad', [('base', float), ('heating', float), ('cooling',float)])
+
+from dataclasses import dataclass 
+
+@dataclass 
+class EnergyChangepointLoad(object): 
+    base: float 
+    hearing: float 
+    cooling: float 
+    
 
 # Some of the logic in here is bound to how curvefit estimator and by proxy we handle coeffs for model types.
 # These are interfaces also specifcally for the current family of changepoint models. 
@@ -86,7 +95,7 @@ class CoolingEnergyChangepointModelLoad(EnergyChangepointLoad):
 class Baseload(IBaseload): 
 
     def calc(self, total_consumption: float, heating: float, cooling: float) -> float: 
-        return _loads.baseload(total_consumption, heating, cooling)
+        return _loads.nptypesload(total_consumption, heating, cooling)
 
 
 

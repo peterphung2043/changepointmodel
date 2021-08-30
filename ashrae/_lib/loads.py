@@ -3,7 +3,7 @@
 
 from typing import Optional, TypeVar, Any
 import numpy as np
-from ..base import OneDimNDArray
+from ..nptypes import OneDimNDArray
 
 # NOTE moved logic handling null up one level but might get rid of that completely
 

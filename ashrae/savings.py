@@ -1,8 +1,8 @@
 """ APIs for handling adjusted and normalized savings as per ashrae.
 """
-
+from dataclasses import dataclass
 import numpy as np
-from ashrae.base import NByOneNDArray, OneDimNDArray
+from ashrae.nptypes import NByOneNDArray, OneDimNDArray, OneDimNDArrayField
 from typing import NamedTuple, Optional
 from ashrae.estimator import EnergyChangepointEstimator
 from ._lib import savings as ashraesavings
@@ -12,22 +12,26 @@ cvrmse_score = Cvrmse()
 
 import abc 
 
+# I have to pass the pydantic ndarray objects as fields so 
+# that we can validate the data later.
 
-AdjustedSavingsResult = NamedTuple('SavingsResult', [
-    ('adjusted_y', OneDimNDArray),
-    ('total_savings', float), 
-    ('average_monthly_savings', float), 
-    ('percent_savings', float), 
-    ('percent_savings_uncertainty', float)])
+@dataclass 
+class AdjustedSavingsResult(object): 
+    adjusted_y: OneDimNDArrayField
+    total_savings: float 
+    average_monthly_savings: float
+    percent_savings: float 
+    percent_savings_uncertainty: float 
 
-NormalizedSavingsResult = NamedTuple('NormalizedSavingsResult', [
-    ('normalized_X', NByOneNDArray),
-    ('normalized_y_pre', OneDimNDArray),
-    ('normalized_y_post', OneDimNDArray), 
-    ('total_savings', float), 
-    ('average_monthly_savings', float), 
-    ('percent_savings', float), 
-    ('percent_savings_uncertainty', float)])
+
+@dataclass 
+class NormalizedSavingsResult(object): 
+    normalized_y_pre: OneDimNDArrayField
+    normalized_y_post: OneDimNDArrayField
+    total_savings: float
+    average_monthly_savings : float 
+    percent_savings : float 
+    percent_savings_uncertainty : float 
 
 
 class ISavingsCalculator(abc.ABC): 
@@ -69,15 +73,24 @@ class AshraeAdjustedSavingsCalculator(AbstractSavings, ISavingsCalculator):
             pre_n, 
             post_n, 
             self._confidence_interval)
-        return adjusted_y, *savings
 
+        total_savings, average_monthly_savings, percent_savings, percent_savings_uncertainty = savings
+        return AdjustedSavingsResult(
+            adjusted_y,
+            total_savings, 
+            average_monthly_savings, 
+            percent_savings, 
+            percent_savings_uncertainty
+        )
 
-
+# This calculation must handle different X values. Design wise its easier to pass the X vals into the constructor. 
+# This way we can pass configured objects to any factory method as opposed to passing data directly
 
 class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator): 
     
     def __init__(self, X_pre: NByOneNDArray, X_post: NByOneNDArray, **kwargs): 
         super().__init__(**kwargs)
+        assert len(X_pre) == len(X_post), 'X_pre and X_post must be the same len'
         self._X_pre = X_pre 
         self._X_post = X_post
 
@@ -103,7 +116,7 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
         pre_p = len(pre.coeffs)
         post_p = len(post.coeffs)
 
-        n_norm = len(normalized_X)
+        n_norm = len(self._X_pre)
 
         savings = ashraesavings.weather_normalized(
             gross_normalized_y_pre, 
@@ -117,4 +130,13 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
             n_norm,
             self._confidence_interval)
         
-        return normalized_X, normalized_pred_y_pre, normalized_pred_y_post, *savings 
+        total_savings, average_monthly_savings, percent_savings, percent_savings_uncertainty = savings
+
+        return NormalizedSavingsResult(
+            normalized_pred_y_pre, 
+            normalized_pred_y_post, 
+            total_savings, 
+            average_monthly_savings, 
+            percent_savings, 
+            percent_savings_uncertainty)
+        

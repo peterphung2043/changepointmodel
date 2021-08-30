@@ -1,13 +1,10 @@
 from typing import List, NamedTuple, Optional
 
-from ashrae.base import AbstractEnergyParameterModel, Load, NByOneNDArray, OneDimNDArray
+from .nptypes import NByOneNDArray, OneDimNDArray
+from .energy_parameter_models import AbstractEnergyParameterModel 
 from curvefit_estimator import CurvefitEstimator
 
-from .schemas import CurvefitEstimatorData
 from .utils import argsort_1d
-
-import functools
-
 from sklearn.base import BaseEstimator, RegressorMixin
 
 # support skl regressor interface -> need to test interop with GridsearchCV and cross val score. 
@@ -23,22 +20,21 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         self.model = model  
 
     @classmethod
-    def _sort_input_data(cls, data: CurvefitEstimatorData, sort: bool=True): 
-        if sort: 
-            return argsort_1d(data.X, data.y)
-        else:
-            return data.X, data.y 
-
+    def sort_X_y(cls, X: NByOneNDArray, y: OneDimNDArray): 
+        return argsort_1d(X, y)
 
     @classmethod 
-    def fit_many(cls, models: List[AbstractEnergyParameterModel], 
-        data: CurvefitEstimatorData,
+    def fit_many(cls, 
+        models: List[AbstractEnergyParameterModel], 
+        X: NByOneNDArray, 
+        y: OneDimNDArray, 
+        sigma: Optional[OneDimNDArray]=None, 
+        absolute_sigma: Optional[bool]=None, 
         sort: bool=True, 
         **estimator_kwargs) -> List[Optional['EnergyChangepointEstimator']]:
-        """ Fits a list of 
-        """ 
         
-        X, y = cls._sort_input_data(data, sort)
+        if sort: 
+            X, y = cls.sort_X_y(X, y)
 
         fitted = []
         for m in models: 
@@ -53,7 +49,10 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
 
     @classmethod 
     def fit_one(cls, model: AbstractEnergyParameterModel, 
-        data: CurvefitEstimatorData,
+        X: NByOneNDArray, 
+        y: OneDimNDArray, 
+        sigma: Optional[OneDimNDArray]=None, 
+        absolute_sigma: Optional[bool]=None, 
         sort: bool=True, 
         **estimator_kwargs) -> Optional['EnergyChangepointEstimator']: 
         """Fits a single model using CurvefitEstimatorData as an entry point. Will sort data if needed.
@@ -66,8 +65,9 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         Returns:
             Optional[AbstractEnergyParameterModel]: [description]
         """
-
-        X, y = cls._sort_input_data(data, sort)
+        if sort: 
+            X, y = cls.sort_X_y(X, y)
+        
         est = cls(model)
         try: 
             return est.name, est.fit(X, y, **estimator_kwargs)
@@ -150,26 +150,6 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
     def pred_y(self): 
         return self.pred_y_
 
-
-    @property 
-    def n_params(self): 
-        return len(self.coeffs)
-
-
-    @property 
-    def total_pred_y(self): 
-        return sum(self.pred_y_)
-
-
-    @property 
-    def total_y(self): 
-        return sum(self.estimator_.y_)
-
-
-    @property 
-    def len_y(self): 
-        return len(self.estimator_.y_)
-
     @property
     def sigma(self): 
         return self.sigma_ 
@@ -178,3 +158,20 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
     @property 
     def absolute_sigma(self): 
         return self.absolute_sigma_
+
+
+    def n_params(self): 
+        return len(self.coeffs)
+
+
+    def total_pred_y(self): 
+        return sum(self.pred_y_)
+
+
+    def total_y(self): 
+        return sum(self.estimator_.y_)
+
+
+    def len_y(self): 
+        return len(self.estimator_.y_)
+

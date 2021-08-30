@@ -4,7 +4,7 @@ NumpyArray can be n-dimensional
 
 from datetime import datetime
 import numpy as np
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import pydantic
 
@@ -13,14 +13,19 @@ from .savings import AdjustedSavingsResult, NormalizedSavingsResult
 from .energy_parameter_models import EnergyParameterModelCoefficients
 from .loads import EnergyChangepointLoad
 
-from .base import AnyByAnyNDArray, NByOneNDArray
+from .nptypes import AnyByAnyNDArrayField, OneDimNDArrayField, AnyByAnyNDArray
 
+
+class NpConfig: 
+    json_encoders = {
+        np.ndarray : lambda v: v.tolist()
+    }
 
 
 class CurvefitEstimatorDataModel(pydantic.BaseModel): 
-    X: AnyByAnyNDArray
-    y: Optional[NByOneNDArray]   # NOTE this is optional so that different X values may be passed to a fit model
-    sigma: Optional[NByOneNDArray]=None
+    X: Union[OneDimNDArrayField, AnyByAnyNDArrayField]
+    y: Optional[OneDimNDArrayField]   # NOTE this is optional so that different X values may be passed to a fit model
+    sigma: Optional[OneDimNDArrayField]=None
     absolute_sigma: Optional[bool]=None
 
 
@@ -44,28 +49,32 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
             
         return values 
 
-# result types generate by factory methods
-# XXX should probably make these dataclasses internally ... might be less confusing then handling from named tuple
-
-EnergyParameterModelCoefficientsModel = pydantic.create_model_from_namedtuple(EnergyParameterModelCoefficients)
-EnergyChangepointLoadModel = pydantic.create_model_from_namedtuple(EnergyChangepointLoad)
-ScoreModel = pydantic.create_model_from_namedtuple(Score)
-AdjustedSavingsResultModel = pydantic.create_model_from_namedtuple(AdjustedSavingsResult)
-NormalizedSavingsResultModel = pydantic.create_model_from_namedtuple(NormalizedSavingsResult)
+    class Config(NpConfig): ... 
+        
+        
+EnergyParameterModelCoefficientsModel = pydantic.dataclasses.dataclass(EnergyParameterModelCoefficients)
+EnergyChangepointLoadModel = pydantic.dataclasses.dataclass(EnergyChangepointLoad)
+ScoreModel = pydantic.dataclasses.dataclass(Score)
+AdjustedSavingsResultModel = pydantic.dataclasses.dataclass(AdjustedSavingsResult)
+NormalizedSavingsResultModel = pydantic.dataclasses.dataclass(NormalizedSavingsResult)
 
 
 class EnergyChangepointModelResult(pydantic.BaseModel): 
     name: str 
     coeffs: EnergyParameterModelCoefficientsModel
-    pred_y: NByOneNDArray
+    pred_y: OneDimNDArrayField
     load: EnergyChangepointLoadModel
     score: List[ScoreModel]
+
+    class Config(NpConfig): ...
+        
 
 class AdjustedEnergyChangepointModelSavingsResult(pydantic.BaseModel): 
 
     pre: EnergyChangepointModelResult 
     post: EnergyChangepointModelResult
     adjusted_savings: AdjustedSavingsResultModel
-    normalized_savings = Optional[NormalizedSavingsResult]
+    normalized_savings = Optional[NormalizedSavingsResultModel]   #XXX without below config this causes a RuntimeError
 
-
+    class Config(NpConfig):
+        arbitrary_types_allowed = True  # XXX not sure why this is needed in this case

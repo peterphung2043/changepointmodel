@@ -1,6 +1,6 @@
 from typing import Tuple
 import numpy as np
-from .base import AnyByAnyNDArray, NByOneNDArray, OneDimNDArray
+from .nptypes import AnyByAnyNDArray, NByOneNDArray, OneDimNDArray
 
 
 def argsort_1d(X: NByOneNDArray, y: OneDimNDArray) -> Tuple[NByOneNDArray, OneDimNDArray]:

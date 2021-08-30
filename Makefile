@@ -20,24 +20,7 @@ clean-test:
 
 
 test: clean-test
-	pytest --cov=bplrpc --cov-report=term-missing tests/ -v -s
-
-test-single-module: clean-test
-	pytest $(module) -v -s
-
-
-install-dev: clean
-	pip install -U pip
-	pip install -U -r requirements.dev.txt
-	pip install -e . 
-
-
-install-dev-force-reinstall: clean 
-	pip install -U pip
-	pip install -U -r requirements.dev.txt
-	pip install -e . --force-reinstall
-
+	pytest --cov=ashrae --cov-report=term-missing tests/ -v -s
 
 install: clean 
-	pip install -U pip
-	pip install . 
+	poetry install 

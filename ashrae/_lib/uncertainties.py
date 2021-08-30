@@ -2,7 +2,7 @@
 """
 import numpy as np 
 from scipy import stats
-from ..base import OneDimNDArray
+from ..nptypes import OneDimNDArray
 
 
 
