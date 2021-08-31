@@ -27,6 +27,12 @@ class Score(object):
     ok: bool 
 
 
+class IEval(abc.ABC): 
+
+    @abc.abstractmethod
+    def ok(self, estimator: EnergyChangepointEstimator) -> bool: ...
+
+
 class ScoringFunction(abc.ABC):
     """ Interface for a scoring function. User should override calc with a numpy/Cython based 
     function that takes (y, pred_y) and returns a scalar. A name should be provided so the object 
@@ -56,44 +62,37 @@ class ScoringFunction(abc.ABC):
 
 class R2(ScoringFunction): 
 
-    def calc(self, y: OneDimNDArray, y_pred: OneDimNDArray, **kwargs) -> SklScoreReturnType:
-        return ashraemetrics.r2_score(y, y_pred, **kwargs)
+    def calc(self, y: OneDimNDArray, pred_y: OneDimNDArray, **kwargs) -> SklScoreReturnType:
+        return ashraemetrics.r2_score(y, pred_y, **kwargs)
 
 
 class Rmse(ScoringFunction): 
 
-    def calc(self, y: OneDimNDArray, y_pred: OneDimNDArray, **kwargs) -> SklScoreReturnType: 
-        return ashraemetrics.rmse(y, y_pred, **kwargs)
+    def calc(self, y: OneDimNDArray, pred_y: OneDimNDArray, **kwargs) -> SklScoreReturnType: 
+        return ashraemetrics.rmse(y, pred_y, **kwargs)
 
 
 class Cvrmse(ScoringFunction): 
 
-    def calc(self, y: OneDimNDArray, y_pred: OneDimNDArray, **kwargs) -> SklScoreReturnType: 
-        return ashraemetrics.cvrmse(y, y_pred, **kwargs)
+    def calc(self, y: OneDimNDArray, pred_y: OneDimNDArray, **kwargs) -> SklScoreReturnType: 
+        return ashraemetrics.cvrmse(y, pred_y, **kwargs)
 
 
 
-class AbstractScoreEval(abc.ABC): 
+class ScoreEval(IEval): 
 
     def __init__(self, scorer: ScoringFunction, threshold: float, method: Comparator): 
         self._scorer = scorer
         self._threshold = threshold
         self._method = method 
     
-    @abc.abstractmethod
-    def ok(self, estimator: EnergyChangepointEstimator) -> bool: ...
-
-
-
-class ScoreEval(AbstractScoreEval): 
 
     def ok(self, estimator: EnergyChangepointEstimator) -> Score:
         est_val = self._scorer(estimator.y, estimator.pred_y)
         return Score(self._scorer.name, est_val, self._threshold, self._method(est_val, self._threshold))
 
 
-
 class Scorer(object): 
 
-    def check(self, estimator: EnergyChangepointEstimator, evals: List[ScoreEval]) -> List[Score]: 
+    def check(self, estimator: EnergyChangepointEstimator, evals: List[IEval]) -> List[Score]: 
         return [e.ok(estimator) for e in evals]

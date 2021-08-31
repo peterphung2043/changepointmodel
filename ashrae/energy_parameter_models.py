@@ -19,6 +19,7 @@ class IChangepointModelFunction(abc.ABC):
 
     _name : str = ""
 
+    @property
     def name(self):
         assert self._name != "", 'Must provide a model name' 
         return self._name
@@ -62,7 +63,7 @@ class AbstractEnergyParameterModel(IEnergyParameterModel):
 
 class TwoParameterEnergyChangepointModel(AbstractEnergyParameterModel, IChangepointModelFunction):
 
-    _name = "twop"
+    _name = "2P"
 
     @staticmethod
     def f(X: NByOneNDArray, *coeffs) -> OneDimNDArray: 
@@ -102,7 +103,7 @@ class TwoParameterEnergyChangepointModel(AbstractEnergyParameterModel, IChangepo
 
 class ThreeParameterCoolingEnergyChangepointModel(AbstractEnergyParameterModel, IChangepointModelFunction): 
 
-    _name = "threepc"
+    _name = "3PC"
 
     @staticmethod
     def f(X: NByOneNDArray, *coeffs) -> OneDimNDArray: 
@@ -135,7 +136,7 @@ class ThreeParameterCoolingEnergyChangepointModel(AbstractEnergyParameterModel, 
 
 class ThreeParameterHeatingEnergyChangepointModel(AbstractEnergyParameterModel, IChangepointModelFunction): 
 
-    _name = "threeph"
+    _name = "3PH"
 
     @staticmethod
     def f(X: NByOneNDArray, *coeffs) -> OneDimNDArray: 
@@ -168,7 +169,7 @@ class ThreeParameterHeatingEnergyChangepointModel(AbstractEnergyParameterModel, 
 
 class FourParameterEnergyChangepointModel(AbstractEnergyParameterModel, IChangepointModelFunction): 
 
-    _name = "fourp"
+    _name = "4P"
 
     @staticmethod
     def f(X: NByOneNDArray, *coeffs) -> OneDimNDArray: 
@@ -201,7 +202,7 @@ class FourParameterEnergyChangepointModel(AbstractEnergyParameterModel, IChangep
 
 class FiveParameterEnergyChangepointModel(AbstractEnergyParameterModel, IChangepointModelFunction): 
 
-    _name = "fivep"
+    _name = "5P"
 
     @staticmethod
     def f(X: NByOneNDArray, *coeffs) -> OneDimNDArray: 
