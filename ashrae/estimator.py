@@ -1,5 +1,7 @@
 from typing import List, NamedTuple, Optional
 
+from _pytest.outcomes import fail
+
 from .nptypes import NByOneNDArray, OneDimNDArray
 from .energy_parameter_models import AbstractEnergyParameterModel 
 from curvefit_estimator import CurvefitEstimator
@@ -9,6 +11,8 @@ from sklearn.base import BaseEstimator, RegressorMixin
 
 # support skl regressor interface -> need to test interop with GridsearchCV and cross val score. 
 # class methods support working without cross validation 
+import logging 
+logger = logging.getLogger(__name__)
 
 
 class EnergyChangepointEstimator(BaseEstimator, RegressorMixin): 
@@ -31,6 +35,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         sigma: Optional[OneDimNDArray]=None, 
         absolute_sigma: Optional[bool]=None, 
         sort: bool=True, 
+        fail_silently: bool=True,
         **estimator_kwargs) -> List[Optional['EnergyChangepointEstimator']]:
         
         if sort: 
@@ -40,10 +45,12 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         for m in models: 
             est = cls(m)
             try:
-                fitted.append( (est.name, est.fit(X, y, **estimator_kwargs),) ) 
+                fitted.append( (est.name, est.fit(X, y, sigma, absolute_sigma, **estimator_kwargs),) ) 
             except Exception: # XXX this is bad... need to figure out exactly what to catch here .. prob LinAlgError? or something from skl...
-                fitted.append( (m.name, None))
-        
+                if fail_silently:
+                    logger.warning(f'{m.name} failed to model.')
+                    fitted.append( (m.name, None))
+                raise 
         return fitted 
 
 
@@ -54,6 +61,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         sigma: Optional[OneDimNDArray]=None, 
         absolute_sigma: Optional[bool]=None, 
         sort: bool=True, 
+        fail_silently: bool=True,
         **estimator_kwargs) -> Optional['EnergyChangepointEstimator']: 
         """Fits a single model using CurvefitEstimatorData as an entry point. Will sort data if needed.
 
@@ -70,10 +78,12 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         
         est = cls(model)
         try: 
-            return est.name, est.fit(X, y, **estimator_kwargs)
+            return est.name, est.fit(X, y, sigma, absolute_sigma, **estimator_kwargs)
         except Exception: # XXX  same as above... Note I can't really combine these methods or we'd be sorting the multiple times for no reason
-            return model.name, None 
-
+            if fail_silently:
+                logger.warning(f'{model.name} failed to model.')
+                return model.name, None 
+            raise
 
     def fit(self, 
         X: NByOneNDArray, 

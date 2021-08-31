@@ -39,14 +39,22 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
     @pydantic.root_validator
     def validate(cls, values: Dict[str, Any]) -> Dict[str, Any]: 
 
-        if values['y'] is not None:  # if we are only passing X then we can skip validation
+        if values['y'] is None and values['sigma'] is not None: 
+            raise ValueError('Cannot pass `sigma` without `y`')
 
+        if values['y'] is not None:  # if we are only passing X then we can skip validation
+            
             xlen = len(values['X'])
             ylen = len(values['y'])
 
-            if xlen != ylen: 
-                raise ValueError(f'X and y lengths do not match.')
-            
+            if values['sigma'] is None:     
+                if xlen != ylen: 
+                    raise ValueError(f'X and y lengths do not match.')
+            else: 
+                siglen = len(values['sigma'])
+                if not xlen == ylen == siglen: 
+                    raise ValueError(f'X, y and sigma lengths to not match.')
+
         return values 
 
     class Config(NpConfig): ... 
@@ -55,16 +63,16 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
 EnergyParameterModelCoefficientsModel = pydantic.dataclasses.dataclass(EnergyParameterModelCoefficients)
 EnergyChangepointLoadModel = pydantic.dataclasses.dataclass(EnergyChangepointLoad)
 ScoreModel = pydantic.dataclasses.dataclass(Score)
-AdjustedSavingsResultModel = pydantic.dataclasses.dataclass(AdjustedSavingsResult)
-NormalizedSavingsResultModel = pydantic.dataclasses.dataclass(NormalizedSavingsResult)
+AdjustedSavingsModel = pydantic.dataclasses.dataclass(AdjustedSavingsResult)
+NormalizedSavingsModel = pydantic.dataclasses.dataclass(NormalizedSavingsResult)
 
 
 class EnergyChangepointModelResult(pydantic.BaseModel): 
     name: str 
     coeffs: EnergyParameterModelCoefficientsModel
     pred_y: OneDimNDArrayField
-    load: EnergyChangepointLoadModel
-    score: List[ScoreModel]
+    load: Optional[EnergyChangepointLoadModel]
+    scores: Optional[List[ScoreModel]]
 
     class Config(NpConfig): ...
         
@@ -73,8 +81,8 @@ class AdjustedEnergyChangepointModelSavingsResult(pydantic.BaseModel):
 
     pre: EnergyChangepointModelResult 
     post: EnergyChangepointModelResult
-    adjusted_savings: AdjustedSavingsResultModel
-    normalized_savings = Optional[NormalizedSavingsResultModel]   #XXX without below config this causes a RuntimeError
+    adjusted_savings: AdjustedSavingsModel
+    normalized_savings: Optional[NormalizedSavingsModel]   
 
-    class Config(NpConfig):
-        arbitrary_types_allowed = True  # XXX not sure why this is needed in this case
+    class Config(NpConfig): ...
+        

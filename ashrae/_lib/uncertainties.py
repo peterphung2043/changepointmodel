@@ -5,6 +5,9 @@ from scipy import stats
 from ..nptypes import OneDimNDArray
 
 
+def _get_tstat(confidence_interval: float, df: int) -> float: 
+    return stats.t.interval(confidence_interval, df)[1]
+
 
 def fractional_avoided_energy_use(total_annual_adjusted: float, total_annual_measured_reporting: float) -> float:
     
@@ -19,7 +22,7 @@ def fractional_avoided_energy_use(total_annual_adjusted: float, total_annual_mea
 
 
 def relative_uncertainty_avoided_energy_use(
-    conf_interval: float, 
+    confidence_interval: float, 
     cvrmse: float, 
     f: float, 
     p: int, 
@@ -42,12 +45,12 @@ def relative_uncertainty_avoided_energy_use(
         float: [description]
     """
 
-    tstat = stats.t.interval(conf_interval, n_pre-p)[1]
+    tstat = _get_tstat(confidence_interval, n_pre - p)
     return 1.26 * tstat * cvrmse * np.sqrt((1/n_post) * (1 + 2/n_pre))/f
 
 
 def relative_uncertainty_normalized_period(
-    conf_interval: float, 
+    confidence_interval: float, 
     n: int, 
     cvrmse: float, 
     gross_norm: float, 
@@ -72,5 +75,5 @@ def relative_uncertainty_normalized_period(
         float: uncertainty for sum of normalized consumption for that period
     """ 
 
-    tstat = stats.t.interval(conf_interval, n - p)[1]
+    tstat = _get_tstat(confidence_interval, n - p)
     return 1.26 * tstat * gross_norm * cvrmse * np.sqrt((1/n_norm) * (1 + 2/n))

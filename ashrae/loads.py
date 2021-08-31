@@ -11,15 +11,12 @@ from .scoring import ScoringFunction
 from ._lib import loads as _loads 
 
 from .energy_parameter_models import AbstractEnergyParameterModel
-
-#EnergyChangepointLoad = NamedTuple('EnergyChangepointLoad', [('base', float), ('heating', float), ('cooling',float)])
-
 from dataclasses import dataclass 
 
 @dataclass 
 class EnergyChangepointLoad(object): 
     base: float 
-    hearing: float 
+    heating: float 
     cooling: float 
     
 

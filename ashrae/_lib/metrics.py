@@ -9,6 +9,10 @@ from ..nptypes import OneDimNDArray
 
 #XXX use nptyping here.
 
+def _cvrmse_from_rmse(rmse: float, y: OneDimNDArray) -> float: 
+    return rmse / np.mean(y)
+
+
 def r2_score(y: OneDimNDArray, y_pred: OneDimNDArray, **kwargs) -> Union[float, OneDimNDArray[float]]: 
     return sklmetrics.r2_score(y, y_pred, **kwargs)
 
@@ -19,5 +23,5 @@ def rmse(y: OneDimNDArray, y_pred: OneDimNDArray, **kwargs) -> Union[float, OneD
 
 def cvrmse(y: OneDimNDArray, y_pred: OneDimNDArray, **kwargs) -> Union[float, OneDimNDArray[float]]:
     rmse = sklmetrics.mean_squared_error(y, y_pred, squared=False, **kwargs)
-    return rmse / np.mean(y)
+    return _cvrmse_from_rmse(rmse, y)
 
