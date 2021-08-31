@@ -7,7 +7,7 @@ from curvefit_estimator import estimator
 from ashrae.schemas import AdjustedEnergyChangepointModelSavingsResult, \
     EnergyChangepointModelResult
 
-from ashrae.loads import EnergyChangepointLoadsCalculator
+from ashrae.loads import EnergyChangepointLoadsAggregator
 from ashrae.scoring import Scorer
 from ashrae.estimator import EnergyChangepointEstimator
 from .savings import AshraeNormalizedSavingsCalculator, \
@@ -17,11 +17,11 @@ from .savings import AshraeNormalizedSavingsCalculator, \
 def create_energychangepointmodelresult(
     estimator: EnergyChangepointEstimator, 
     scorer: Scorer, 
-    loadcalc: EnergyChangepointLoadsCalculator,
+    loadagg: EnergyChangepointLoadsAggregator,
     ) -> EnergyChangepointModelResult:
 
     score = scorer.check(estimator)
-    load = loadcalc.run(estimator)
+    load = loadagg.run(estimator)
 
     # Not sure to add input data here (X, y)
     data = {
@@ -40,16 +40,16 @@ def create_adjustedenergychangepointmodelsavingsresult(
     pre: EnergyChangepointEstimator, 
     post: EnergyChangepointEstimator, 
     scorer: Scorer,
-    loadcalc: EnergyChangepointLoadsCalculator, 
+    loadagg: EnergyChangepointLoadsAggregator, 
     adjcalc: AshraeAdjustedSavingsCalculator,
     normcalc: Optional[AshraeNormalizedSavingsCalculator]=None
 ) -> AdjustedEnergyChangepointModelSavingsResult: 
 
     pre_score = scorer.check(pre)
-    pre_load = loadcalc.run(pre)
+    pre_load = loadagg.run(pre)
 
-    post_score = loadcalc.run(post)
-    post_load = loadcalc.run(post)
+    post_score = scorer.check(post)
+    post_load = loadagg.run(post)
 
     pre_result = create_energychangepointmodelresult(pre, pre_score, pre_load)
     post_result = create_energychangepointmodelresult(post, post_score, post_load)

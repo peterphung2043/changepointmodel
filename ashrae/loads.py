@@ -38,6 +38,7 @@ class IEnergyChangepointLoad(ScoringFunction):
     def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]) -> float: ...
 
 
+
 class IBaseload(ScoringFunction): 
 
     @abc.abstractmethod 
@@ -45,7 +46,7 @@ class IBaseload(ScoringFunction):
 
 
 
-class HeatingEnergyChangpointModelLoad(EnergyChangepointLoad): 
+class HeatingEnergyChangpointModelLoad(IEnergyChangepointLoad): 
 
 
     def get_slope(self, model: IEnergyParameterModel, coeffs: EnergyParameterModelCoefficients) -> Optional[float]: 
@@ -64,11 +65,11 @@ class HeatingEnergyChangpointModelLoad(EnergyChangepointLoad):
         if changepoint is None: # no changepoint then set to inf  (handles linear model loads)
             changepoint = np.inf 
 
-        return _loads.heatload(X, pred_y, slope, yint, changepoint)
+        return _loads.heatload(X, pred_y, yint, changepoint)
 
 
 
-class CoolingEnergyChangepointModelLoad(EnergyChangepointLoad): 
+class CoolingEnergyChangepointModelLoad(IEnergyChangepointLoad): 
 
 
     def get_slope(self, model: IEnergyParameterModel, coeffs: EnergyParameterModelCoefficients) -> Optional[float]: 
@@ -76,7 +77,8 @@ class CoolingEnergyChangepointModelLoad(EnergyChangepointLoad):
 
 
     def get_changepoint(self, model: IEnergyParameterModel, coeffs: EnergyParameterModelCoefficients) -> Optional[float]:
-        return model.cooling_slope(coeffs)
+        return model.cooling_changepoint(coeffs)
+
 
     def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]) -> float: 
         if slope < 0: # neg slope no cool
@@ -85,14 +87,14 @@ class CoolingEnergyChangepointModelLoad(EnergyChangepointLoad):
         if changepoint is None:  # no cp then set to -inf (handles linear model loads)
             changepoint = -np.inf
         
-        return _loads.heatload(X, pred_y, slope, yint, changepoint)
+        return _loads.coolingload(X, pred_y, yint, changepoint)
 
 
 
 class Baseload(IBaseload): 
 
     def calc(self, total_consumption: float, heating: float, cooling: float) -> float: 
-        return _loads.nptypesload(total_consumption, heating, cooling)
+        return _loads.baseload(total_consumption, heating, cooling)
 
 
 
@@ -108,20 +110,15 @@ class EnergyChangepointLoadHandler(object):
         model: AbstractEnergyParameterModel, 
         coeffs: EnergyParameterModelCoefficients) -> float: 
         
-        slope = self._load.get_slope(model, coeffs)
-
-        # slope may be none if we're trying to get a heating or cooling load for a model that does not support it 
-        if slope is None:
-            return 0
-        
+        slope = self._load.get_slope(model, coeffs)        
         cp = self._load.get_changepoint(model, coeffs)
         yint = model.yint(coeffs)
 
-        return self._load.calc(X, pred_y, slope, yint, cp)
+        return self._load(X, pred_y, slope, yint, cp)
 
 
 
-class EnergyChangepointLoadsCalculator(object): 
+class EnergyChangepointLoadsAggregator(object): 
 
     def __init__(self, 
         heating: EnergyChangepointLoadHandler, 
@@ -132,13 +129,13 @@ class EnergyChangepointLoadsCalculator(object):
         self._cooling = cooling 
         self._base = base
 
-    def run(self, estimator: EnergyChangepointEstimator) -> EnergyChangepointLoad: 
+    def aggregate(self, estimator: EnergyChangepointEstimator) -> EnergyChangepointLoad: 
 
         X = estimator.X.squeeze()  # have to make this 1d
         pred_y = estimator.pred_y 
         
         model = estimator.model 
-        coeffs = estimator.parsed_coeffs()
+        coeffs = model.parse_coeffs(estimator.coeffs)
 
         hl = self._heating.calc(X, pred_y, model, coeffs)
         cl = self._cooling.calc(X, pred_y, model, coeffs)

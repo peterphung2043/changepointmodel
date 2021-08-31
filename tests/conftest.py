@@ -1,6 +1,25 @@
+from ashrae.energy_parameter_models import AbstractEnergyParameterModel, EnergyParameterModelCoefficients
 from ashrae import estimator, scoring
 import pytest 
 import numpy as np
+
+class DummyEnergyParameterModel(AbstractEnergyParameterModel): 
+
+    def parse_coeffs(self, coeffs): 
+        return EnergyParameterModelCoefficients(99, [99], None)
+
+    def cooling_slope(self, coeffs): 
+        return 42 
+    
+    def cooling_changepoint(self, coeffs): 
+        return 43
+
+    def heating_slope(self, coeffs): 
+        return 44 
+
+    def heating_changepoint(self, coeffs): 
+        return 45 
+
 
 @pytest.fixture 
 def schema_scores(): 
@@ -75,3 +94,30 @@ def score_mock_scorefunction():
             return 42.0 
     
     return Dummy()
+
+
+@pytest.fixture 
+def loads_dummyenergyparametermodel(): 
+    return DummyEnergyParameterModel()
+
+
+@pytest.fixture 
+def loads_dummyenergycoefficients(): 
+
+    return EnergyParameterModelCoefficients(99, [99], None)
+
+
+@pytest.fixture 
+def loads_dummyestimator(loads_dummyenergyparametermodel): 
+
+    # this is tricky to mock...
+    class _estimator(object): 
+
+        popt_ = (99, 99,)
+    
+    class LoadsDummyEstimator(estimator.EnergyChangepointEstimator):
+        estimator_ = _estimator
+        X_ = np.array([[1.,],])
+        pred_y_ = np.array([1.,])
+
+    return LoadsDummyEstimator(model=loads_dummyenergyparametermodel)
