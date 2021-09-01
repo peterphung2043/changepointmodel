@@ -2,69 +2,6 @@ import numpy as np
 from ashrae import energy_parameter_models as models 
 
 
-def test_twop_energy_parameter_model_function_forwarding(mocker): 
-    mockf = mocker.patch('ashrae._lib.models.twop')
-    mockbounds = mocker.patch('ashrae._lib.bounds.twop')
-
-    model = models.TwoParameterEnergyChangepointModel()
-    assert model.name == '2P'
-
-    model.f(np.array([[1.,]]), 42)
-    model.bounds(np.array([[1.,]]))
-    mockf.assert_called_once_with(np.array([1.,]), 42) # pass an array of value 1 to avoid annoying mock error
-    mockbounds.assert_called_once()
-
-def test_threepc_energy_parameter_model_function_forwarding(mocker): 
-    mockf = mocker.patch('ashrae._lib.models.threepc')
-    mockbounds = mocker.patch('ashrae._lib.bounds.threepc')
-
-    model = models.ThreeParameterCoolingEnergyChangepointModel()
-    assert model.name == '3PC'
-
-    model.f(np.array([[1.,]]), 42)
-    model.bounds(np.array([[1.,]]))
-    mockf.assert_called_once_with(np.array([1.,]), 42) # pass an array of value 1 to avoid annoying mock error
-    mockbounds.assert_called_once()
-
-
-def test_threeph_energy_parameter_model_function_forwarding(mocker): 
-    mockf = mocker.patch('ashrae._lib.models.threeph')
-    mockbounds = mocker.patch('ashrae._lib.bounds.threeph')
-
-    model = models.ThreeParameterHeatingEnergyChangepointModel()
-    assert model.name == '3PH'
-
-    model.f(np.array([[1.,]]), 42)
-    model.bounds(np.array([[1.,]]))
-    mockf.assert_called_once_with(np.array([1.,]), 42) # pass an array of value 1 to avoid annoying mock error
-    mockbounds.assert_called_once()
-
-
-def test_fourp_energy_parameter_model_function_forwarding(mocker): 
-    mockf = mocker.patch('ashrae._lib.models.fourp')
-    mockbounds = mocker.patch('ashrae._lib.bounds.fourp')
-
-    model = models.FourParameterEnergyChangepointModel()
-    assert model.name == '4P'
-
-    model.f(np.array([[1.,]]), 42)
-    model.bounds(np.array([[1.,]]))
-    mockf.assert_called_once_with(np.array([1.,]), 42) # pass an array of value 1 to avoid annoying mock error
-    mockbounds.assert_called_once()
-
-
-def test_fivep_energy_parameter_model_function_forwarding(mocker): 
-    mockf = mocker.patch('ashrae._lib.models.fivep')
-    mockbounds = mocker.patch('ashrae._lib.bounds.fivep')
-
-    model = models.FiveParameterEnergyChangepointModel()
-    assert model.name == '5P'
-
-    model.f(np.array([[1.,]]), 42)
-    model.bounds(np.array([[1.,]]))
-    mockf.assert_called_once_with(np.array([1.,]), 42) # pass an array of value 1 to avoid annoying mock error
-    mockbounds.assert_called_once()
-
 
 def test_abstractparametermodel_yint(): 
 

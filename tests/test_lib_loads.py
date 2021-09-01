@@ -2,13 +2,6 @@
 import numpy as np  
 from ashrae._lib import loads
 
-def test_heatload_returns_zero_if_slope_positive(): 
-    assert 0 == loads.heatload(np.array([1.,]), np.array([1.]), 42, 0)
-
-
-def test_coolload_returns_zero_if_slope_is_negative(): 
-    assert 0 == loads.coolingload(np.array([1.,]), np.array([1.]), -42, 0)
-
 
 def test_baseload_calculation(): 
     assert 0 == loads.baseload(100, 50, 50)
@@ -52,7 +45,7 @@ def test_coolingload_returns_correct_result(mocker):
     coolspy = mocker.spy(loads, '_cooling_predicted_load') 
     sumspy = mocker.spy(loads, '_positive_sum')
 
-    l = loads.coolingload(test_X, test_y, 42, yint, changepoint)
+    l = loads.coolingload(test_X, test_y, yint, changepoint)
     assert l == 4 + 5 + 6 + 7 + 8
 
     coolspy.assert_called_once_with(test_X, test_y, yint, changepoint)
@@ -71,7 +64,7 @@ def test_heatingload_correct_calling_behavior(mocker):
     heatspy = mocker.spy(loads, '_heating_predicted_load')
     sumspy = mocker.spy(loads, '_positive_sum')
 
-    l = loads.heatload(test_X, test_y, -42, yint, changepoint)  
+    l = loads.heatload(test_X, test_y, yint, changepoint)  
     assert l == 8 + 7 + 6 + 5 
     heatspy.assert_called_once_with(test_X, test_y, yint, changepoint)
     

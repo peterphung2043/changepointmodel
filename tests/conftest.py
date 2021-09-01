@@ -1,4 +1,4 @@
-from ashrae.energy_parameter_models import AbstractEnergyParameterModel, EnergyParameterModelCoefficients
+from ashrae.energy_parameter_models import AbstractEnergyParameterModel, EnergyParameterModelCoefficients, IChangepointModelFunction
 from ashrae import estimator, scoring
 import pytest 
 import numpy as np
@@ -121,3 +121,21 @@ def loads_dummyestimator(loads_dummyenergyparametermodel):
         pred_y_ = np.array([1.,])
 
     return LoadsDummyEstimator(model=loads_dummyenergyparametermodel)
+
+
+
+@pytest.fixture
+def estimator_dummymodel(): 
+
+    class LinearModel(IChangepointModelFunction):
+        # pulled this from twop 
+ 
+        def f(self): 
+            def line(X, yint, m): 
+                return (m * X + yint).squeeze()
+            return line
+        
+        def bounds(self): 
+            return ((0, -np.inf),(np.inf, np.inf))
+    
+    return LinearModel()
