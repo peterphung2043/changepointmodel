@@ -1,5 +1,6 @@
+import pytest
+from ashrae.parameter_models import EnergyParameterModelCoefficients, TwoParameterModel
 from ashrae.estimator import EnergyChangepointEstimator
-from tests.conftest import loads_dummyenergycoefficients, loads_dummyenergyparametermodel
 from ashrae.nptypes import OneDimNDArray
 from ashrae import loads 
 import numpy as np 
@@ -14,7 +15,7 @@ def test_heatingchangepointmodelload_correctly_forwards_call(mocker):
     yint = 1 
     changepoint = 1 
 
-    l = loads.HeatingEnergyChangpointModelLoad()
+    l = loads.HeatingLoad()
     l(X, pred_y, slope, yint, changepoint)
     mock.assert_called_once_with(X, pred_y, yint, changepoint)
 
@@ -26,7 +27,7 @@ def test_heatingchangepointmodelload_pos_slope_returns_zero():
     yint = 1 
     changepoint = 1 
 
-    l = loads.HeatingEnergyChangpointModelLoad()
+    l = loads.HeatingLoad()
     assert l(X, pred_y, slope, yint, changepoint) == 0
 
 
@@ -40,7 +41,7 @@ def test_heatingchangepointmodelload_none_changepoint_passes_pos_inf(mocker):
     yint = 1 
     changepoint = None 
 
-    l = loads.HeatingEnergyChangpointModelLoad()
+    l = loads.HeatingLoad()
     l(X, pred_y, slope, yint, changepoint)
     mock.assert_called_once_with(X, pred_y, yint, np.inf)
 
@@ -56,7 +57,7 @@ def test_coolingchangepointmodelload_forwards_call(mocker):
     yint = 1 
     changepoint = 1 
 
-    l = loads.CoolingEnergyChangepointModelLoad()
+    l = loads.CoolingLoad()
     l(X, pred_y, slope, yint, changepoint)
     mock.assert_called_once_with(X, pred_y, yint, changepoint)
 
@@ -69,7 +70,7 @@ def test_coolingchangepointmodelload_neg_slope_returns_zero():
     yint = 1 
     changepoint = 1 
 
-    l = loads.CoolingEnergyChangepointModelLoad()
+    l = loads.CoolingLoad()
     assert l(X, pred_y, slope, yint, changepoint) == 0
 
 
@@ -83,7 +84,7 @@ def test_coolingchangepointmodelload_none_changepoint_passes_neg_inf(mocker):
     yint = 1 
     changepoint = None 
 
-    l = loads.CoolingEnergyChangepointModelLoad()
+    l = loads.CoolingLoad()
     l(X, pred_y, slope, yint, changepoint)
     mock.assert_called_once_with(X, pred_y, yint, -np.inf)
 
@@ -100,85 +101,179 @@ def test_baseload_forwards_call(mocker):
     mock.assert_called_once_with(tc, hl, cl)
 
 
-def test_coolingchangepointmodelload_get_slope_calls_correct_model_method(
-    loads_dummyenergyparametermodel, 
-    loads_dummyenergycoefficients): 
+def test_twoparameter_load_handler_calls_correct_methods(mocker, dummy_twopcoefficients): 
+    # spy on changepoint 
+    class DummyModel: 
+        def slope(self, coeffs): 
+            return 42 
+        def yint(self, coeffs): 
+            return 43 
+
+    cl = loads.CoolingLoad()
+    hl = loads.HeatingLoad()
+    bl = loads.Baseload()
+
+    mockcl = mocker.patch.object(cl, 'calc', return_value=44)
+    mockhl = mocker.patch.object(hl, 'calc', return_value=45)
+    mockbl = mocker.patch.object(bl, 'calc', return_value=46) 
+
+    X = np.array([1,])
+    pred_y = np.array([100,])
     
-    l = loads.CoolingEnergyChangepointModelLoad() 
-    slope = l.get_slope(loads_dummyenergyparametermodel, loads_dummyenergycoefficients)
-    assert slope == 42 
+    handler = loads.TwoParameterLoadHandler(DummyModel(),cooling=mockcl, heating=mockhl, base=mockbl)
+    result = handler.run(X, pred_y, dummy_twopcoefficients)
 
-def test_coolingchangepointmodelload_get_changepoint_calls_correct_model_method(
-    loads_dummyenergyparametermodel, 
-    loads_dummyenergycoefficients):
-
-    l = loads.CoolingEnergyChangepointModelLoad()
-    cp = l.get_changepoint(loads_dummyenergyparametermodel, loads_dummyenergycoefficients)
-    assert cp == 43
+    assert result == loads.Load(46,45,44)
+    mockcl.assert_called_once_with(X, pred_y, 42, 43)
+    mockhl.assert_called_once_with(X, pred_y, 42, 43)
+    mockbl.assert_called_once_with(100, 44, 45)
 
 
-def test_heatingchangepointmodelload_get_slope_calls_correct_model_method(
-    loads_dummyenergyparametermodel, 
-    loads_dummyenergycoefficients): 
+def test_threeparameter_load_handler_calls_correct_methods(mocker, dummy_threepcoefficients): 
+    class DummyModel: 
+        def slope(self, coeffs): 
+            return 42 
+        def yint(self, coeffs): 
+            return 43 
+        def changepoint(self, coeffs): 
+            return 45
+
+    cl = loads.CoolingLoad()
+    hl = loads.HeatingLoad()
+    bl = loads.Baseload()
+
+    mockcl = mocker.patch.object(cl, 'calc', return_value=44)
+    mockhl = mocker.patch.object(hl, 'calc', return_value=45)
+    mockbl = mocker.patch.object(bl, 'calc', return_value=46) 
+
+    X = np.array([1,])
+    pred_y = np.array([100,])
     
-    l = loads.HeatingEnergyChangpointModelLoad()
-    slope = l.get_slope(loads_dummyenergyparametermodel, loads_dummyenergycoefficients) 
-    assert slope == 44
+    handler = loads.ThreeParameterLoadHandler(DummyModel(),cooling=mockcl, heating=mockhl, base=mockbl)
+    result = handler.run(X, pred_y, dummy_threepcoefficients)
+
+    assert result == loads.Load(46,45,44)
+    mockcl.assert_called_once_with(X, pred_y, 42, 43, 45)
+    mockhl.assert_called_once_with(X, pred_y, 42, 43, 45)
+    mockbl.assert_called_once_with(100, 44, 45) 
 
 
-def test_heatingchangepointmodelload_get_changepoint_calls_correct_model_method(
-    loads_dummyenergyparametermodel, 
-    loads_dummyenergycoefficients): 
+def test_fourparameter_load_handler_calls_correct_methods(mocker, dummy_fourpcoefficients): 
+    class DummyModel: 
+        def left_slope(self, coeffs): 
+            return 42
+        def right_slope(self, coeffs): 
+            return 43
+        def yint(self, coeffs): 
+            return 44 
+        def changepoint(self, coeffs): 
+            return 45
 
-    l = loads.HeatingEnergyChangpointModelLoad()
-    cp = l.get_changepoint(loads_dummyenergyparametermodel, loads_dummyenergycoefficients)
-    assert cp == 45
 
+    cl = loads.CoolingLoad()
+    hl = loads.HeatingLoad()
+    bl = loads.Baseload()
 
-def test_energychangepointloadhandler_makes_correct_calls(
-    mocker, 
-    loads_dummyenergyparametermodel, 
-    loads_dummyenergycoefficients):  
+    mockcl = mocker.patch.object(cl, 'calc', return_value=44)
+    mockhl = mocker.patch.object(hl, 'calc', return_value=45)
+    mockbl = mocker.patch.object(bl, 'calc', return_value=46) 
+
+    X = np.array([1,])
+    pred_y = np.array([100,])
     
-    load = loads.CoolingEnergyChangepointModelLoad()
+    handler = loads.FourParameterLoadHandler(DummyModel(),cooling=mockcl, heating=mockhl, base=mockbl)
+    result = handler.run(X, pred_y, dummy_fourpcoefficients)
 
-    slope_spy = mocker.spy(load, 'get_slope')
-    cp_spy = mocker.spy(load, 'get_changepoint')
-    calc_spy = mocker.spy(load, 'calc')
-    yintspy = mocker.spy(loads_dummyenergyparametermodel, 'yint')
+    assert result == loads.Load(46,45,44)
+    mockcl.assert_called_once_with(X, pred_y, 43, 44, 45)
+    mockhl.assert_called_once_with(X, pred_y, 42, 44, 45)
+    mockbl.assert_called_once_with(100, 44, 45)  
 
-    handler = loads.EnergyChangepointLoadHandler(load)
 
-    X = np.array([1.,])
-    pred_y = np.array([1.,])
 
-    res = handler.calc(X, pred_y, loads_dummyenergyparametermodel, loads_dummyenergycoefficients)
+def test_fiveparameter_load_handler_calls_correct_methods(mocker, dummy_fivepcoefficients): 
+    class DummyModel: 
+        def left_slope(self, coeffs): 
+            return 42
+        def right_slope(self, coeffs): 
+            return 43
+        def yint(self, coeffs): 
+            return 44 
+        def left_changepoint(self, coeffs): 
+            return 45
+        def right_changepoint(self, coeffs): 
+            return 46
+
+    cl = loads.CoolingLoad()
+    hl = loads.HeatingLoad()
+    bl = loads.Baseload()
+
+    mockcl = mocker.patch.object(cl, 'calc', return_value=44)
+    mockhl = mocker.patch.object(hl, 'calc', return_value=45)
+    mockbl = mocker.patch.object(bl, 'calc', return_value=46) 
+
+    X = np.array([1,])
+    pred_y = np.array([100,])
     
-    assert slope_spy.spy_return == 42
-    assert cp_spy.spy_return == 43 
-    assert yintspy.spy_return == 99 
+    handler = loads.FiveParameterLoadHandler(DummyModel(),cooling=mockcl, heating=mockhl, base=mockbl)
+    result = handler.run(X, pred_y, dummy_fivepcoefficients)
 
-    calc_spy.assert_called_with(X, pred_y, 42, 99, 43)
+    assert result == loads.Load(46,45,44)
+    mockcl.assert_called_once_with(X, pred_y, 43, 44, 46)
+    mockhl.assert_called_once_with(X, pred_y, 42, 44, 45)
+    mockbl.assert_called_once_with(100, 44, 45)   
 
-def test_energychangepointloadsaggregator_builds_result(mocker, loads_dummyestimator): 
+
+def test_loads_aggregator_raises_typeerror_if_wrong_model(mocker):
     
-    cload = loads.CoolingEnergyChangepointModelLoad()
-    hload = loads.HeatingEnergyChangpointModelLoad()
-    bload = loads.Baseload()
+    class DummyEstimator(object): 
+        model = TwoParameterModel()
 
-    clhandler = loads.EnergyChangepointLoadHandler(cload)
-    hlhandler = loads.EnergyChangepointLoadHandler(hload)
+    class DummyModel:
+        pass 
     
-    agg = loads.EnergyChangepointLoadsAggregator(hlhandler, clhandler, bload)
+    cl = loads.CoolingLoad()
+    hl = loads.HeatingLoad()
+    bl = loads.Baseload()
 
-    mocker.patch.object(hload, 'calc', return_value=42)
-    mocker.patch.object(cload, 'calc', return_value=43)
-    mocker.patch.object(bload, 'calc', return_value=44) 
 
-    print(loads_dummyestimator.model)
+    mockcl = mocker.patch.object(cl, 'calc', return_value=44)
+    mockhl = mocker.patch.object(hl, 'calc', return_value=45)
+    mockbl = mocker.patch.object(bl, 'calc', return_value=46) 
 
-    res = agg.aggregate(loads_dummyestimator)
+    handler = loads.FiveParameterLoadHandler(DummyModel(),cooling=mockcl, heating=mockhl, base=mockbl)
     
-    assert res.base == 44 
-    assert res.cooling == 43 
-    assert res.heating == 42
+    agg = loads.EnergyChangepointLoadsAggregator(handler)
+    with pytest.raises(TypeError):  
+        agg.aggregate(DummyEstimator())
+
+
+def test_loads_aggregator_calls_handler(mocker): 
+
+    Xtest = np.array([[1.,]])
+    ytest = np.array([100,])
+    coeffs = EnergyParameterModelCoefficients(42, [99], None)
+
+    class DummyEstimator(object): 
+        model = TwoParameterModel()
+        X = Xtest
+        pred_y = ytest
+
+        def parse_coeffs(self): 
+            return coeffs
+
+    pmodel = TwoParameterModel()
+    cl = loads.CoolingLoad()
+    hl = loads.HeatingLoad()
+    bl = loads.Baseload()
+
+    handler = loads.FiveParameterLoadHandler(pmodel,cooling=cl, heating=hl, base=bl)
+    
+    mockhandler = mocker.patch.object(handler, 'run')
+    agg = loads.EnergyChangepointLoadsAggregator(handler)
+    agg.aggregate(DummyEstimator())
+
+    mockhandler.assert_called_once_with(Xtest, ytest, coeffs)
+
+
+

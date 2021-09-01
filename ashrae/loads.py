@@ -25,7 +25,7 @@ class Load(object):
 class ISensitivityLoad(abc.ABC): 
 
     @abc.abstractmethod 
-    def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]) -> float: ...
+    def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]=None) -> float: ...
 
     def __call__(self, *args, **kwargs) -> float: 
         return self.calc(*args, **kwargs)
@@ -41,7 +41,7 @@ class IBaseload(abc.ABC):
 
 class HeatingLoad(ISensitivityLoad): 
 
-    def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]) -> float: 
+    def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]=None) -> float: 
 
         if slope > 0: # pos slope no heat
             return 0
@@ -55,7 +55,7 @@ class HeatingLoad(ISensitivityLoad):
 
 class CoolingLoad(ISensitivityLoad): 
 
-    def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]) -> float: 
+    def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]=None) -> float: 
         if slope < 0: # neg slope no cool
             return 0
         
@@ -83,7 +83,7 @@ class AbstractLoadHandler(abc.ABC):
         self._model = model 
         self._cooling = cooling 
         self._heating = heating 
-        self._base = base 
+        self._base = base if base is not None else Baseload()
 
     @property 
     def model(self): 
@@ -115,12 +115,11 @@ class TwoParameterLoadHandler(AbstractLoadHandler):
         yint, total_pred_y = self._initial(pred_y, coeffs)
 
         slope = self._model.slope(coeffs)
-
-        cooling = self._cooling(X, pred_y, slope, yint)
         heating = self._heating(X, pred_y, slope, yint)
+        cooling = self._cooling(X, pred_y, slope, yint)
         base = self._base(total_pred_y, cooling, heating)
         
-        return Load(base, heating, cooling)
+        return Load(base=base, heating=heating, cooling=cooling)
 
     
 
@@ -136,8 +135,8 @@ class ThreeParameterLoadHandler(AbstractLoadHandler):
         slope = self._model.slope(coeffs)
         cp = self._model.changepoint(coeffs)
 
-        cooling = self._cooling(X, pred_y, slope, yint, cp)
         heating = self._heating(X, pred_y, slope, yint, cp)
+        cooling = self._cooling(X, pred_y, slope, yint, cp)
         base = self._base(total_pred_y, cooling, heating)
 
         return Load(base, heating, cooling)
@@ -158,9 +157,8 @@ class FourParameterLoadHandler(AbstractLoadHandler):
         rs = self._model.right_slope(coeffs)
         cp = self._model.changepoint(coeffs)
 
-
-        cooling = self._cooling(X, pred_y, rs, yint, cp)
         heating = self._heating(X, pred_y, ls, yint, cp)
+        cooling = self._cooling(X, pred_y, rs, yint, cp)
         base = self._base(total_pred_y, cooling, heating)
 
         return Load(base, heating, cooling)
@@ -182,8 +180,8 @@ class FiveParameterLoadHandler(AbstractLoadHandler):
         lcp = self._model.left_changepoint(coeffs)
         rcp = self._model.right_changepoint(coeffs)
 
-        cooling = self._cooling(X, pred_y, rs, yint, lcp)
-        heating = self._heating(X, pred_y, ls, yint, rcp)
+        cooling = self._cooling(X, pred_y, rs, yint, rcp)
+        heating = self._heating(X, pred_y, ls, yint, lcp)
         base = self._base(total_pred_y, cooling, heating)
 
         return Load(base, heating, cooling)
@@ -200,11 +198,11 @@ class EnergyChangepointLoadsAggregator(object):
 
         # check that estimator model type matches the handler's model interface or else we'll have an issue 
         # coeff parsing needs to match...
-        if not isinstance(estimator.model, self._handler.model): 
+        if not isinstance(estimator.model, self._handler.model.__class__): 
             raise TypeError(f'estimator model must be of type {self._handler.model}')
         
-        coeffs = estimator.model.parse_coeffs(estimator.coeffs)
+        coeffs = estimator.parse_coeffs()
         X = estimator.X.squeeze()  # have to make this 1d
         pred_y = estimator.pred_y 
-        return self._handler(X, pred_y, coeffs)
+        return self._handler.run(X, pred_y, coeffs)
 

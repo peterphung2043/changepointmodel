@@ -1,4 +1,5 @@
 
+from ashrae.parameter_models import EnergyParameterModelCoefficients
 from ashrae import estimator, scoring
 import pytest 
 import numpy as np
@@ -81,15 +82,22 @@ def score_mock_scorefunction():
     return Dummy()
 
 
-# @pytest.fixture 
-# def loads_dummyenergyparametermodel(): 
-#     return DummyEnergyParameterModel()
 
+@pytest.fixture 
+def dummy_twopcoefficients(): 
+    return EnergyParameterModelCoefficients(98, [99], None)
 
-# @pytest.fixture 
-# def loads_dummyenergycoefficients(): 
+@pytest.fixture 
+def dummy_threepcoefficients(): 
+    return EnergyParameterModelCoefficients(98, [99], 100)
 
-#     return EnergyParameterModelCoefficients(99, [99], None)
+@pytest.fixture 
+def dummy_fourpcoefficients(): 
+    return EnergyParameterModelCoefficients(98, [99,100], 101)
+
+@pytest.fixture 
+def dummy_fivepcoefficients(): 
+    return EnergyParameterModelCoefficients(98, [99, 100], [101, 102])
 
 
 @pytest.fixture 

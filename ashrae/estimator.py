@@ -3,7 +3,7 @@ from typing import List, NamedTuple, Optional
 from _pytest.outcomes import fail
 
 from .nptypes import NByOneNDArray, OneDimNDArray
-from .parameter_models import ModelFunction 
+from .parameter_models import EnergyParameterModelCoefficients, ModelFunction 
 from curvefit_estimator import CurvefitEstimator
 
 from .utils import argsort_1d
@@ -184,4 +184,8 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
 
     def len_y(self): 
         return len(self.estimator_.y_)
+
+
+    def parse_coeffs(self) -> EnergyParameterModelCoefficients: #XXX maybe belongs in utils not sure yet...
+        return self.model.parse_coeffs(self.coeffs)
 
