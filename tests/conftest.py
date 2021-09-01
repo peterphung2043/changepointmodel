@@ -1,24 +1,9 @@
-from ashrae.energy_parameter_models import AbstractEnergyParameterModel, EnergyParameterModelCoefficients, IChangepointModelFunction
+
 from ashrae import estimator, scoring
 import pytest 
 import numpy as np
 
-class DummyEnergyParameterModel(AbstractEnergyParameterModel): 
 
-    def parse_coeffs(self, coeffs): 
-        return EnergyParameterModelCoefficients(99, [99], None)
-
-    def cooling_slope(self, coeffs): 
-        return 42 
-    
-    def cooling_changepoint(self, coeffs): 
-        return 43
-
-    def heating_slope(self, coeffs): 
-        return 44 
-
-    def heating_changepoint(self, coeffs): 
-        return 45 
 
 
 @pytest.fixture 
@@ -96,15 +81,15 @@ def score_mock_scorefunction():
     return Dummy()
 
 
-@pytest.fixture 
-def loads_dummyenergyparametermodel(): 
-    return DummyEnergyParameterModel()
+# @pytest.fixture 
+# def loads_dummyenergyparametermodel(): 
+#     return DummyEnergyParameterModel()
 
 
-@pytest.fixture 
-def loads_dummyenergycoefficients(): 
+# @pytest.fixture 
+# def loads_dummyenergycoefficients(): 
 
-    return EnergyParameterModelCoefficients(99, [99], None)
+#     return EnergyParameterModelCoefficients(99, [99], None)
 
 
 @pytest.fixture 
@@ -124,18 +109,18 @@ def loads_dummyestimator(loads_dummyenergyparametermodel):
 
 
 
-@pytest.fixture
-def estimator_dummymodel(): 
+# @pytest.fixture
+# def estimator_dummymodel(): 
 
-    class LinearModel(IChangepointModelFunction):
-        # pulled this from twop 
+#     class LinearModel(IChangepointModelFunction):
+#         # pulled this from twop 
  
-        def f(self): 
-            def line(X, yint, m): 
-                return (m * X + yint).squeeze()
-            return line
+#         def f(self): 
+#             def line(X, yint, m): 
+#                 return (m * X + yint).squeeze()
+#             return line
         
-        def bounds(self): 
-            return ((0, -np.inf),(np.inf, np.inf))
+#         def bounds(self): 
+#             return ((0, -np.inf),(np.inf, np.inf))
     
-    return LinearModel()
+#     return LinearModel()

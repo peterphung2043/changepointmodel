@@ -3,7 +3,7 @@ from typing import List, NamedTuple, Optional
 from _pytest.outcomes import fail
 
 from .nptypes import NByOneNDArray, OneDimNDArray
-from .energy_parameter_models import AbstractEnergyParameterModel 
+from .parameter_models import ModelFunction 
 from curvefit_estimator import CurvefitEstimator
 
 from .utils import argsort_1d
@@ -20,7 +20,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
     load calculations via propeties. 
     """
 
-    def __init__(self, model: Optional[AbstractEnergyParameterModel]=None): 
+    def __init__(self, model: Optional[ModelFunction]=None): 
         self.model = model  
 
     @classmethod
@@ -29,7 +29,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
 
     @classmethod 
     def fit_many(cls, 
-        models: List[AbstractEnergyParameterModel], 
+        models: List[ModelFunction], 
         X: NByOneNDArray, 
         y: OneDimNDArray, 
         sigma: Optional[OneDimNDArray]=None, 
@@ -55,7 +55,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
 
 
     @classmethod 
-    def fit_one(cls, model: AbstractEnergyParameterModel, 
+    def fit_one(cls, model: ModelFunction, 
         X: NByOneNDArray, 
         y: OneDimNDArray, 
         sigma: Optional[OneDimNDArray]=None, 
