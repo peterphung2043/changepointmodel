@@ -97,7 +97,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
             data (CurvefitEstimatorInputData): [description]
             reshape (Optional[Tuple[int]], optional): [description]. Defaults to None.
         """
-        self.estimator_ = CurvefitEstimator(model_func=self.model.f(), bounds=self.model.bounds(), **estimator_kwargs)
+        self.estimator_ = CurvefitEstimator(model_func=self.model.f, bounds=self.model.bounds, **estimator_kwargs)
         self.pred_y_ = self.estimator_.fit(X, y, sigma, absolute_sigma).predict(X)  # call estimator fit  # XXX scipy/skl error in our own here.
         self.X_, self.y_ = self.estimator_.X_, self.estimator_.y_  # XXX I think these need to be here for interop with skl cv
         self.sigma_ = sigma 

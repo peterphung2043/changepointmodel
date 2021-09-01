@@ -10,8 +10,8 @@ import pydantic
 
 from .scoring import Score
 from .savings import AdjustedSavingsResult, NormalizedSavingsResult
-from .energy_parameter_models import EnergyParameterModelCoefficients
-from .loads import EnergyChangepointLoad
+from .parameter_models import EnergyParameterModelCoefficients
+from .loads import Load
 
 from .nptypes import AnyByAnyNDArrayField, OneDimNDArrayField, AnyByAnyNDArray
 
@@ -61,7 +61,7 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
         
         
 EnergyParameterModelCoefficientsModel = pydantic.dataclasses.dataclass(EnergyParameterModelCoefficients)
-EnergyChangepointLoadModel = pydantic.dataclasses.dataclass(EnergyChangepointLoad)
+LoadModel = pydantic.dataclasses.dataclass(Load)
 ScoreModel = pydantic.dataclasses.dataclass(Score)
 AdjustedSavingsModel = pydantic.dataclasses.dataclass(AdjustedSavingsResult)
 NormalizedSavingsModel = pydantic.dataclasses.dataclass(NormalizedSavingsResult)
@@ -71,7 +71,7 @@ class EnergyChangepointModelResult(pydantic.BaseModel):
     name: str 
     coeffs: EnergyParameterModelCoefficientsModel
     pred_y: OneDimNDArrayField
-    load: Optional[EnergyChangepointLoadModel]
+    load: Optional[LoadModel]
     scores: Optional[List[ScoreModel]]
 
     class Config(NpConfig): ...

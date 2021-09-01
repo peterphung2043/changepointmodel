@@ -1,3 +1,4 @@
+from ashrae.parameter_models import ModelFunction
 from curvefit_estimator.estimator import CurvefitEstimator
 import numpy as np
 from numpy.testing import assert_array_almost_equal
@@ -7,11 +8,17 @@ import pytest
 from curvefit_estimator import CurvefitEstimator
 from numpy.testing import assert_array_almost_equal
 
-def test_energychangepointestimator_fit_calls_curvefitestimator_fit(estimator_dummymodel, mocker): 
+def test_energychangepointestimator_fit_calls_curvefitestimator_fit(mocker): 
 
+    def line(X, yint, m): 
+        return (m * X + yint).squeeze()
+
+    bounds = ((0, -np.inf),(np.inf, np.inf))
+
+    mymodel = ModelFunction('line', line, bounds, object(), object()) 
     mocker.spy(CurvefitEstimator, 'fit')
 
-    est = EnergyChangepointEstimator(model=estimator_dummymodel)
+    est = EnergyChangepointEstimator(model=mymodel)
 
     X = np.linspace(1,10,10).reshape(-1, 1)
     y = np.linspace(1,10,10)

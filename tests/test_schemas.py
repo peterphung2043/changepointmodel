@@ -1,4 +1,3 @@
-from ashrae.energy_parameter_models import EnergyParameterModelCoefficients
 from ashrae import schemas 
 
 import numpy as np
@@ -97,7 +96,7 @@ def test_energychangepointloadmodel_converted_from_internal_dataclass():
         'heating': 0
     }
 
-    schemas.EnergyChangepointLoadModel(**data)
+    schemas.LoadModel(**data)
 
 def test_scoremodel_converted_from_internal_dataclass(): 
 

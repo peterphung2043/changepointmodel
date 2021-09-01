@@ -9,8 +9,7 @@ from .scoring import ScoringFunction
 
 from ._lib import loads as _loads 
 
-from .parameter_models import EnergyParameterModelCoefficients, ISingleSlopeModel,\
-    IDualSlopeSingleChangepointModel, ISingleSlopeSingleChangepointModel, IDualSlopeDualChangepointModel
+from .parameter_models import EnergyParameterModel, EnergyParameterModelCoefficients
 from dataclasses import dataclass 
 
 @dataclass 
@@ -75,7 +74,7 @@ class Baseload(IBaseload):
 class AbstractLoadHandler(abc.ABC): 
 
     def __init__(self, 
-        model: ISingleSlopeSingleChangepointModel, 
+        model: EnergyParameterModel, 
         cooling: ISensitivityLoad, 
         heating: ISensitivityLoad, 
         base: Optional[IBaseload]=None):

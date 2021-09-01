@@ -116,19 +116,3 @@ def loads_dummyestimator(loads_dummyenergyparametermodel):
     return LoadsDummyEstimator(model=loads_dummyenergyparametermodel)
 
 
-
-# @pytest.fixture
-# def estimator_dummymodel(): 
-
-#     class LinearModel(IChangepointModelFunction):
-#         # pulled this from twop 
- 
-#         def f(self): 
-#             def line(X, yint, m): 
-#                 return (m * X + yint).squeeze()
-#             return line
-        
-#         def bounds(self): 
-#             return ((0, -np.inf),(np.inf, np.inf))
-    
-#     return LinearModel()
