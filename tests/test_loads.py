@@ -1,10 +1,11 @@
 import pytest
-from ashrae.parameter_models import EnergyParameterModelCoefficients, TwoParameterModel
+from ashrae.parameter_models import EnergyParameterModelCoefficients, ModelFunction, ParameterModelFunction, TwoParameterModel
 from ashrae.estimator import EnergyChangepointEstimator
 from ashrae.nptypes import OneDimNDArray
 from ashrae import loads 
 import numpy as np 
 
+from ashrae.utils import parse_coeffs
 
 def test_heatingchangepointmodelload_correctly_forwards_call(mocker): 
     mock = mocker.patch('ashrae._lib.loads.heatload')
@@ -227,7 +228,7 @@ def test_fiveparameter_load_handler_calls_correct_methods(mocker, dummy_fivepcoe
 def test_loads_aggregator_raises_typeerror_if_wrong_model(mocker):
     
     class DummyEstimator(object): 
-        model = TwoParameterModel()
+        model = ParameterModelFunction('a', None, None, TwoParameterModel(), object())
 
     class DummyModel:
         pass 
@@ -254,10 +255,16 @@ def test_loads_aggregator_calls_handler(mocker):
     ytest = np.array([100,])
     coeffs = EnergyParameterModelCoefficients(42, [99], None)
 
+    class FakeParser(object): 
+
+        def parse(self, coeffs): 
+            return coeffs 
+
     class DummyEstimator(object): 
-        model = TwoParameterModel()
+        model = ParameterModelFunction('a', None, None, TwoParameterModel(), FakeParser())
         X = Xtest
         pred_y = ytest
+        coeffs = (42, 42)
 
         def parse_coeffs(self): 
             return coeffs
@@ -267,9 +274,11 @@ def test_loads_aggregator_calls_handler(mocker):
     hl = loads.HeatingLoad()
     bl = loads.Baseload()
 
-    handler = loads.FiveParameterLoadHandler(pmodel,cooling=cl, heating=hl, base=bl)
+    handler = loads.TwoParameterLoadHandler(pmodel,cooling=cl, heating=hl, base=bl)
     
     mockhandler = mocker.patch.object(handler, 'run')
+    mock = mocker.patch('ashrae.utils.parse_coeffs', return_value=coeffs)
+
     agg = loads.EnergyChangepointLoadsAggregator(handler)
     agg.aggregate(DummyEstimator())
 

@@ -8,12 +8,19 @@ from ashrae.estimator import EnergyChangepointEstimator
 from ._lib import savings as ashraesavings
 
 from .scoring import Cvrmse
-cvrmse_score = Cvrmse()
+_cvrmse_score = Cvrmse()
 
 import abc 
 
 # I have to pass the pydantic ndarray objects as fields so 
 # that we can validate the data later.
+
+def _get_adjusted(
+    pre: EnergyChangepointEstimator, 
+    post: EnergyChangepointEstimator) -> OneDimNDArray:
+    
+    return pre.adjust(post)
+
 
 @dataclass 
 class AdjustedSavingsResult(object): 
@@ -46,7 +53,9 @@ class AbstractSavings(abc.ABC):
     def __init__(self, confidence_interval: float=0.80): 
         self._confidence_interval = confidence_interval
 
-
+    @property 
+    def confidence_interval(self): 
+        return self._confidence_interval
 
 class AshraeAdjustedSavingsCalculator(AbstractSavings, ISavingsCalculator): 
     
@@ -55,15 +64,15 @@ class AshraeAdjustedSavingsCalculator(AbstractSavings, ISavingsCalculator):
         pre: EnergyChangepointEstimator, 
         post: EnergyChangepointEstimator) -> AdjustedSavingsResult:
 
-        adjusted_y = pre.adjust(post)# XXX this is expensive... :/ 
-        pre_cvrmse = cvrmse_score(pre.y, pre.pred_y) # XXX this is expensive... :/ 
+        adjusted_y = _get_adjusted(pre, post) # XXX this is expensive... :/ 
+        pre_cvrmse = _cvrmse_score(pre.y, pre.pred_y) # XXX this is expensive... :/ 
         pre_p = len(pre.coeffs)
         
-        pre_n = pre.len_y 
-        post_n = post.len_y 
+        pre_n = pre.len_y()
+        post_n = post.len_y() 
                  
-        gross_adjusted_y = np.sum(adjusted_y)  # annual_adjusted_baseline in old code (?)
-        gross_post_y = post.total_y      # annual_measured_reporting in old code(?)
+        gross_adjusted_y = np.sum(adjusted_y)  
+        gross_post_y = post.total_y()      
 
         savings = ashraesavings.adjusted(
             gross_adjusted_y, 
@@ -88,12 +97,22 @@ class AshraeAdjustedSavingsCalculator(AbstractSavings, ISavingsCalculator):
 
 class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator): 
     
-    def __init__(self, X_pre: NByOneNDArray, X_post: NByOneNDArray, **kwargs): 
-        super().__init__(**kwargs)
-        assert len(X_pre) == len(X_post), 'X_pre and X_post must be the same len'
+    def __init__(self, X_pre: NByOneNDArray, X_post: NByOneNDArray, confidence_interval: float=0.80): 
+        super().__init__(confidence_interval=confidence_interval)
+        
+        if len(X_pre) != len(X_post): 
+            raise ValueError('X_pre and X_post must be the same len')
+        
         self._X_pre = X_pre 
         self._X_post = X_post
 
+    @property 
+    def X_pre(self):
+        return self._X_pre 
+    
+    @property 
+    def X_post(self): 
+        return self._X_post
 
     def save(self, 
         pre: EnergyChangepointEstimator, 
@@ -107,11 +126,11 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
         gross_normalized_y_pre = np.sum(normalized_pred_y_pre)
         gross_normalized_y_post = np.sum(normalized_pred_y_post)
 
-        pre_cvrmse = cvrmse_score(pre.y, pre.pred_y)  # XXX expensive :( -- NOTE also this is from the original model on the actual X
-        post_cvrmse = cvrmse_score(post.y, post.pred_y)
+        pre_cvrmse = _cvrmse_score(pre.y, pre.pred_y)  # XXX expensive :( -- NOTE also this is from the original model on the actual X
+        post_cvrmse = _cvrmse_score(post.y, post.pred_y)
 
-        pre_n = pre.len_y 
-        post_n = post.len_y 
+        pre_n = pre.len_y()
+        post_n = post.len_y() 
 
         pre_p = len(pre.coeffs)
         post_p = len(post.coeffs)

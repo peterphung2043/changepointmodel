@@ -43,22 +43,29 @@ def schema_coeffs():
 @pytest.fixture 
 def schema_adjustedsavings(): 
     return {
-        'adjusted_y': np.array([1., 2., 3.]), 
-        'total_savings': 42., 
-        'average_monthly_savings': 42., 
-        'percent_savings': 42.,
-        'percent_savings_uncertainty': 42.
+        'confidence_interval': 0.8,
+        'result': {
+            'adjusted_y': np.array([1., 2., 3.]), 
+            'total_savings': 42., 
+            'average_monthly_savings': 42., 
+            'percent_savings': 42.,
+            'percent_savings_uncertainty': 42.}
     }
 
 @pytest.fixture 
 def schema_normalizedsavings(): 
     return {
-        'normalized_y_pre': np.array([1., 2., 3.]),
-        'normalized_y_post': np.array([1., 2., 3.]),
-        'total_savings': 42., 
-        'average_monthly_savings': 42., 
-        'percent_savings': 42., 
-        'percent_savings_uncertainty': 42.,
+        'X_pre': np.array([[1.,]]), 
+        'X_post': np.array([[1.,]]),
+        'confidence_interval': 0.8,
+        'result':{
+            'normalized_y_pre': np.array([1., 2., 3.]),
+            'normalized_y_post': np.array([1., 2., 3.]),
+            'total_savings': 42., 
+            'average_monthly_savings': 42., 
+            'percent_savings': 42., 
+            'percent_savings_uncertainty': 42.,
+        }
     }
 
 

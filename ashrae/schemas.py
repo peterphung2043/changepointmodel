@@ -13,7 +13,7 @@ from .savings import AdjustedSavingsResult, NormalizedSavingsResult
 from .parameter_models import EnergyParameterModelCoefficients
 from .loads import Load
 
-from .nptypes import AnyByAnyNDArrayField, OneDimNDArrayField, AnyByAnyNDArray
+from .nptypes import AnyByAnyNDArrayField, NByOneNDArrayField, OneDimNDArrayField, AnyByAnyNDArray
 
 
 class NpConfig: 
@@ -63,8 +63,21 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
 EnergyParameterModelCoefficientsModel = pydantic.dataclasses.dataclass(EnergyParameterModelCoefficients)
 LoadModel = pydantic.dataclasses.dataclass(Load)
 ScoreModel = pydantic.dataclasses.dataclass(Score)
-AdjustedSavingsModel = pydantic.dataclasses.dataclass(AdjustedSavingsResult)
-NormalizedSavingsModel = pydantic.dataclasses.dataclass(NormalizedSavingsResult)
+_AdjustedSavingsModel = pydantic.dataclasses.dataclass(AdjustedSavingsResult)  # treating these privately
+_NormalizedSavingsModel = pydantic.dataclasses.dataclass(NormalizedSavingsResult)
+
+
+#XXX including the normalized_X_pre and post to enforce input data stays with output for this schema
+class NormalizedSavingsResultModel(pydantic.BaseModel): 
+
+    X_pre: NByOneNDArrayField
+    X_post: NByOneNDArrayField
+    confidence_interval: float
+    result: _NormalizedSavingsModel
+
+class AdjustedSavingsResultModel(pydantic.BaseModel): 
+    confidence_interval: float
+    result: _AdjustedSavingsModel
 
 
 class EnergyChangepointModelResult(pydantic.BaseModel): 
@@ -73,16 +86,17 @@ class EnergyChangepointModelResult(pydantic.BaseModel):
     pred_y: OneDimNDArrayField
     load: Optional[LoadModel]
     scores: Optional[List[ScoreModel]]
+    input_data: Optional[CurvefitEstimatorDataModel]
 
     class Config(NpConfig): ...
         
 
-class AdjustedEnergyChangepointModelSavingsResult(pydantic.BaseModel): 
+class SavingsResult(pydantic.BaseModel): 
 
     pre: EnergyChangepointModelResult 
     post: EnergyChangepointModelResult
-    adjusted_savings: AdjustedSavingsModel
-    normalized_savings: Optional[NormalizedSavingsModel]   
+    adjusted_savings: AdjustedSavingsResultModel
+    normalized_savings: Optional[NormalizedSavingsResultModel]   
 
     class Config(NpConfig): ...
         

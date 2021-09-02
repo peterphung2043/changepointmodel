@@ -1,71 +1,124 @@
-"""Some factory methods for creating pydantic models from EnergyChangepointEstimator 
+"""Some factory methods for configuration and generating result pydantic schemas to and from internals.
 """
 
-from typing import Optional
+from ashrae.savings import AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator
+import ashrae.utils as ashraeutils
 
-from curvefit_estimator import estimator
-from ashrae.schemas import AdjustedEnergyChangepointModelSavingsResult, \
-    EnergyChangepointModelResult
-
-from ashrae.loads import EnergyChangepointLoadsAggregator
-from ashrae.scoring import Scorer
+from pydantic.utils import GetterDict
+from ashrae import schemas, scoring
+from ashrae.scoring import Score, Scorer
 from ashrae.estimator import EnergyChangepointEstimator
-from .savings import AshraeNormalizedSavingsCalculator, \
-    AshraeAdjustedSavingsCalculator
+from typing import Any, Dict, List, Optional, Union
+from ashrae import loads
+from dataclasses import dataclass
+from . import parameter_models as pmodels
+from ._lib import models
+
+@dataclass
+class EnergyModel(object): 
+    model: pmodels.ParameterModelFunction
+    load: loads.EnergyChangepointLoadsAggregator
+
+    def create_estimator(self) -> EnergyChangepointEstimator:
+        """Spawn a new estimator from the model.
+
+        Returns:
+            EnergyChangepointEstimator: [description]
+        """
+        return EnergyChangepointEstimator(model=self.model)
+        
+
+class EnergyModelFactory(object): 
+
+    @classmethod 
+    def create(cls, 
+        name: str, 
+        f: pmodels.ModelCallable, 
+        b: Union[pmodels.BoundCallable, pmodels.Bound], 
+        parser: pmodels.ICoefficientParser, 
+        parameter_model: pmodels.EnergyParameterModel, 
+        load_handler: loads.AbstractLoadHandler) -> EnergyModel:
+        """Construct an model and a loads factory simultaneously. 
+        Creates a convenient container object which will help keep model dependent 
+        calculations together within more complicated workflows. 
+
+        Args:
+            name (str): [description]
+            f (pmodels.ModelCallable): [description]
+            b (Union[pmodels.BoundCallable, pmodels.Bound]): [description]
+            parser (pmodels.ICoefficientParser): [description]
+            parameter_model (pmodels.EnergyParameterModel): [description]
+            load_handler (loads.AbstractLoadHandler): [description]
+
+        Returns:
+            EnergyModel: [description]
+        """
+
+        model = pmodels.ParameterModelFunction(name, f, b, parameter_model, parser)
+        load = loads.EnergyChangepointLoadsAggregator(load_handler)
+
+        return EnergyModel(model=model, load=load)
 
 
-def create_energychangepointmodelresult(
-    estimator: EnergyChangepointEstimator, 
-    scorer: Scorer, 
-    loadagg: EnergyChangepointLoadsAggregator,
-    ) -> EnergyChangepointModelResult:
 
-    score = scorer.check(estimator)
-    load = loadagg.run(estimator)
+class EnergyChangepointModelResultFactory(object): 
 
-    # Not sure to add input data here (X, y)
-    data = {
-        'name': estimator.name, 
-        'coeffs': estimator.parse_coeffs(),
-        'pred_y': estimator.pred_y, 
-        'load': load, 
-        'score': score
-    }
+    @classmethod
+    def create(cls, 
+        estimator: EnergyChangepointEstimator, 
+        loads: Optional[loads.EnergyChangepointLoadsAggregator]=None, 
+        scorer: Optional[scoring.Scorer]=None) -> schemas.EnergyChangepointModelResult: 
 
-    return EnergyChangepointModelResult(**data)
+        data = {
+            'name': estimator.name,
+            'input_data': {
+                'X': estimator.X, 
+                'y': estimator.y, 
+                'sigma': estimator.sigma,
+                'absolute_sigma': estimator.absolute_sigma 
+            }, 
+            'coeffs': ashraeutils.parse_coeffs(estimator.model, estimator.coeffs), 
+            'pred_y': estimator.pred_y, 
+            'load': loads.aggregate(estimator) if loads else None, 
+            'scores': scorer.check(estimator) if scorer else None
+        }
+
+        return schemas.EnergyChangepointModelResult(**data)
 
 
+class SavingsResultFactory(object): 
 
-def create_adjustedenergychangepointmodelsavingsresult(
-    pre: EnergyChangepointEstimator, 
-    post: EnergyChangepointEstimator, 
-    scorer: Scorer,
-    loadagg: EnergyChangepointLoadsAggregator, 
-    adjcalc: AshraeAdjustedSavingsCalculator,
-    normcalc: Optional[AshraeNormalizedSavingsCalculator]=None
-) -> AdjustedEnergyChangepointModelSavingsResult: 
+    @classmethod 
+    def create(cls, 
+        pre: EnergyChangepointEstimator, 
+        post: EnergyChangepointEstimator, 
+        adjcalc: AshraeAdjustedSavingsCalculator, 
+        normcalc: Optional[AshraeNormalizedSavingsCalculator]=None, 
+        loads: Optional[loads.EnergyChangepointLoadsAggregator]=None, 
+        scorer: Optional[Scorer]=None) -> schemas.SavingsResult: 
 
-    pre_score = scorer.check(pre)
-    pre_load = loadagg.run(pre)
+        pre_result = EnergyChangepointModelResultFactory.create(pre, loads, scorer)
+        post_result = EnergyChangepointModelResultFactory.create(post, loads, scorer)   
 
-    post_score = scorer.check(post)
-    post_load = loadagg.run(post)
+        adj = {
+            'result': adjcalc.save(pre, post), 
+            'confidence_interval': adjcalc.confidence_interval
+        }
+        if normcalc: 
+            result = normcalc.save(pre, post)
+            norm = {
+                'X_pre': normcalc.X_pre, 
+                'X_post': normcalc.X_post,
+                'confidence_interval': normcalc.confidence_interval, 
+                'result': result
+            }
+        else: 
+            norm = None 
 
-    pre_result = create_energychangepointmodelresult(pre, pre_score, pre_load)
-    post_result = create_energychangepointmodelresult(post, post_score, post_load)
-
-    adj = adjcalc.save(pre, post)
-
-    if normcalc: 
-        norm = normcalc.save(pre, post)
-    else: 
-        norm = None 
-
-    data = {
-        'pre': pre_result, 
-        'post': post_result, 
-        'adjusted_savings': adj, 
-        'normalized_savings': norm
-    }
-
-    return AdjustedEnergyChangepointModelSavingsResult(**data)
+        data = {
+            'pre': pre_result, 
+            'post': post_result, 
+            'adjusted_savings': adj, 
+            'normalized_savings': norm
+        }
+        return schemas.SavingsResult(**data)

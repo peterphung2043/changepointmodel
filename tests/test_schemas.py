@@ -119,7 +119,7 @@ def test_adjustedsavingsresultmodel_converted_from_internal_dataclass():
         'percent_savings_uncertainty': 42.
     }
 
-    schemas.AdjustedSavingsModel(**data)
+    schemas._AdjustedSavingsModel(**data)
 
 
 def test_normalizedsavingsresultmodel_converted_from_internal_dataclass(): 
@@ -133,7 +133,7 @@ def test_normalizedsavingsresultmodel_converted_from_internal_dataclass():
         'percent_savings_uncertainty': 42.,
     }
 
-    schemas.NormalizedSavingsModel(**data)
+    schemas._NormalizedSavingsModel(**data)
 
 
 def test_energychangepointmodelresult_with_required_data(schema_coeffs): 
@@ -193,7 +193,7 @@ def test_adjustedenergychangepointmodelsavingsresult_with_required_data(
         'adjusted_savings': schema_adjustedsavings
     }
 
-    schemas.AdjustedEnergyChangepointModelSavingsResult(**data)
+    schemas.SavingsResult(**data)
 
 
 def test_adjustedenergychangepointmodelsavingsresult_with_non_required_data(
@@ -226,4 +226,4 @@ def test_adjustedenergychangepointmodelsavingsresult_with_non_required_data(
         'normalized_savings': schema_normalizedsavings
     }
 
-    schemas.AdjustedEnergyChangepointModelSavingsResult(**data)
+    schemas.SavingsResult(**data)

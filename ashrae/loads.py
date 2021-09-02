@@ -3,13 +3,14 @@
 import abc
 import numpy as np
 from ashrae.nptypes import NByOneNDArray, OneDimNDArray, OneDimNDArrayField
+from . import utils as ashraeutils
 from typing import List, NamedTuple, Optional, Tuple
 from .estimator import EnergyChangepointEstimator
 from .scoring import ScoringFunction
 
 from ._lib import loads as _loads 
 
-from .parameter_models import EnergyParameterModel, EnergyParameterModelCoefficients
+from .parameter_models import EnergyParameterModel, EnergyParameterModelCoefficients, ParameterModelFunction
 from dataclasses import dataclass 
 
 @dataclass 
@@ -197,10 +198,13 @@ class EnergyChangepointLoadsAggregator(object):
 
         # check that estimator model type matches the handler's model interface or else we'll have an issue 
         # coeff parsing needs to match...
-        if not isinstance(estimator.model, self._handler.model.__class__): 
-            raise TypeError(f'estimator model must be of type {self._handler.model}')
+        if not isinstance(estimator.model, ParameterModelFunction): # XXX is there a way around this introspection?
+            raise TypeError(f'estimator.model must be of type ParameterModelFunction')
+
+        if not isinstance(estimator.model.parameter_model, self._handler.model.__class__): 
+            raise TypeError(f'estimator parameter_model must be of type {self._handler.model}')
         
-        coeffs = estimator.parse_coeffs()
+        coeffs = ashraeutils.parse_coeffs(estimator.model, estimator.coeffs)
         X = estimator.X.squeeze()  # have to make this 1d
         pred_y = estimator.pred_y 
         return self._handler.run(X, pred_y, coeffs)

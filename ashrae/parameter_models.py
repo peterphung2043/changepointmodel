@@ -79,6 +79,8 @@ class IDualSlopeSingleChangepointModel(IDualSlopeModel, ISingleChangepointModel,
 class IDualSlopeDualChangepointModel(IDualSlopeModel, IDualChangepointModel, YinterceptMixin): ... 
 
 
+class AbstractEnergyParameterModel(abc.ABC): ... # essentially a namespace  
+
 
 class TwoParameterModel(ISingleSlopeYinterceptModel): 
     
@@ -107,7 +109,7 @@ class FourParameterModel(IDualSlopeSingleChangepointModel):
         return coeffs.changepoints[0]
 
 
-class FiveParameterModel(IDualSlopeDualChangepointModel): 
+class FiveParameterModel( IDualSlopeDualChangepointModel): 
     
     def left_slope(self, coeffs: EnergyParameterModelCoefficients) -> float:
         return coeffs.slopes[0]
@@ -159,15 +161,11 @@ class ModelFunction(object):
     def __init__(self, 
         name: str, 
         f: ModelCallable, 
-        bounds: Union[BoundCallable, Bound], 
-        parameter_model: EnergyParameterModel, 
-        coefficients_parser: ICoefficientParser): 
+        bounds: Union[BoundCallable, Bound]): 
         
         self._name = name 
         self._f = f 
         self._bounds = bounds 
-        self._parameter_model = parameter_model
-        self._coefficients_parser = coefficients_parser 
 
     @property 
     def name(self) -> str:
@@ -180,6 +178,21 @@ class ModelFunction(object):
     @property 
     def bounds(self) -> Union[BoundCallable, Bound]:
         return self._bounds 
+
+
+
+class ParameterModelFunction(ModelFunction): 
+
+    def __init__(self, 
+        name: str, 
+        f: ModelCallable, 
+        bounds: Union[BoundCallable, Bound], 
+        parameter_model: EnergyParameterModel, 
+        coefficients_parser: ICoefficientParser):
+        
+        super().__init__(name, f, bounds)
+        self._parameter_model = parameter_model 
+        self._coefficients_parser = coefficients_parser
 
     @property
     def parameter_model(self) -> EnergyParameterModel: 

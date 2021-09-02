@@ -1,4 +1,4 @@
-from ashrae.parameter_models import FiveParameterCoefficientsParser, FiveParameterModel, FourParameterCoefficientsParser, FourParameterModel, ModelFunction, ThreeParameterCoefficientsParser, ThreeParameterModel, TwoParameterCoefficientParser, TwoParameterModel, YinterceptMixin, EnergyParameterModelCoefficients
+from ashrae.parameter_models import FiveParameterCoefficientsParser, FiveParameterModel, FourParameterCoefficientsParser, FourParameterModel, ModelFunction, ParameterModelFunction, ThreeParameterCoefficientsParser, ThreeParameterModel, TwoParameterCoefficientParser, TwoParameterModel, YinterceptMixin, EnergyParameterModelCoefficients
 import numpy as np
 
 
@@ -78,7 +78,7 @@ def test_modelfunction():
     parmeter_model = TwoParameterModel()
     parser = TwoParameterCoefficientParser() 
 
-    model = ModelFunction('mymodel', 
+    model = ParameterModelFunction('mymodel', 
         f=f, bounds=bound, 
         parameter_model=parmeter_model, 
         coefficients_parser=parser)

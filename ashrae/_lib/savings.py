@@ -10,7 +10,9 @@ def adjusted(gross_adjusted_y: float,
     pre_n: int, 
     post_n: int, 
     confidence_interval: float=0.8) -> Tuple[float, float, float, float]: 
-        
+    
+    assert pre_n == post_n, 'pre_n and post_n must be equal'
+
     total_savings = gross_adjusted_y - gross_post_y 
     percent_savings = total_savings - gross_post_y
 
@@ -28,7 +30,7 @@ def adjusted(gross_adjusted_y: float,
 
     absolute_uncertainty_of_total_savings = rel_unc * np.absolute(total_savings)
     
-    average_monthly_savings = total_savings/post_n
+    average_monthly_savings = total_savings / post_n
     percent_savings_uncertainty = absolute_uncertainty_of_total_savings /\
             np.absolute(total_savings)
 
@@ -46,7 +48,9 @@ def weather_normalized(gross_normalized_y_pre: float,
     n_norm: int,  
     confidence_interval: float=0.8):
 
-    total_savings =  gross_normalized_y_pre - gross_normalized_y_post #this seems to return wrong value
+    assert pre_n == post_n == n_norm, 'pre_n, post_n, and n_norm must be the same' 
+
+    total_savings =  gross_normalized_y_pre - gross_normalized_y_post
     percent_savings = total_savings / gross_normalized_y_pre
 
     #n_norm_months = 12 # formula makes this assumption... therefore there should be an assertion somewhere that the data being passed is correct.

@@ -1,10 +1,12 @@
-from typing import List, NamedTuple, Optional
+from typing import Generator, List, NamedTuple, Optional, Tuple
 
 from _pytest.outcomes import fail
+import numpy as np
 
 from .nptypes import NByOneNDArray, OneDimNDArray
 from .parameter_models import EnergyParameterModelCoefficients, ModelFunction 
 from curvefit_estimator import CurvefitEstimator
+from sklearn.utils.validation import check_is_fitted
 
 from .utils import argsort_1d
 from sklearn.base import BaseEstimator, RegressorMixin
@@ -14,6 +16,18 @@ from sklearn.base import BaseEstimator, RegressorMixin
 import logging 
 logger = logging.getLogger(__name__)
 
+from sklearn.exceptions import NotFittedError
+
+def check_not_fitted(method): 
+
+    def inner(*args, **kwargs): 
+        try: 
+            return method(*args, **kwargs)
+        except AttributeError as err:
+            raise NotFittedError(
+                f'This Estimator is not fitted yet. Call `fit` with X and y') from err 
+    
+    return inner 
 
 class EnergyChangepointEstimator(BaseEstimator, RegressorMixin): 
     """A container object for a changepoint model. After a model is fit you can access scores and 
@@ -36,22 +50,21 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         absolute_sigma: Optional[bool]=None, 
         sort: bool=True, 
         fail_silently: bool=True,
-        **estimator_kwargs) -> List[Optional['EnergyChangepointEstimator']]:
+        **estimator_kwargs) -> Generator[Tuple[str, Optional['EnergyChangepointEstimator']], None, None]:
         
         if sort: 
             X, y = cls.sort_X_y(X, y)
 
-        fitted = []
         for m in models: 
             est = cls(m)
             try:
-                fitted.append( (est.name, est.fit(X, y, sigma, absolute_sigma, **estimator_kwargs),) ) 
+                yield est.name, est.fit(X, y, sigma, absolute_sigma, **estimator_kwargs)
             except Exception: # XXX this is bad... need to figure out exactly what to catch here .. prob LinAlgError? or something from skl...
                 if fail_silently:
                     logger.warning(f'{m.name} failed to model.')
-                    fitted.append( (m.name, None))
-                raise 
-        return fitted 
+                    yield m.name, None
+                else:
+                    raise 
 
 
     @classmethod 
@@ -62,8 +75,8 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         absolute_sigma: Optional[bool]=None, 
         sort: bool=True, 
         fail_silently: bool=True,
-        **estimator_kwargs) -> Optional['EnergyChangepointEstimator']: 
-        """Fits a single model using CurvefitEstimatorData as an entry point. Will sort data if needed.
+        **estimator_kwargs) -> Tuple[str, Optional['EnergyChangepointEstimator']]: 
+        """Fits a single model. Will sort data if needed and optionally fail silently.
 
         Args:
             model (AbstractEnergyParameterModel): [description]
@@ -116,7 +129,8 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         Returns:
             np.array : predicted y values
         """  
-        return self._estimator.predict(X) 
+        check_is_fitted(self)
+        return self.estimator_.predict(X) 
 
 
     def adjust(self, other: 'EnergyChangepointEstimator') -> OneDimNDArray:
@@ -129,63 +143,71 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         Returns:
             OneDimNDArray: [description]
         """
+        check_is_fitted(self)
         return self.predict(other.X)
 
 
     @property 
-    def name(self): 
+    def name(self):
+        if self.model is None:
+            raise ValueError('Cannot access name of model that is not set.') 
         return self.model.name
 
 
-    @property 
-    def X(self):
+    @property
+    @check_not_fitted 
+    def X(self) -> NByOneNDArray:
         return self.X_
 
 
     @property 
-    def y(self):
+    @check_not_fitted
+    def y(self) -> OneDimNDArray:
         return self.y_
 
     @property 
-    def coeffs(self): # tuple
+    @check_not_fitted
+    def coeffs(self) -> Tuple[float, ...]: # tuple
         return self.estimator_.popt_
 
 
     @property 
-    def cov(self): 
+    @check_not_fitted
+    def cov(self) -> Tuple[float, ...]: 
         return self.estimator_.pcov_
 
 
     @property 
-    def pred_y(self): 
+    @check_not_fitted
+    def pred_y(self) -> OneDimNDArray: 
         return self.pred_y_
 
     @property
-    def sigma(self): 
+    @check_not_fitted
+    def sigma(self) -> Optional[OneDimNDArray]: 
         return self.sigma_ 
     
 
     @property 
-    def absolute_sigma(self): 
+    @check_not_fitted
+    def absolute_sigma(self) -> Optional[bool]: 
         return self.absolute_sigma_
 
-
-    def n_params(self): 
+    @check_not_fitted
+    def n_params(self) -> int: 
         return len(self.coeffs)
 
+    @check_not_fitted
+    def total_pred_y(self) -> float: 
+        return np.sum(self.pred_y_)
 
-    def total_pred_y(self): 
-        return sum(self.pred_y_)
+    @check_not_fitted
+    def total_y(self) -> float: 
+        return np.sum(self.estimator_.y_)
 
-
-    def total_y(self): 
-        return sum(self.estimator_.y_)
-
-
-    def len_y(self): 
+    @check_not_fitted
+    def len_y(self) -> int: 
         return len(self.estimator_.y_)
 
 
-    def parse_coeffs(self) -> EnergyParameterModelCoefficients: #XXX maybe belongs in utils not sure yet...
-        return self.model.parse_coeffs(self.coeffs)
 
