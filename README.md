@@ -8,9 +8,9 @@ Meant to replace `bema` python library package in future production environments
 ## features 
 
 - timescale agnostic changepoint modeling and load disaggregation 
-- ashrae savings methodologies and formulas 
+- ashrae savings methodologies and formulas similar to `bema` package
 - an `Estimator` interface this is interoperability with sklearn APIs including `cross_val_score` and `GridSearchCV` 
-- pydantic models and factory methods for high level schema validation 
+- `pydantic` models and factory methods for high level schema validation 
 - a loosely coupled and extensible API to allow for new non-linear function fitting with `CurvefitEstimator`
 
 ### todo 
