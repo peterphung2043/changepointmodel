@@ -52,7 +52,7 @@ def test_energychangepointmodelresultfactory_correctly_configures_schema(mocker)
     l = loads.EnergyChangepointLoadsAggregator(object())
     mocker.patch.object(l, 'aggregate', return_value=loads.Load(42., 43., 44.))
 
-    s = scoring.Scorer()
+    s = scoring.Scorer([])
     mocker.patch.object(s, 'check', return_value=[
         scoring.Score('s1', 42., 42.,True), 
         scoring.Score('s2', 43., 43., False)])
@@ -84,7 +84,7 @@ def test_savingsresultfactory_correctly_configures_schema(mocker):
     l = loads.EnergyChangepointLoadsAggregator(object())
     mocker.patch.object(l, 'aggregate', return_value=loads.Load(42., 43., 44.))
 
-    s = scoring.Scorer()
+    s = scoring.Scorer([])
     mocker.patch.object(s, 'check', return_value=[
         scoring.Score('s1', 42., 42.,True), 
         scoring.Score('s2', 43., 43., False)])

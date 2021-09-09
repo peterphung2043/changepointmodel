@@ -60,8 +60,8 @@ def test_scorer(score_mock_estimator):
         DummyScoreEval()
     ]
 
-    s = scoring.Scorer()
-    res = s.check(score_mock_estimator, evals)
+    s = scoring.Scorer(evals)
+    res = s.check(score_mock_estimator)
 
     for r in res:
         assert r.name == 'dumb'

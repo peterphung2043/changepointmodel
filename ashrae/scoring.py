@@ -94,5 +94,8 @@ class ScoreEval(IEval):
 
 class Scorer(object): 
 
-    def check(self, estimator: EnergyChangepointEstimator, evals: List[IEval]) -> List[Score]: 
-        return [e.ok(estimator) for e in evals]
+    def __init__(self, evals: List[IEval]):
+        self._evals = evals
+
+    def check(self, estimator: EnergyChangepointEstimator) -> List[Score]: 
+        return [e.ok(estimator) for e in self._evals]
