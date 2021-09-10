@@ -1,7 +1,7 @@
 *.crt
 .pytest_cache/
 *.json
-!fixtures/*.json
+!tests/fixtures/*.json
 
 notebooks/
 init-fixtures-aws.sh

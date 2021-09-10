@@ -22,5 +22,8 @@ clean-test:
 test: clean-test
 	pytest --cov=ashrae --cov-report=term-missing tests/ -v -s
 
+test-single-module: clean-test
+	pytest $(module) -v -s
+
 install: clean 
 	poetry install 

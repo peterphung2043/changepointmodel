@@ -94,11 +94,12 @@ class SavingsResultFactory(object):
         post: EnergyChangepointEstimator, 
         adjcalc: AshraeAdjustedSavingsCalculator, 
         normcalc: Optional[AshraeNormalizedSavingsCalculator]=None, 
-        loads: Optional[loads.EnergyChangepointLoadsAggregator]=None, 
+        pre_loads: Optional[loads.EnergyChangepointLoadsAggregator]=None, 
+        post_loads: Optional[loads.EnergyChangepointLoadsAggregator]=None, 
         scorer: Optional[Scorer]=None) -> schemas.SavingsResult: 
 
-        pre_result = EnergyChangepointModelResultFactory.create(pre, loads, scorer)
-        post_result = EnergyChangepointModelResultFactory.create(post, loads, scorer)   
+        pre_result = EnergyChangepointModelResultFactory.create(pre, pre_loads, scorer)
+        post_result = EnergyChangepointModelResultFactory.create(post, post_loads, scorer)   
 
         adj = {
             'result': adjcalc.save(pre, post), 

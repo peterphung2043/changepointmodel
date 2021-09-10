@@ -86,7 +86,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         Returns:
             Optional[AbstractEnergyParameterModel]: [description]
         """
-        if sort: 
+        if sort:
             X, y = cls.sort_X_y(X, y)
         
         est = cls(model)
@@ -105,6 +105,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         absolute_sigma: Optional[bool]=None, 
         **estimator_kwargs) -> 'EnergyChangepointEstimator':
         """This is wrapper around CurvefitEstimator.fit and allows interoperability with sklearn
+        NOTE: this method does not sort the data. The data must be sorted beforehand if it is necessary.
 
         Args:
             data (CurvefitEstimatorInputData): [description]
