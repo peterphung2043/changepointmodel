@@ -1,5 +1,5 @@
 
-from ashrae._lib import models 
+from ashrae.lib import models 
 import numpy as np
 from numpy.testing import assert_array_equal
 

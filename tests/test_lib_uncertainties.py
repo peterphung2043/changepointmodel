@@ -1,4 +1,4 @@
-from ashrae._lib import uncertainties 
+from ashrae.lib import uncertainties 
 from numpy.testing import assert_almost_equal
 
 def test_fractional_avoided_energy_use(): 

@@ -5,7 +5,7 @@ import numpy as np
 from ashrae.nptypes import NByOneNDArray, OneDimNDArray, OneDimNDArrayField
 from typing import NamedTuple, Optional
 from ashrae.estimator import EnergyChangepointEstimator
-from ._lib import savings as ashraesavings
+from .lib import savings as ashraesavings
 
 from .scoring import Cvrmse
 _cvrmse_score = Cvrmse()

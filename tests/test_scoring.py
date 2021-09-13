@@ -5,7 +5,7 @@ def test_r2_forwards_call(mocker):
     
     y = np.array([1.,2.,3.])
     y_pred = np.array([4.,5.,6.])
-    mock = mocker.patch('ashrae._lib.metrics.r2_score')
+    mock = mocker.patch('ashrae.lib.metrics.r2_score')
 
     method = scoring.R2()
     method(y, y_pred)
@@ -16,7 +16,7 @@ def test_rmse_forwards_call(mocker):
     
     y = np.array([1.,2.,3.])
     y_pred = np.array([4.,5.,6.])
-    mock = mocker.patch('ashrae._lib.metrics.rmse')
+    mock = mocker.patch('ashrae.lib.metrics.rmse')
     
     method = scoring.Rmse()
     method(y, y_pred)
@@ -27,7 +27,7 @@ def test_cvrmse_forwards_call(mocker):
     
     y = np.array([1.,2.,3.])
     y_pred = np.array([4.,5.,6.])
-    mock = mocker.patch('ashrae._lib.metrics.cvrmse')
+    mock = mocker.patch('ashrae.lib.metrics.cvrmse')
 
     method = scoring.Cvrmse()
     method(y, y_pred)

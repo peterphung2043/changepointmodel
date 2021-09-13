@@ -8,7 +8,7 @@ import numpy as np
 from ashrae.utils import parse_coeffs
 
 def test_heatingchangepointmodelload_correctly_forwards_call(mocker): 
-    mock = mocker.patch('ashrae._lib.loads.heatload')
+    mock = mocker.patch('ashrae.lib.loads.heatload')
 
     X = np.array([1.,])
     pred_y = np.array([1.,])
@@ -34,7 +34,7 @@ def test_heatingchangepointmodelload_pos_slope_returns_zero():
 
 def test_heatingchangepointmodelload_none_changepoint_passes_pos_inf(mocker): 
     
-    mock = mocker.patch('ashrae._lib.loads.heatload')
+    mock = mocker.patch('ashrae.lib.loads.heatload')
 
     X = np.array([1.,])
     pred_y = np.array([1.,])
@@ -50,7 +50,7 @@ def test_heatingchangepointmodelload_none_changepoint_passes_pos_inf(mocker):
 
 def test_coolingchangepointmodelload_forwards_call(mocker):
 
-    mock = mocker.patch('ashrae._lib.loads.coolingload')
+    mock = mocker.patch('ashrae.lib.loads.coolingload')
 
     X = np.array([1.,])
     pred_y = np.array([1.,])
@@ -77,7 +77,7 @@ def test_coolingchangepointmodelload_neg_slope_returns_zero():
 
 def test_coolingchangepointmodelload_none_changepoint_passes_neg_inf(mocker): 
     
-    mock = mocker.patch('ashrae._lib.loads.coolingload')
+    mock = mocker.patch('ashrae.lib.loads.coolingload')
 
     X = np.array([1.,])
     pred_y = np.array([1.,])
@@ -91,7 +91,7 @@ def test_coolingchangepointmodelload_none_changepoint_passes_neg_inf(mocker):
 
 
 def test_baseload_forwards_call(mocker): 
-    mock = mocker.patch('ashrae._lib.loads.baseload')
+    mock = mocker.patch('ashrae.lib.loads.baseload')
 
     tc = 42  
     hl = 43

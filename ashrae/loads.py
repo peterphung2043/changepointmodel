@@ -8,7 +8,7 @@ from typing import List, NamedTuple, Optional, Tuple
 from .estimator import EnergyChangepointEstimator
 from .scoring import ScoringFunction
 
-from ._lib import loads as _loads 
+from .lib import loads as _loads 
 
 from .parameter_models import EnergyParameterModel, EnergyParameterModelCoefficients, ParameterModelFunction
 from dataclasses import dataclass 

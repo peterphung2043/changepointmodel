@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Union
 from ashrae import loads
 from dataclasses import dataclass
 from . import parameter_models as pmodels
-from ._lib import models
+from .lib import models
 
 @dataclass
 class EnergyModel(object): 

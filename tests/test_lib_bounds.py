@@ -1,5 +1,5 @@
 import numpy as np
-from ashrae._lib import bounds
+from ashrae.lib import bounds
 
 def test_twop_bounds(): 
 

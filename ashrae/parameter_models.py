@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Callable, List, NamedTuple, Optional, Tuple, TypeVar, Union
 from .nptypes import NByOneNDArray, OneDimNDArray
 
-from ._lib import models, bounds
+from .lib import models, bounds
 
 from typing_extensions import Protocol
 
