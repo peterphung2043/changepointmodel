@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from ashrae.nptypes import AnyByAnyNDArray, AnyByAnyNDArrayField, OneDimNDArray
 from nptyping import NDArray
 from typing import Any, Callable, List, NamedTuple, TypeVar, Union
-from ._lib import metrics as ashraemetrics
+from .lib import metrics as ashraemetrics
 from .estimator import EnergyChangepointEstimator
 
 class IComparable(abc.ABC):  # trick to declare a Comparable type... py3 all comparability is implemented in terms of < so this is a safe descriptor

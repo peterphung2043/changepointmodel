@@ -3,7 +3,7 @@ import numpy as np
 from ashrae.savings import AshraeAdjustedSavingsCalculator, \
     AshraeNormalizedSavingsCalculator, AdjustedSavingsResult, NormalizedSavingsResult, _cvrmse_score
 
-from ashrae._lib.savings import adjusted, weather_normalized
+from ashrae.lib.savings import adjusted, weather_normalized
 
 def test_adjusted_savings_calls_adjusted_correctly(mocker): 
 
@@ -30,7 +30,7 @@ def test_adjusted_savings_calls_adjusted_correctly(mocker):
 
     mocker.patch.object(_cvrmse_score, 'calc', return_value=0.42)
     mocker.patch('ashrae.savings._get_adjusted', return_value=np.array([42.,]))
-    mock = mocker.patch('ashrae._lib.savings.adjusted', return_value=(1,1,1,1,))
+    mock = mocker.patch('ashrae.lib.savings.adjusted', return_value=(1,1,1,1,))
 
     calc = AshraeAdjustedSavingsCalculator()
     calc.save(pre, post)
@@ -67,7 +67,7 @@ def test_normalized_savings_calls_weather_normalzied_correctly(mocker):
 
     mocker.patch.object(_cvrmse_score, 'calc', side_effect=[0.42, 0.43])
     mocker.patch('ashrae.savings._get_adjusted', return_value=np.array([42.,]))
-    mock = mocker.patch('ashrae._lib.savings.weather_normalized', return_value=(1,1,1,1,))
+    mock = mocker.patch('ashrae.lib.savings.weather_normalized', return_value=(1,1,1,1,))
 
     Xnorm_pre = np.array([100.,])
     Xnorm_post = np.array([200.,])

@@ -1,6 +1,6 @@
 import pytest  
 import numpy as np
-from ashrae._lib import metrics as ashraemetrics
+from ashrae.lib import metrics as ashraemetrics
 
 def test_r2_score_forwards_arguments(mocker): 
 
