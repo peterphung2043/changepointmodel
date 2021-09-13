@@ -3,8 +3,10 @@ from ashrae.parameter_models import EnergyParameterModelCoefficients
 from ashrae import estimator, scoring
 import pytest 
 import numpy as np
+import json
+import random
 
-
+from . import GENERATED_DATA_ALL_MODELS_FILE, GENERATED_DATA_POST
 
 
 @pytest.fixture 
@@ -121,5 +123,62 @@ def loads_dummyestimator(loads_dummyenergyparametermodel):
         pred_y_ = np.array([1.,])
 
     return LoadsDummyEstimator(model=loads_dummyenergyparametermodel)
+
+
+@pytest.fixture
+def generated_data_all_models():
+    with open(GENERATED_DATA_ALL_MODELS_FILE, 'r') as f:
+        return json.load(f)
+
+@pytest.fixture
+def generated_data_for_post():
+    with open(GENERATED_DATA_POST, 'r') as f:
+        return json.load(f)
+
+
+def _parse_generated_mode_data(data, model_type):
+    for i in data:
+        if i['model_type'] == model_type:
+            return i
+
+@pytest.fixture
+def generated_2p_data(generated_data_all_models):
+    return _parse_generated_mode_data(generated_data_all_models, '2P')
+
+@pytest.fixture
+def generated_3pc_data(generated_data_all_models):
+    return _parse_generated_mode_data(generated_data_all_models, '3PC')
+
+@pytest.fixture
+def generated_3ph_data(generated_data_all_models):
+    return _parse_generated_mode_data(generated_data_all_models, '3PH')
+
+@pytest.fixture
+def generated_4p_data(generated_data_all_models):
+    return _parse_generated_mode_data(generated_data_all_models, '4P')
+
+@pytest.fixture
+def generated_5p_data(generated_data_all_models):
+    return _parse_generated_mode_data(generated_data_all_models, '5P')
+
+@pytest.fixture
+def generated_2p_post_data(generated_data_for_post):
+    return _parse_generated_mode_data(generated_data_for_post, '2P')
+
+@pytest.fixture
+def generated_3pc_post_data(generated_data_for_post):
+    return _parse_generated_mode_data(generated_data_for_post, '3PC')
+
+@pytest.fixture
+def generated_3ph_post_data(generated_data_for_post):
+    return _parse_generated_mode_data(generated_data_for_post, '3PH')
+
+@pytest.fixture
+def generated_4p_post_data(generated_data_for_post):
+    return _parse_generated_mode_data(generated_data_for_post, '4P')
+
+@pytest.fixture
+def generated_5p_post_data(generated_data_for_post):
+    return _parse_generated_mode_data(generated_data_for_post, '5P')
 
 

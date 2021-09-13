@@ -15,7 +15,7 @@ FourParameterBoundary = Tuple[float, float, float, float]
 FiveParameterBoundary = Tuple[float, float, float, float ,float]
 
 
-def twop() -> Tuple[TwoParameterBoundary, TwoParameterBoundary]: 
+def twop(*args) -> Tuple[TwoParameterBoundary, TwoParameterBoundary]: 
     return ((0, -np.inf),(np.inf, np.inf))
 
 

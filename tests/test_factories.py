@@ -97,4 +97,4 @@ def test_savingsresultfactory_correctly_configures_schema(mocker):
     
 
     res = factories.SavingsResultFactory.create(dpre, dpost, adjcalc, normcalc)
-    res = factories.SavingsResultFactory.create(dpre, dpost, adjcalc, normcalc, l, s)
+    res = factories.SavingsResultFactory.create(dpre, dpost, adjcalc, normcalc, l, l, s)
