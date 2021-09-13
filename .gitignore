@@ -2,6 +2,7 @@
 .pytest_cache/
 *.json
 !tests/fixtures/*.json
+!ashrae/lib
 
 notebooks/
 init-fixtures-aws.sh
@@ -120,3 +121,6 @@ ENV/
 
 # mkdocs documentation
 /site
+
+
+!ashrae/lib
