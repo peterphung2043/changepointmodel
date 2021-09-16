@@ -10,7 +10,7 @@ import pydantic
 
 from .scoring import Score
 from .savings import AdjustedSavingsResult, NormalizedSavingsResult
-from .parameter_models import EnergyParameterModelCoefficients
+from .pmodels import EnergyParameterModelCoefficients
 from .loads import Load
 
 from .nptypes import AnyByAnyNDArrayField, NByOneNDArrayField, OneDimNDArrayField, AnyByAnyNDArray

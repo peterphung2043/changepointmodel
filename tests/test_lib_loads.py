@@ -1,6 +1,6 @@
 
 import numpy as np  
-from ashrae.lib import loads
+from energymodel.calc import loads
 
 
 def test_baseload_calculation(): 

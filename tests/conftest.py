@@ -1,6 +1,5 @@
-
-from ashrae.parameter_models import EnergyParameterModelCoefficients
-from ashrae import estimator, scoring
+from energymodel.pmodels import EnergyParameterModelCoefficients
+from energymodel import estimator, scoring
 import pytest 
 import numpy as np
 import json

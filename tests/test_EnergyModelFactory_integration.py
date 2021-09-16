@@ -1,10 +1,10 @@
-from ashrae import parameter_models as models
-from ashrae import loads
-from ashrae.scoring import Scorer, R2, Cvrmse, ScoreEval 
-from ashrae.schemas import CurvefitEstimatorDataModel
-from ashrae import factories
+from energymodel import pmodels as models
+from energymodel import loads
+from energymodel.scoring import Scorer, R2, Cvrmse, ScoreEval 
+from energymodel.schemas import CurvefitEstimatorDataModel
+from energymodel import factories
 import numpy as np
-from ashrae import lib
+from energymodel import calc
 
 def test_EnergyModelFactory_integration_with_2p(generated_2p_data):
     Xdata = np.array(generated_2p_data['x']) 
@@ -26,7 +26,7 @@ def test_EnergyModelFactory_integration_with_2p(generated_2p_data):
 
 
     #note cannot use fit_one method here for estimator cause
-    twop = factories.EnergyModelFactory.create('2P', lib.models.twop, lib.bounds.twop, parser, twop_model, load_handler)
+    twop = factories.EnergyModelFactory.create('2P', calc.models.twop, calc.bounds.twop, parser, twop_model, load_handler)
     estimator = twop.create_estimator()
 
     # X, y = estimator.sort_X_y(input_data.X, input_data.y)
@@ -76,7 +76,7 @@ def test_integration_with_3pc(generated_3pc_data):
     scorer = Scorer(evals)   # <<< NOTE I screwed this up we need to implement it like this.... 
 
     # factory method to create an EnergyModel 
-    threepc = factories.EnergyModelFactory.create('3PC', lib.models.threepc, lib.bounds.threepc, parser, threep_model, load_handler)
+    threepc = factories.EnergyModelFactory.create('3PC', calc.models.threepc, calc.bounds.threepc, parser, threep_model, load_handler)
     estimator = threepc.create_estimator()
 
     name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y)
@@ -124,7 +124,7 @@ def test_integration_with_3ph(generated_3ph_data):
     scorer = Scorer(evals)   # <<< NOTE I screwed this up we need to implement it like this.... 
 
     # factory method to create an EnergyModel 
-    threeph = factories.EnergyModelFactory.create('3PH', lib.models.threeph, lib.bounds.threeph, parser, threep_model, load_handler)
+    threeph = factories.EnergyModelFactory.create('3PH', calc.models.threeph, calc.bounds.threeph, parser, threep_model, load_handler)
     estimator = threeph.create_estimator()
 
     name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y) 
@@ -172,7 +172,7 @@ def test_integration_with_4p(generated_4p_data):
     scorer = Scorer(evals)   # <<< NOTE I screwed this up we need to implement it like this.... 
 
     # factory method to create an EnergyModel 
-    fourp = factories.EnergyModelFactory.create('4P', lib.models.fourp, lib.bounds.fourp, parser, fourp_model, load_handler)
+    fourp = factories.EnergyModelFactory.create('4P', calc.models.fourp, calc.bounds.fourp, parser, fourp_model, load_handler)
     estimator = fourp.create_estimator()
 
     name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y) 
@@ -221,7 +221,7 @@ def test_integration_with_5p(generated_4p_data):
     scorer = Scorer(evals)   # <<< NOTE I screwed this up we need to implement it like this.... 
 
     # factory method to create an EnergyModel 
-    fivep = factories.EnergyModelFactory.create('5P', lib.models.fivep, lib.bounds.fivep, parser, fivep_model, load_handler)
+    fivep = factories.EnergyModelFactory.create('5P', calc.models.fivep, calc.bounds.fivep, parser, fivep_model, load_handler)
     estimator = fivep.create_estimator()
 
     name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y)

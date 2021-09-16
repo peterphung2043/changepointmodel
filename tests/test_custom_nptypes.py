@@ -2,7 +2,7 @@ import pydantic
 import pytest 
 import numpy as np
 
-from ashrae.nptypes import NByOneNDArrayField, AnyByAnyNDArrayField, OneDimNDArrayField
+from energymodel.nptypes import NByOneNDArrayField, AnyByAnyNDArrayField, OneDimNDArrayField
 
 
 def test_custom_fields_accept_lists_or_array_like(): 

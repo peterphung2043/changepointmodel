@@ -1,5 +1,5 @@
 import numpy as np
-from ashrae.lib import bounds
+from energymodel.calc import bounds
 
 def test_twop_bounds(): 
 

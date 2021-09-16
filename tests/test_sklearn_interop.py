@@ -1,8 +1,8 @@
 import pytest
 import numpy as np
 from sklearn.model_selection import cross_val_score, cross_val_predict, GridSearchCV
-from ashrae.parameter_models import ModelFunction, ParameterModelFunction
-from ashrae.estimator import EnergyChangepointEstimator
+from energymodel.pmodels import ModelFunction, ParameterModelFunction
+from energymodel.estimator import EnergyChangepointEstimator
 from sklearn.utils.validation import check_is_fitted
 
 from numpy.testing import assert_array_almost_equal, assert_array_equal

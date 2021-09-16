@@ -3,11 +3,9 @@ name: CI
 on:
   pull_request:
     branches:
-      - master
       - development
   push:
     branches:
-      - master
       - development
       
 

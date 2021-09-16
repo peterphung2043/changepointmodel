@@ -1,9 +1,9 @@
 from sklearn.exceptions import NotFittedError
-from ashrae.parameter_models import ModelFunction
+from energymodel.pmodels import ModelFunction
 from curvefit_estimator.estimator import CurvefitEstimator
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_almost_equal, assert_array_equal
-from ashrae.estimator import EnergyChangepointEstimator 
+from energymodel.estimator import EnergyChangepointEstimator 
 import pytest 
 
 from curvefit_estimator import CurvefitEstimator

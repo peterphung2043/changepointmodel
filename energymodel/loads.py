@@ -2,15 +2,14 @@
 """
 import abc
 import numpy as np
-from ashrae.nptypes import NByOneNDArray, OneDimNDArray, OneDimNDArrayField
-from . import utils as ashraeutils
-from typing import List, NamedTuple, Optional, Tuple
+from .nptypes import NByOneNDArray, OneDimNDArray
+from . import utils
+from typing import Optional, Tuple
 from .estimator import EnergyChangepointEstimator
-from .scoring import ScoringFunction
 
-from .lib import loads as _loads 
+from .calc import loads as _loads 
 
-from .parameter_models import EnergyParameterModel, EnergyParameterModelCoefficients, ParameterModelFunction
+from .pmodels import EnergyParameterModel, EnergyParameterModelCoefficients, ParameterModelFunction
 from dataclasses import dataclass 
 
 @dataclass 
@@ -204,7 +203,7 @@ class EnergyChangepointLoadsAggregator(object):
         if not isinstance(estimator.model.parameter_model, self._handler.model.__class__): 
             raise TypeError(f'estimator parameter_model must be of type {self._handler.model}')
         
-        coeffs = ashraeutils.parse_coeffs(estimator.model, estimator.coeffs)
+        coeffs = utils.parse_coeffs(estimator.model, estimator.coeffs)
         X = estimator.X.squeeze()  # have to make this 1d
         pred_y = estimator.pred_y 
         return self._handler.run(X, pred_y, coeffs)

@@ -4,11 +4,11 @@ can be used on their own.
 
 import abc
 from dataclasses import dataclass
-from ashrae.nptypes import AnyByAnyNDArray, AnyByAnyNDArrayField, OneDimNDArray
-from nptyping import NDArray
-from typing import Any, Callable, List, NamedTuple, TypeVar, Union
-from .lib import metrics as ashraemetrics
+from .nptypes import AnyByAnyNDArrayField, OneDimNDArray
+from typing import Any, Callable, List, TypeVar, Union
+from .calc import metrics
 from .estimator import EnergyChangepointEstimator
+
 
 class IComparable(abc.ABC):  # trick to declare a Comparable type... py3 all comparability is implemented in terms of < so this is a safe descriptor
 
@@ -57,25 +57,22 @@ class ScoringFunction(abc.ABC):
         return self.calc(*args, **kwargs)
 
 
-## TODO model r2, mse, rmse, cvrmse from the ashrae/bema calcs
-
-
 class R2(ScoringFunction): 
 
     def calc(self, y: OneDimNDArray, pred_y: OneDimNDArray, **kwargs) -> SklScoreReturnType:
-        return ashraemetrics.r2_score(y, pred_y, **kwargs)
+        return metrics.r2_score(y, pred_y, **kwargs)
 
 
 class Rmse(ScoringFunction): 
 
     def calc(self, y: OneDimNDArray, pred_y: OneDimNDArray, **kwargs) -> SklScoreReturnType: 
-        return ashraemetrics.rmse(y, pred_y, **kwargs)
+        return metrics.rmse(y, pred_y, **kwargs)
 
 
 class Cvrmse(ScoringFunction): 
 
     def calc(self, y: OneDimNDArray, pred_y: OneDimNDArray, **kwargs) -> SklScoreReturnType: 
-        return ashraemetrics.cvrmse(y, pred_y, **kwargs)
+        return metrics.cvrmse(y, pred_y, **kwargs)
 
 
 

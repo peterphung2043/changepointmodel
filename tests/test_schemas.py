@@ -1,4 +1,4 @@
-from ashrae import schemas 
+from energymodel import schemas 
 
 import numpy as np
 import pytest

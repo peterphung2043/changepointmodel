@@ -20,7 +20,7 @@ clean-test:
 
 
 test: clean-test
-	pytest --cov=ashrae --cov-report=term-missing tests/ -v -s
+	pytest --cov=energymodel --cov-report=term-missing tests/ -v -s
 
 test-single-module: clean-test
 	pytest $(module) -v -s

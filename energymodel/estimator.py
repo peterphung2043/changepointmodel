@@ -4,7 +4,7 @@ from _pytest.outcomes import fail
 import numpy as np
 
 from .nptypes import NByOneNDArray, OneDimNDArray
-from .parameter_models import EnergyParameterModelCoefficients, ModelFunction 
+from .pmodels import EnergyParameterModelCoefficients, ModelFunction 
 from curvefit_estimator import CurvefitEstimator
 from sklearn.utils.validation import check_is_fitted
 

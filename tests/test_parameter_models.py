@@ -1,4 +1,8 @@
-from ashrae.parameter_models import FiveParameterCoefficientsParser, FiveParameterModel, FourParameterCoefficientsParser, FourParameterModel, ModelFunction, ParameterModelFunction, ThreeParameterCoefficientsParser, ThreeParameterModel, TwoParameterCoefficientParser, TwoParameterModel, YinterceptMixin, EnergyParameterModelCoefficients
+from energymodel.pmodels import FiveParameterCoefficientsParser, \
+    FiveParameterModel, FourParameterCoefficientsParser, \
+        FourParameterModel, ModelFunction, ParameterModelFunction, \
+            ThreeParameterCoefficientsParser, ThreeParameterModel, TwoParameterCoefficientParser, \
+                TwoParameterModel, YinterceptMixin, EnergyParameterModelCoefficients
 import numpy as np
 
 

@@ -1,9 +1,11 @@
+"""Changepoint parameter model definitions
+"""
+
 import abc 
 from dataclasses import dataclass
-from typing import Callable, List, NamedTuple, Optional, Tuple, TypeVar, Union
+from typing import List, Optional, Tuple, Union
 from .nptypes import NByOneNDArray, OneDimNDArray
 
-from .lib import models, bounds
 
 from typing_extensions import Protocol
 

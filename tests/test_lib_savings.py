@@ -1,4 +1,4 @@
-from ashrae.lib.savings import adjusted, weather_normalized
+from energymodel.calc.savings import adjusted, weather_normalized
 from numpy.testing import assert_almost_equal 
 
 # XXX these are basically just checking that the math is hitting... 

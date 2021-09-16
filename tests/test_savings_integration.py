@@ -1,11 +1,13 @@
-from ashrae import parameter_models as models
-from ashrae import loads
-from ashrae.scoring import Scorer, R2, Cvrmse, ScoreEval 
-from ashrae.schemas import CurvefitEstimatorDataModel
-from ashrae import factories
+from energymodel import pmodels as models
+from energymodel import loads
+from energymodel.scoring import Scorer, R2, Cvrmse, ScoreEval 
+from energymodel.schemas import CurvefitEstimatorDataModel
+from energymodel import factories
 import numpy as np
-from ashrae import lib
-from ashrae import savings
+from energymodel import calc
+from energymodel import savings
+
+
 
 def test_savings_integration_with_pre_and_post(generated_3pc_data, generated_4p_post_data):
     Xdata = np.array(generated_3pc_data['x']) 
@@ -35,10 +37,10 @@ def test_savings_integration_with_pre_and_post(generated_3pc_data, generated_4p_
 
 
     #note cannot use fit_one method here for estimator cause
-    threepc = factories.EnergyModelFactory.create('3PC', lib.models.threepc, lib.bounds.threepc, parser_3pc, threep_model, load_handler_3pc)
+    threepc = factories.EnergyModelFactory.create('3PC', calc.models.threepc, calc.bounds.threepc, parser_3pc, threep_model, load_handler_3pc)
     estimator_pre = threepc.create_estimator()
 
-    fourp = factories.EnergyModelFactory.create('4P', lib.models.fourp, lib.bounds.fourp, parser_4p, fourp_model, load_handler_4p)
+    fourp = factories.EnergyModelFactory.create('4P', calc.models.fourp, calc.bounds.fourp, parser_4p, fourp_model, load_handler_4p)
     estimator_post = fourp.create_estimator()
 
     # X, y = estimator.sort_X_y(input_data.X, input_data.y)

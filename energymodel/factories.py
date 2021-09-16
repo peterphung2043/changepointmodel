@@ -1,18 +1,18 @@
 """Some factory methods for configuration and generating result pydantic schemas to and from internals.
 """
 
-from ashrae.savings import AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator
-import ashrae.utils as ashraeutils
+from .savings import AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator
+from . import utils
 
 from pydantic.utils import GetterDict
-from ashrae import schemas, scoring
-from ashrae.scoring import Score, Scorer
-from ashrae.estimator import EnergyChangepointEstimator
+from . import schemas, scoring
+from .scoring import Score, Scorer
+from .estimator import EnergyChangepointEstimator
 from typing import Any, Dict, List, Optional, Union
-from ashrae import loads
+from . import loads
 from dataclasses import dataclass
-from . import parameter_models as pmodels
-from .lib import models
+from . import pmodels as pmodels
+from .calc import models
 
 @dataclass
 class EnergyModel(object): 
@@ -77,7 +77,7 @@ class EnergyChangepointModelResultFactory(object):
                 'sigma': estimator.sigma,
                 'absolute_sigma': estimator.absolute_sigma 
             }, 
-            'coeffs': ashraeutils.parse_coeffs(estimator.model, estimator.coeffs), 
+            'coeffs': utils.parse_coeffs(estimator.model, estimator.coeffs), 
             'pred_y': estimator.pred_y, 
             'load': loads.aggregate(estimator) if loads else None, 
             'scores': scorer.check(estimator) if scorer else None

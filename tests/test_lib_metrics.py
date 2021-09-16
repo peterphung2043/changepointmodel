@@ -1,6 +1,6 @@
 import pytest  
 import numpy as np
-from ashrae.lib import metrics as ashraemetrics
+from energymodel.calc import metrics as energymodelmetrics
 
 def test_r2_score_forwards_arguments(mocker): 
 
@@ -9,7 +9,7 @@ def test_r2_score_forwards_arguments(mocker):
     sample_weight = np.array([7.,8.,9.])
 
     mock = mocker.patch('sklearn.metrics.r2_score')
-    ashraemetrics.r2_score(y, y_pred, sample_weight=sample_weight)
+    energymodelmetrics.r2_score(y, y_pred, sample_weight=sample_weight)
     mock.assert_called_once_with(y, y_pred, sample_weight=sample_weight)
 
 
@@ -20,7 +20,7 @@ def test_rmse_score_forwards_arguments(mocker):
     sample_weight = np.array([7.,8.,9.])
 
     mock = mocker.patch('sklearn.metrics.mean_squared_error')
-    ashraemetrics.rmse(y, y_pred, sample_weight=sample_weight)
+    energymodelmetrics.rmse(y, y_pred, sample_weight=sample_weight)
     mock.assert_called_once_with(y, y_pred, sample_weight=sample_weight, squared=False) # NOTE squared=False returns rmse according to skl docs
 
 
@@ -32,7 +32,7 @@ def test_cvrmse_score_forwards_arguments(mocker):
     sample_weight = np.array([7.,8.,9.])
 
     mock = mocker.patch('sklearn.metrics.mean_squared_error')
-    ashraemetrics.cvrmse(y, y_pred, sample_weight=sample_weight)
+    energymodelmetrics.cvrmse(y, y_pred, sample_weight=sample_weight)
     mock.assert_called_once_with(y, y_pred, sample_weight=sample_weight, squared=False) 
 
 
@@ -40,5 +40,5 @@ def test_cvrmse_from_rmse():
 
     rmse = 2 
     y = np.array([1.,2.,3.])
-    assert 1 == ashraemetrics._cvrmse_from_rmse(rmse, y)
+    assert 1 == energymodelmetrics._cvrmse_from_rmse(rmse, y)
 

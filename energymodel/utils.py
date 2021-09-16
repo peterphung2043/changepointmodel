@@ -1,7 +1,7 @@
-from ashrae.parameter_models import EnergyParameterModel, EnergyParameterModelCoefficients, ParameterModelFunction
+from .pmodels import EnergyParameterModelCoefficients, ParameterModelFunction
 from typing import Tuple, Union
 import numpy as np
-from .nptypes import AnyByAnyNDArray, NByOneNDArray, OneDimNDArray
+from .nptypes import NByOneNDArray, OneDimNDArray
 
 
 def argsort_1d(X: Union[NByOneNDArray, OneDimNDArray], y: OneDimNDArray) -> Tuple[NByOneNDArray, OneDimNDArray]:

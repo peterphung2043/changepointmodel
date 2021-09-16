@@ -2,10 +2,9 @@
 """
 from dataclasses import dataclass
 import numpy as np
-from ashrae.nptypes import NByOneNDArray, OneDimNDArray, OneDimNDArrayField
-from typing import NamedTuple, Optional
-from ashrae.estimator import EnergyChangepointEstimator
-from .lib import savings as ashraesavings
+from .nptypes import NByOneNDArray, OneDimNDArray, OneDimNDArrayField
+from .estimator import EnergyChangepointEstimator
+from .calc import savings as libsavings
 
 from .scoring import Cvrmse
 _cvrmse_score = Cvrmse()
@@ -74,7 +73,7 @@ class AshraeAdjustedSavingsCalculator(AbstractSavings, ISavingsCalculator):
         gross_adjusted_y = np.sum(adjusted_y)  
         gross_post_y = post.total_y()      
 
-        savings = ashraesavings.adjusted(
+        savings = libsavings.adjusted(
             gross_adjusted_y, 
             gross_post_y, 
             pre_cvrmse, 
@@ -137,7 +136,7 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
 
         n_norm = len(self._X_pre)
 
-        savings = ashraesavings.weather_normalized(
+        savings = libsavings.weather_normalized(
             gross_normalized_y_pre, 
             gross_normalized_y_post, 
             pre_cvrmse, 
