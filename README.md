@@ -1,4 +1,4 @@
-# ashrae 
+# energymodel 
 
 Changepoint modeling, load disaggregation and savings methodologies consistent with ashrae guidelines. 
 
@@ -15,8 +15,8 @@ Meant to replace `bema` python library package in future production environments
 
 ### todo 
 
-- [ ] CI github
-- [ ] Integration tests for all modules 
+- [x] CI github
+- [x] Integration tests for all modules 
 - [ ] docstrings + documentation 
 - [ ] live testing QA with real data.
 - [ ] publishing 
