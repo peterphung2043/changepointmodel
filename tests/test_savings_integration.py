@@ -51,8 +51,10 @@ def test_savings_integration_with_pre_and_post(generated_3pc_data, generated_4p_
     adjusted_saving = savings.AshraeAdjustedSavingsCalculator()
     normalized_saving = savings.AshraeNormalizedSavingsCalculator(input_data.X, input_data_post.X)
 
+    threepcload = threepc.create_load_aggregator()
+    fourpload = fourp.create_load_aggregator()
     savings_result = factories.SavingsResultFactory.create(fitted_est_pre, fitted_est_post,
-                                            adjusted_saving, normalized_saving, threepc.load, fourp.load, scorer
+                                            adjusted_saving, normalized_saving, threepcload, fourpload, scorer
                                             )
     
     #pre basic check

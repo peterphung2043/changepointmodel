@@ -40,8 +40,19 @@ class IBaseload(abc.ABC):
 
 class HeatingLoad(ISensitivityLoad): 
 
-    def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]=None) -> float: 
+    def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]=None) -> float:
+        """Configures and calculates a heating load.
 
+        Args:
+            X (OneDimNDArray): The X array input as 1d.
+            pred_y (OneDimNDArray): The predicted y values.
+            slope (float): The heating slope.
+            yint (float): The yintercept.
+            changepoint (Optional[float], optional): The heating changepoint.. Defaults to None.
+
+        Returns:
+            float: The heating load.
+        """
         if slope > 0: # pos slope no heat
             return 0
 
@@ -54,7 +65,19 @@ class HeatingLoad(ISensitivityLoad):
 
 class CoolingLoad(ISensitivityLoad): 
 
-    def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]=None) -> float: 
+    def calc(self, X: OneDimNDArray, pred_y: OneDimNDArray, slope: float, yint: float, changepoint: Optional[float]=None) -> float:
+        """Configures and calculates the cooling load for a given model.
+
+        Args:
+            X (OneDimNDArray): The X array
+            pred_y (OneDimNDArray): The model's predicted y values.
+            slope (float): The cooling slope.
+            yint (float): The yintercept.
+            changepoint (Optional[float], optional): The cooling changepoint. Defaults to None.
+
+        Returns:
+            float: [description]
+        """
         if slope < 0: # neg slope no cool
             return 0
         
@@ -67,6 +90,14 @@ class CoolingLoad(ISensitivityLoad):
 class Baseload(IBaseload): 
 
     def calc(self, total_consumption: float, *loads: float) -> float:
+        """Calculates the baseload given the total consumption and any number of other loads.
+
+        Args:
+            total_consumption (float): The total consumption.
+
+        Returns:
+            float: The baseload.
+        """
         return _loads.baseload(total_consumption, *loads)  # This just subtracts all loads from this total y_pred ... subject to change @tynabot
 
 
@@ -78,6 +109,14 @@ class AbstractLoadHandler(abc.ABC):
         cooling: ISensitivityLoad, 
         heating: ISensitivityLoad, 
         base: Optional[IBaseload]=None):
+        """The handler for calculating heating cooling and baseloads for a given model.
+
+        Args:
+            model (EnergyParameterModel): An instance of an EnergyParameterModel 
+            cooling (ISensitivityLoad): A cooling load calculation.
+            heating (ISensitivityLoad): A heating load calculation.
+            base (Optional[IBaseload], optional): A baseload calculation. Defaults to None.
+        """
 
         self._model = model 
         self._cooling = cooling 
@@ -101,16 +140,24 @@ class AbstractLoadHandler(abc.ABC):
         X: OneDimNDArray, 
         pred_y: OneDimNDArray, 
         coeffs: EnergyParameterModelCoefficients) -> Load: ...
-
-
+        
 
 class TwoParameterLoadHandler(AbstractLoadHandler): 
 
     def run(self, 
-        X: NByOneNDArray, 
+        X: OneDimNDArray, 
         pred_y: OneDimNDArray, 
         coeffs: EnergyParameterModelCoefficients) -> Load: 
+        """Calculate a two parameter load.
 
+        Args:
+            X (OneDimNDArray): [description]
+            pred_y (OneDimNDArray): [description]
+            coeffs (EnergyParameterModelCoefficients): [description]
+
+        Returns:
+            Load: [description]
+        """
         yint, total_pred_y = self._initial(pred_y, coeffs)
 
         slope = self._model.slope(coeffs)
@@ -125,9 +172,19 @@ class TwoParameterLoadHandler(AbstractLoadHandler):
 class ThreeParameterLoadHandler(AbstractLoadHandler): 
     
     def run(self, 
-        X: NByOneNDArray, 
+        X: OneDimNDArray, 
         pred_y: OneDimNDArray, 
         coeffs: EnergyParameterModelCoefficients) -> Load: 
+        """Calculate a three parameter (heating or cooling) load.
+
+        Args:
+            X (OneDimNDArray): The X array of the model.
+            pred_y (OneDimNDArray): The predicted y array of the
+            coeffs (EnergyParameterModelCoefficients): [description]
+
+        Returns:
+            Load: A load calculation.
+        """
 
         yint, total_pred_y = self._initial(pred_y, coeffs)
 
@@ -146,9 +203,19 @@ class FourParameterLoadHandler(AbstractLoadHandler):
 
 
     def run(self, 
-        X: NByOneNDArray, 
+        X: OneDimNDArray, 
         pred_y: OneDimNDArray, 
         coeffs: EnergyParameterModelCoefficients) -> Load: 
+        """Calculate a FourParameterLoad.
+
+        Args:
+            X (OneDimNDArray): [description]
+            pred_y (OneDimNDArray): [description]
+            coeffs (EnergyParameterModelCoefficients): [description]
+
+        Returns:
+            Load: A Load calculation.
+        """
 
         yint, total_pred_y = self._initial(pred_y, coeffs)
 
@@ -170,6 +237,16 @@ class FiveParameterLoadHandler(AbstractLoadHandler):
         X: NByOneNDArray, 
         pred_y: OneDimNDArray, 
         coeffs: EnergyParameterModelCoefficients) -> Load: 
+        """Calculate a FiveParameterLoad
+
+        Args:
+            X (NByOneNDArray): [description]
+            pred_y (OneDimNDArray): [description]
+            coeffs (EnergyParameterModelCoefficients): [description]
+
+        Returns:
+            Load: [description]
+        """
 
         yint, total_pred_y = self._initial(pred_y, coeffs)
 
@@ -189,11 +266,30 @@ class FiveParameterLoadHandler(AbstractLoadHandler):
 
 class EnergyChangepointLoadsAggregator(object): 
 
-    def __init__(self, handler: AbstractLoadHandler): 
+    def __init__(self, handler: AbstractLoadHandler):
+        """A high level wrapper around a load handler that works with an 
+        estimator to aggregate the load.
+
+        Args:
+            handler (AbstractLoadHandler): An instance of a load handler.
+        """
         self._handler = handler 
 
 
     def aggregate(self, estimator: EnergyChangepointEstimator) -> Load: 
+        """Performs some type checks between the handler and the estimator and then 
+        performs the load calculations using the configured handler.
+
+        Args:
+            estimator (EnergyChangepointEstimator): A fitted EnergyChangepointEstimator instance.
+
+        Raises:
+            TypeError: raised if the estimator's model is not of type ParameterModelFunction.
+            TypeError: raised if the estimator's model.pmodel is not of the same type as that of the handler.
+
+        Returns:
+            Load: The calculated load
+        """
 
         # check that estimator model type matches the handler's model interface or else we'll have an issue 
         # coeff parsing needs to match...

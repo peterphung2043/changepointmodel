@@ -32,8 +32,8 @@ def test_energymodelfactory_integration_with_2p(generated_2p_data):
     # X, y = estimator.sort_X_y(input_data.X, input_data.y)
     # # fit the changepoint model 
     name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y) 
-
-    result = factories.EnergyChangepointModelResultFactory.create(fitted_est, twop.load, scorer)
+    load = twop.create_load_aggregator()
+    result = factories.EnergyChangepointModelResultFactory.create(fitted_est, load, scorer)
 
     #model
     assert result.name == "2P"
@@ -80,8 +80,8 @@ def test_integration_with_3pc(generated_3pc_data):
     estimator = threepc.create_estimator()
 
     name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y)
-
-    result = factories.EnergyChangepointModelResultFactory.create(fitted_est, threepc.load, scorer)
+    load = threepc.create_load_aggregator()
+    result = factories.EnergyChangepointModelResultFactory.create(fitted_est, load, scorer)
 
     #model
     assert result.name == "3PC"
@@ -128,8 +128,8 @@ def test_integration_with_3ph(generated_3ph_data):
     estimator = threeph.create_estimator()
 
     name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y) 
-
-    result = factories.EnergyChangepointModelResultFactory.create(fitted_est, threeph.load, scorer)
+    load = threeph.create_load_aggregator()
+    result = factories.EnergyChangepointModelResultFactory.create(fitted_est, load, scorer)
 
     #model
     assert result.name == "3PH"
@@ -176,8 +176,8 @@ def test_integration_with_4p(generated_4p_data):
     estimator = fourp.create_estimator()
 
     name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y) 
-
-    result = factories.EnergyChangepointModelResultFactory.create(fitted_est, fourp.load, scorer)
+    load = fourp.create_load_aggregator()
+    result = factories.EnergyChangepointModelResultFactory.create(fitted_est, load, scorer)
 
     #model
     assert result.name == "4P"
@@ -222,11 +222,11 @@ def test_integration_with_5p(generated_4p_data):
 
     # factory method to create an EnergyModel 
     fivep = factories.EnergyModelFactory.create('5P', calc.models.fivep, calc.bounds.fivep, parser, fivep_model, load_handler)
-    estimator = fivep.create_estimator()
-
+    estimator = fivep.create_estimator()    
+    
     name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y)
-
-    result = factories.EnergyChangepointModelResultFactory.create(fitted_est, fivep.load, scorer)
+    load = fivep.create_load_aggregator()
+    result = factories.EnergyChangepointModelResultFactory.create(fitted_est, load, scorer)
 
     #model
     assert result.name == "5P"

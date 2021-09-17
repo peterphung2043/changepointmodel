@@ -10,11 +10,12 @@ def _get_tstat(confidence_interval: float, df: int) -> float:
 
 
 def fractional_avoided_energy_use(total_annual_adjusted: float, total_annual_measured_reporting: float) -> float:
-    
     """ASHRAE Guideline 14 2014 Annex B Eq. B-22 Fractional Avoided Energy Use
+
     Args:
         annual_adj_baseline (float): Sum of a year of adjusted baseline consumption.
         annual_measured_reporting (float): Sum of a year of measured reporting consumption.
+    
     Returns:
         float: Savings as a fraction of annual adjusted baseline.
     """
@@ -42,7 +43,7 @@ def relative_uncertainty_avoided_energy_use(
         len_post (int): number of points post
 
     Returns:
-        float: [description]
+        float: The relative uncertainties of avoided energy use
     """
 
     tstat = _get_tstat(confidence_interval, n_pre - p)
@@ -64,12 +65,12 @@ def relative_uncertainty_normalized_period(
      This function is used twice in normalized savings uncertainty calculation.
 
     Args:
-        conf_interval ([type]): desired confidence interval 
-        n ([type]): number of points of data used to create the model
-        cvrmse ([type]): model cvrmse as a fraction
-        gross_norm ([type]): sum of normalized consumption for the number of cny months 
-        p ([type]): number of parameters. Depends on model complexity and number of independent variables.
-        n_norm ([type]): number of points in normal period 
+        conf_interval (float): desired confidence interval 
+        n (int): number of points of data used to create the model
+        cvrmse (float): model cvrmse as a fraction
+        gross_norm (float): sum of normalized consumption for the number of cny months 
+        p (int): number of parameters. Depends on model complexity and number of independent variables.
+        n_norm (int): number of points in normal period 
 
     Returns:
         float: uncertainty for sum of normalized consumption for that period

@@ -9,9 +9,11 @@ from energymodel import factories, predsum, schemas, scoring, loads
 
 def test_energymodelfactory_returns_configured_modelresult(): 
 
-    class DummyLoadHandler: ...
     class DummyParamModel: ... 
     class DummyParser: ...
+    class DummyLoadHandler:
+        model = DummyParamModel()
+    
 
     def f(): ... 
     def b(): ... 
@@ -28,7 +30,7 @@ def test_energymodelfactory_returns_configured_modelresult():
     assert res.model.bounds == b 
     assert res.model._coefficients_parser == parser 
     assert res.model._parameter_model == parameter_model 
-    assert res.load._handler == load_handler 
+    assert res.load_handler == load_handler 
 
 
 def test_energychangepointmodelresultfactory_correctly_configures_schema(mocker): 

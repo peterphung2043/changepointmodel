@@ -1,3 +1,8 @@
+""" Provides numpy types for various functionality throughout the library as well as pydantic fields 
+that are used for validating input and converting it from python primitives or arrays.
+
+This can be treated as more or less a private module.     
+"""
 import numpy as np 
 from typing import Any
 from nptyping import NDArray 
@@ -7,6 +12,7 @@ NByOneNDArray = NDArray[(Any, 1,), float]  # [[1.], [2.], [3.], ...]
 OneDimNDArray = NDArray[(Any,), float]  # [ 1., 2., 3., ...]
 
 
+# pydantic aware numpy types.
 
 class AnyByAnyNDArrayField(np.ndarray):
     
