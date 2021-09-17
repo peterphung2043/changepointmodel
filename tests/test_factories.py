@@ -2,7 +2,7 @@
 from energymodel.savings import AdjustedSavingsResult, AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator, NormalizedSavingsResult
 from energymodel.pmodels import EnergyParameterModelCoefficients
 import numpy as np
-from energymodel import factories, schemas, scoring, loads
+from energymodel import factories, predsum, schemas, scoring, loads
 
 
 # factories.EnergyChangepointModelResultFactory
@@ -57,11 +57,14 @@ def test_energychangepointmodelresultfactory_correctly_configures_schema(mocker)
         scoring.Score('s1', 42., 42.,True), 
         scoring.Score('s2', 43., 43., False)])
 
+    nac = predsum.PredictedSumCalculator(np.array([1.,]))
+    mocker.patch.object(nac, 'calculate', return_value=predsum.PredictedSum(value=42.,))
+    
     # this should not fail to build
-    res = factories.EnergyChangepointModelResultFactory.create(d, l, s)
+    res = factories.EnergyChangepointModelResultFactory.create(d, l, s, nac)
     assert res.scores is not None 
     assert res.load is not None
-
+    assert res.nac is not None
 
 def test_savingsresultfactory_correctly_configures_schema(mocker): 
 
