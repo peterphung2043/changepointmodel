@@ -79,62 +79,6 @@ def test_curvefitestimatordatamodel_returns_valid_json():
     d.json()
 
 
-def test_energyparametermodelcoefficientsmodel_converted_from_internal_dataclass(): 
-
-    data = {
-        'yint': 42., 
-        'slopes': [1.], 
-        'changepoints': None
-    }
-    schemas.EnergyParameterModelCoefficientsModel(**data)
-
-def test_energychangepointloadmodel_converted_from_internal_dataclass(): 
-
-    data = {
-        'base': 0, 
-        'cooling': 0, 
-        'heating': 0
-    }
-
-    schemas.LoadModel(**data)
-
-def test_scoremodel_converted_from_internal_dataclass(): 
-
-    data = {
-        'name': 'r2', 
-        'value': 0, 
-        'threshold': 0, 
-        'ok': False
-    }
-
-    schemas.ScoreModel(**data)
-
-def test_adjustedsavingsresultmodel_converted_from_internal_dataclass(): 
-
-    data = {
-        'adjusted_y': np.array([1., 2., 3.]), 
-        'total_savings': 42., 
-        'average_monthly_savings': 42., 
-        'percent_savings': 42.,
-        'percent_savings_uncertainty': 42.
-    }
-
-    schemas._AdjustedSavingsModel(**data)
-
-
-def test_normalizedsavingsresultmodel_converted_from_internal_dataclass(): 
-
-    data = {
-        'normalized_y_pre': np.array([1., 2., 3.]),
-        'normalized_y_post': np.array([1., 2., 3.]),
-        'total_savings': 42., 
-        'average_monthly_savings': 42., 
-        'percent_savings': 42., 
-        'percent_savings_uncertainty': 42.,
-    }
-
-    schemas._NormalizedSavingsModel(**data)
-
 
 def test_energychangepointmodelresult_with_required_data(schema_coeffs): 
 

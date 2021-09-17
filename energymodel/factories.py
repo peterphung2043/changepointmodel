@@ -1,6 +1,7 @@
 """Some factory methods for configuration and generating result pydantic schemas to and from internals.
 """
 
+from numpy import absolute
 from energymodel.predsum import PredictedSumCalculator
 from .savings import AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator
 from . import utils
@@ -71,14 +72,15 @@ class EnergyChangepointModelResultFactory(object):
         scorer: Optional[scoring.Scorer]=None, 
         nac: Optional[PredictedSumCalculator]=None) -> schemas.EnergyChangepointModelResult: 
 
+        input_data = schemas.CurvefitEstimatorDataModel(
+            X=estimator.X, 
+            y=estimator.y, 
+            sigma=estimator.sigma, 
+            absolute_sigma=estimator.absolute_sigma)
+
         data = {
             'name': estimator.name,
-            'input_data': {
-                'X': estimator.X, 
-                'y': estimator.y, 
-                'sigma': estimator.sigma,
-                'absolute_sigma': estimator.absolute_sigma 
-            }, 
+            'input_data': input_data, 
             'coeffs': utils.parse_coeffs(estimator.model, estimator.coeffs), 
             'pred_y': estimator.pred_y, 
             'load': loads.aggregate(estimator) if loads else None, 
@@ -104,18 +106,17 @@ class SavingsResultFactory(object):
         pre_result = EnergyChangepointModelResultFactory.create(pre, pre_loads, scorer)
         post_result = EnergyChangepointModelResultFactory.create(post, post_loads, scorer)   
 
-        adj = {
-            'result': adjcalc.save(pre, post), 
-            'confidence_interval': adjcalc.confidence_interval
-        }
+        adj = schemas.AdjustedSavingsResultData(
+            result=adjcalc.save(pre, post), 
+            confidence_interval=adjcalc.confidence_interval)
+        
         if normcalc: 
             result = normcalc.save(pre, post)
-            norm = {
-                'X_pre': normcalc.X_pre, 
-                'X_post': normcalc.X_post,
-                'confidence_interval': normcalc.confidence_interval, 
-                'result': result
-            }
+            norm = schemas.NormalizedSavingsResultData(
+                X_pre=normcalc.X_pre, 
+                X_post=normcalc.X_post, 
+                confidence_interval=normcalc.confidence_interval, 
+                result=result)
         else: 
             norm = None 
 

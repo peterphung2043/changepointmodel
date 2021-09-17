@@ -2,6 +2,7 @@
 NumpyArray can be n-dimensional
 """
 
+from dataclasses import dataclass
 from datetime import datetime
 from .predsum import PredictedSum
 import numpy as np
@@ -60,45 +61,41 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
 
     class Config(NpConfig): ... 
         
-        
-EnergyParameterModelCoefficientsModel = pydantic.dataclasses.dataclass(EnergyParameterModelCoefficients)
-LoadModel = pydantic.dataclasses.dataclass(Load)
-ScoreModel = pydantic.dataclasses.dataclass(Score)
-_AdjustedSavingsModel = pydantic.dataclasses.dataclass(AdjustedSavingsResult)  # treating these privately
-_NormalizedSavingsModel = pydantic.dataclasses.dataclass(NormalizedSavingsResult)
+# NOTE output data schemas are now just plain wrappers around internal dataclasses as per issue-12
+# pydantic is only used as input validation for this lib... 
 
-
-#XXX including the normalized_X_pre and post to enforce input data stays with output for this schema
-class NormalizedSavingsResultModel(pydantic.BaseModel): 
+@dataclass
+class NormalizedSavingsResultData: 
 
     X_pre: NByOneNDArrayField
     X_post: NByOneNDArrayField
     confidence_interval: float
-    result: _NormalizedSavingsModel
+    result: NormalizedSavingsResult
 
-class AdjustedSavingsResultModel(pydantic.BaseModel): 
+
+@dataclass
+class AdjustedSavingsResultData: 
     confidence_interval: float
-    result: _AdjustedSavingsModel
+    result: AdjustedSavingsResult
 
 
-class EnergyChangepointModelResult(pydantic.BaseModel): 
+@dataclass
+class EnergyChangepointModelResult: 
     name: str 
-    coeffs: EnergyParameterModelCoefficientsModel
+    coeffs: EnergyParameterModelCoefficients
     pred_y: OneDimNDArrayField
-    load: Optional[LoadModel]
-    scores: Optional[List[ScoreModel]]
-    input_data: Optional[CurvefitEstimatorDataModel]
-    nac: Optional[PredictedSum]
+    load: Optional[Load]=None
+    scores: Optional[List[Score]]=None
+    input_data: Optional[CurvefitEstimatorDataModel]=None
+    nac: Optional[PredictedSum]=None
 
-    class Config(NpConfig): ...
         
-
-class SavingsResult(pydantic.BaseModel): 
+@dataclass
+class SavingsResult: 
 
     pre: EnergyChangepointModelResult 
     post: EnergyChangepointModelResult
-    adjusted_savings: AdjustedSavingsResultModel
-    normalized_savings: Optional[NormalizedSavingsResultModel]   
+    adjusted_savings: AdjustedSavingsResultData
+    normalized_savings: Optional[NormalizedSavingsResultData]=None
 
-    class Config(NpConfig): ...
         
