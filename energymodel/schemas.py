@@ -3,6 +3,7 @@ NumpyArray can be n-dimensional
 """
 
 from datetime import datetime
+from .predsum import PredictedSum
 import numpy as np
 from typing import Any, Dict, List, Optional, Union
 
@@ -87,6 +88,7 @@ class EnergyChangepointModelResult(pydantic.BaseModel):
     load: Optional[LoadModel]
     scores: Optional[List[ScoreModel]]
     input_data: Optional[CurvefitEstimatorDataModel]
+    nac: Optional[PredictedSum]
 
     class Config(NpConfig): ...
         

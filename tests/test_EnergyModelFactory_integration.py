@@ -6,7 +6,7 @@ from energymodel import factories
 import numpy as np
 from energymodel import calc
 
-def test_EnergyModelFactory_integration_with_2p(generated_2p_data):
+def test_energymodelfactory_integration_with_2p(generated_2p_data):
     Xdata = np.array(generated_2p_data['x']) 
     ydata = np.array(generated_2p_data['y']) 
     input_data = CurvefitEstimatorDataModel(X=Xdata, y=ydata) 

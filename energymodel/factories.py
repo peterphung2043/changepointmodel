@@ -1,6 +1,7 @@
 """Some factory methods for configuration and generating result pydantic schemas to and from internals.
 """
 
+from energymodel.predsum import PredictedSumCalculator
 from .savings import AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator
 from . import utils
 
@@ -67,7 +68,8 @@ class EnergyChangepointModelResultFactory(object):
     def create(cls, 
         estimator: EnergyChangepointEstimator, 
         loads: Optional[loads.EnergyChangepointLoadsAggregator]=None, 
-        scorer: Optional[scoring.Scorer]=None) -> schemas.EnergyChangepointModelResult: 
+        scorer: Optional[scoring.Scorer]=None, 
+        nac: Optional[PredictedSumCalculator]=None) -> schemas.EnergyChangepointModelResult: 
 
         data = {
             'name': estimator.name,
@@ -80,7 +82,8 @@ class EnergyChangepointModelResultFactory(object):
             'coeffs': utils.parse_coeffs(estimator.model, estimator.coeffs), 
             'pred_y': estimator.pred_y, 
             'load': loads.aggregate(estimator) if loads else None, 
-            'scores': scorer.check(estimator) if scorer else None
+            'scores': scorer.check(estimator) if scorer else None, 
+            'nac': nac.calculate(estimator) if nac else None
         }
 
         return schemas.EnergyChangepointModelResult(**data)
