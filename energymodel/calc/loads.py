@@ -1,7 +1,7 @@
 """ Loads calculated from changepoint models. This is essentially AUC calculations.
 """
 
-from typing import Optional, TypeVar, Any
+from typing import Optional
 import numpy as np
 from ..nptypes import OneDimNDArray
 
