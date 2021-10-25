@@ -1,10 +1,8 @@
-from typing import Generator, List, NamedTuple, Optional, Tuple
-
-from _pytest.outcomes import fail
+from typing import Generator, List, Optional, Tuple
 import numpy as np
 
 from .nptypes import NByOneNDArray, OneDimNDArray
-from .pmodels import EnergyParameterModelCoefficients, ModelFunction 
+from .pmodels import ModelFunction 
 from curvefit_estimator import CurvefitEstimator
 from sklearn.utils.validation import check_is_fitted
 
