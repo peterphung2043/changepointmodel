@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "energymodel"
-version = "0.1.0"
+version = "0.1.1"
 description = "changepoint analysis library for energy modeling"
 authors = ["cunybpl <dev@cunybpl.org>"]
 
