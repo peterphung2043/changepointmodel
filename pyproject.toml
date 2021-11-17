@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "energymodel"
-version = "0.1.1"
+version = "0.2.0"
 description = "changepoint analysis library for energy modeling"
 authors = ["cunybpl <dev@cunybpl.org>"]
 
 [tool.poetry.dependencies]
-python = ">=3.7, <3.10"
+python = ">=3.8, <3.10"
 curvefit-estimator = { git = "https://github.com/cunybpl/curvefit-estimator.git", tag = "v0.2.0"}
 pydantic = "^1.8.2"
 nptyping = "^1.4.3"
