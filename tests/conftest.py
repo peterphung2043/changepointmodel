@@ -48,7 +48,7 @@ def schema_adjustedsavings():
         'result': {
             'adjusted_y': np.array([1., 2., 3.]), 
             'total_savings': 42., 
-            'average_monthly_savings': 42., 
+            'average_savings': 42., 
             'percent_savings': 42.,
             'percent_savings_uncertainty': 42.}
     }
@@ -63,7 +63,7 @@ def schema_normalizedsavings():
             'normalized_y_pre': np.array([1., 2., 3.]),
             'normalized_y_post': np.array([1., 2., 3.]),
             'total_savings': 42., 
-            'average_monthly_savings': 42., 
+            'average_savings': 42., 
             'percent_savings': 42., 
             'percent_savings_uncertainty': 42.,
         }
