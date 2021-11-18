@@ -26,6 +26,18 @@ class AnyByAnyNDArrayField(np.ndarray):
         if len(arr.shape) != 2:
             raise ValueError('Shape of data should be M x n')
         return arr
+
+    @classmethod 
+    def __modify_schema__(cls, field_val): 
+        field_val.update(type='array')
+        field_val.update(items={
+            'type': 'array',
+            'items': {
+                'type': 'number'
+            }
+        })
+
+    
     
 class NByOneNDArrayField(np.ndarray):
     
@@ -41,6 +53,16 @@ class NByOneNDArrayField(np.ndarray):
         if arr.shape[1] != 1:
             raise ValueError(f'Second dimension must be of size 1, got {arr.shape[1]}')
         return arr 
+
+    @classmethod 
+    def __modify_schema__(cls, field_val): 
+        field_val.update(type='array')
+        field_val.update(items={
+            'type': 'array',
+            'items': {
+                'type': 'number'
+            }
+        })
     
 class OneDimNDArrayField(np.ndarray): 
     
@@ -54,4 +76,9 @@ class OneDimNDArrayField(np.ndarray):
         if len(arr.shape) != 1:
             raise ValueError('Shape of data should be One dimension')
         return arr 
+
+    @classmethod 
+    def __modify_schema__(cls, field_val): 
+        field_val.update(type='array')
+        field_val.update(items={'type': 'number'})
 
