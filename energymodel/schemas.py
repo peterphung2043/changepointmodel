@@ -64,23 +64,26 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
 # NOTE output data schemas are now just plain wrappers around internal dataclasses as per issue-12
 # pydantic is only used as input validation for this lib... 
 
-@dataclass
-class NormalizedSavingsResultData: 
+class NormalizedSavingsResultData(pydantic.BaseModel): 
 
     X_pre: NByOneNDArrayField
     X_post: NByOneNDArrayField
     confidence_interval: float
     result: NormalizedSavingsResult
 
+    class Config(NpConfig): ... 
 
-@dataclass
-class AdjustedSavingsResultData: 
+
+
+class AdjustedSavingsResultData(pydantic.BaseModel): 
     confidence_interval: float
     result: AdjustedSavingsResult
 
+    class Config(NpConfig): ... 
 
-@dataclass
-class EnergyChangepointModelResult: 
+
+
+class EnergyChangepointModelResult(pydantic.BaseModel): 
     name: str 
     coeffs: EnergyParameterModelCoefficients
     pred_y: OneDimNDArrayField
@@ -89,13 +92,16 @@ class EnergyChangepointModelResult:
     input_data: Optional[CurvefitEstimatorDataModel]=None
     nac: Optional[PredictedSum]=None
 
+    class Config(NpConfig): ... 
+
+
         
-@dataclass
-class SavingsResult: 
+class SavingsResult(pydantic.BaseModel): 
 
     pre: EnergyChangepointModelResult 
     post: EnergyChangepointModelResult
     adjusted_savings: AdjustedSavingsResultData
     normalized_savings: Optional[NormalizedSavingsResultData]=None
 
+    class Config(NpConfig): ... 
         
