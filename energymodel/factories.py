@@ -122,7 +122,12 @@ class EnergyChangepointModelResultFactory(object):
 
         data = {
             'name': estimator.name,
-            'input_data': input_data, 
+            'input_data': {
+                'X': estimator.X, 
+                'y': estimator.y, 
+                'sigma': estimator.sigma, 
+                'absolute_sigma': estimator.absolute_sigma
+            }, 
             'coeffs': utils.parse_coeffs(estimator.model, estimator.coeffs), 
             'pred_y': estimator.pred_y, 
             'load': loads.aggregate(estimator) if loads else None, 

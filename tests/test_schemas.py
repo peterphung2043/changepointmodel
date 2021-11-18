@@ -217,3 +217,9 @@ def test_openapi_schemas_are_correctly_generated_for_custom_nptypes():
     assert schema['definitions']['Check']['properties']['a'] == a 
     assert schema['definitions']['Check']['properties']['b'] == b 
     assert schema['definitions']['Check']['properties']['c'] == c 
+
+
+def test_schema_generation_for_pydantic_models(): 
+
+    schemas.SavingsResult.schema()
+    schemas.EnergyChangepointModelResult.schema()
