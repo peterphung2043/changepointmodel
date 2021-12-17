@@ -105,10 +105,10 @@ class EnergyChangepointModelResultFactory(object):
         provide scores, nac and loads if given configured instances of their handlers.
 
         Args:
-            estimator (EnergyChangepointEstimator): [description]
-            loads (Optional[loads.EnergyChangepointLoadsAggregator], optional): [description]. Defaults to None.
-            scorer (Optional[scoring.Scorer], optional): [description]. Defaults to None.
-            nac (Optional[PredictedSumCalculator], optional): [description]. Defaults to None.
+            estimator (EnergyChangepointEstimator): energy changpoint estimator object.
+            loads (Optional[loads.EnergyChangepointLoadsAggregator], optional): load object. Defaults to None.
+            scorer (Optional[scoring.Scorer], optional): scorer. Defaults to None.
+            nac (Optional[PredictedSumCalculator], optional): nac. Defaults to None.
 
         Returns:
             schemas.EnergyChangepointModelResult: [description]
@@ -148,25 +148,27 @@ class SavingsResultFactory(object):
         normcalc: Optional[AshraeNormalizedSavingsCalculator]=None, 
         pre_loads: Optional[loads.EnergyChangepointLoadsAggregator]=None, 
         post_loads: Optional[loads.EnergyChangepointLoadsAggregator]=None, 
-        scorer: Optional[scoring.Scorer]=None) -> schemas.SavingsResult: 
+        pre_scorer: Optional[scoring.Scorer]=None,
+        post_scorer: Optional[scoring.Scorer]=None) -> schemas.SavingsResult: 
         """Creates a SavingsResult given pre and post retrofit models. Designed for usage with the 
         option-c methodology.
 
         Args:
-            pre (EnergyChangepointEstimator): [description]
-            post (EnergyChangepointEstimator): [description]
-            adjcalc (AshraeAdjustedSavingsCalculator): [description]
-            normcalc (Optional[AshraeNormalizedSavingsCalculator], optional): [description]. Defaults to None.
-            pre_loads (Optional[loads.EnergyChangepointLoadsAggregator], optional): [description]. Defaults to None.
-            post_loads (Optional[loads.EnergyChangepointLoadsAggregator], optional): [description]. Defaults to None.
-            scorer (Optional[Scorer], optional): [description]. Defaults to None.
+            pre (EnergyChangepointEstimator): Pre changepoint estimator obj 
+            post (EnergyChangepointEstimator): Post changepoint estimator obj
+            adjcalc (AshraeAdjustedSavingsCalculator): Adjusted calc instance
+            normcalc (Optional[AshraeNormalizedSavingsCalculator], optional): normalized calc instance. Defaults to None.
+            pre_loads (Optional[loads.EnergyChangepointLoadsAggregator], optional): Pre load obj. Defaults to None.
+            post_loads (Optional[loads.EnergyChangepointLoadsAggregator], optional): Post load obj. Defaults to None.
+            pre_scorer (Optional[Scorer], optional): scorer for pre modeling. Defaults to None.
+            post_scorer (Optional[Scorer], optional): scorer for post modeling. Defaults to None.
 
         Returns:
             schemas.SavingsResult: The SavingsResult.
         """
 
-        pre_result = EnergyChangepointModelResultFactory.create(pre, pre_loads, scorer)
-        post_result = EnergyChangepointModelResultFactory.create(post, post_loads, scorer)   
+        pre_result = EnergyChangepointModelResultFactory.create(pre, pre_loads, pre_scorer)
+        post_result = EnergyChangepointModelResultFactory.create(post, post_loads, post_scorer)   
 
         adj = schemas.AdjustedSavingsResultData(
             result=adjcalc.save(pre, post), 
