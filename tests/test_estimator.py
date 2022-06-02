@@ -1,9 +1,9 @@
 from sklearn.exceptions import NotFittedError
-from energymodel.pmodels import ModelFunction
+from changepointmodel.pmodels import ModelFunction
 from curvefit_estimator.estimator import CurvefitEstimator
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_almost_equal, assert_array_equal
-from energymodel.estimator import EnergyChangepointEstimator 
+from changepointmodel.estimator import EnergyChangepointEstimator 
 import pytest 
 
 from curvefit_estimator import CurvefitEstimator

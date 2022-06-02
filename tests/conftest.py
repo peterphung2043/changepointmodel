@@ -1,5 +1,5 @@
-from energymodel.pmodels import EnergyParameterModelCoefficients
-from energymodel import estimator, scoring
+from changepointmodel.pmodels import EnergyParameterModelCoefficients
+from changepointmodel import estimator, scoring
 import pytest 
 import numpy as np
 import json

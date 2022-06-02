@@ -1,14 +1,14 @@
 import pytest
-from energymodel.pmodels import EnergyParameterModelCoefficients, ModelFunction, ParameterModelFunction, TwoParameterModel
-from energymodel.estimator import EnergyChangepointEstimator
-from energymodel.nptypes import OneDimNDArray
-from energymodel import loads 
+from changepointmodel.pmodels import EnergyParameterModelCoefficients, ModelFunction, ParameterModelFunction, TwoParameterModel
+from changepointmodel.estimator import EnergyChangepointEstimator
+from changepointmodel.nptypes import OneDimNDArray
+from changepointmodel import loads 
 import numpy as np 
 
-from energymodel.utils import parse_coeffs
+from changepointmodel.utils import parse_coeffs
 
 def test_heatingchangepointmodelload_correctly_forwards_call(mocker): 
-    mock = mocker.patch('energymodel.calc.loads.heatload')
+    mock = mocker.patch('changepointmodel.calc.loads.heatload')
 
     X = np.array([1.,])
     pred_y = np.array([1.,])
@@ -34,7 +34,7 @@ def test_heatingchangepointmodelload_pos_slope_returns_zero():
 
 def test_heatingchangepointmodelload_none_changepoint_passes_pos_inf(mocker): 
     
-    mock = mocker.patch('energymodel.calc.loads.heatload')
+    mock = mocker.patch('changepointmodel.calc.loads.heatload')
 
     X = np.array([1.,])
     pred_y = np.array([1.,])
@@ -50,7 +50,7 @@ def test_heatingchangepointmodelload_none_changepoint_passes_pos_inf(mocker):
 
 def test_coolingchangepointmodelload_forwards_call(mocker):
 
-    mock = mocker.patch('energymodel.calc.loads.coolingload')
+    mock = mocker.patch('changepointmodel.calc.loads.coolingload')
 
     X = np.array([1.,])
     pred_y = np.array([1.,])
@@ -77,7 +77,7 @@ def test_coolingchangepointmodelload_neg_slope_returns_zero():
 
 def test_coolingchangepointmodelload_none_changepoint_passes_neg_inf(mocker): 
     
-    mock = mocker.patch('energymodel.calc.loads.coolingload')
+    mock = mocker.patch('changepointmodel.calc.loads.coolingload')
 
     X = np.array([1.,])
     pred_y = np.array([1.,])
@@ -91,7 +91,7 @@ def test_coolingchangepointmodelload_none_changepoint_passes_neg_inf(mocker):
 
 
 def test_baseload_forwards_call(mocker): 
-    mock = mocker.patch('energymodel.calc.loads.baseload')
+    mock = mocker.patch('changepointmodel.calc.loads.baseload')
 
     tc = 42  
     hl = 43
@@ -277,7 +277,7 @@ def test_loads_aggregator_calls_handler(mocker):
     handler = loads.TwoParameterLoadHandler(pmodel,cooling=cl, heating=hl, base=bl)
     
     mockhandler = mocker.patch.object(handler, 'run')
-    mock = mocker.patch('energymodel.utils.parse_coeffs', return_value=coeffs)
+    mock = mocker.patch('changepointmodel.utils.parse_coeffs', return_value=coeffs)
 
     agg = loads.EnergyChangepointLoadsAggregator(handler)
     agg.aggregate(DummyEstimator())
