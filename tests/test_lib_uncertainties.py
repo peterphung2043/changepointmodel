@@ -1,4 +1,4 @@
-from energymodel.calc import uncertainties 
+from changepointmodel.calc import uncertainties 
 from numpy.testing import assert_almost_equal
 
 def test_fractional_avoided_energy_use(): 

@@ -1,12 +1,12 @@
 from typing import List
-from energymodel import schemas 
+from changepointmodel import schemas 
 
 import numpy as np
 import pytest
 import pydantic
 import dataclasses
 
-from energymodel.nptypes import NByOneNDArrayField, OneDimNDArrayField, AnyByAnyNDArrayField
+from changepointmodel.nptypes import NByOneNDArrayField, OneDimNDArrayField, AnyByAnyNDArrayField
 
 
 def test_curvefitestimatordatamodel_handles_1d_xdata(): 

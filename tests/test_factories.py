@@ -1,8 +1,8 @@
 
-from energymodel.savings import AdjustedSavingsResult, AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator, NormalizedSavingsResult
-from energymodel.pmodels import EnergyParameterModelCoefficients
+from changepointmodel.savings import AdjustedSavingsResult, AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator, NormalizedSavingsResult
+from changepointmodel.pmodels import EnergyParameterModelCoefficients
 import numpy as np
-from energymodel import factories, predsum, schemas, scoring, loads
+from changepointmodel import factories, predsum, schemas, scoring, loads
 
 
 # factories.EnergyChangepointModelResultFactory
@@ -50,7 +50,7 @@ def test_energychangepointmodelresultfactory_correctly_configures_schema(mocker)
         coeffs = (99, 99,)
 
     d = DummyEstimator()
-    m = mocker.patch('energymodel.utils.parse_coeffs', return_value=EnergyParameterModelCoefficients(99, [99,],None))
+    m = mocker.patch('changepointmodel.utils.parse_coeffs', return_value=EnergyParameterModelCoefficients(99, [99,],None))
     l = loads.EnergyChangepointLoadsAggregator(object())
     mocker.patch.object(l, 'aggregate', return_value=loads.Load(42., 43., 44.))
 
@@ -85,7 +85,7 @@ def test_savingsresultfactory_correctly_configures_schema(mocker):
 
     dpre = DummyEstimator()
     dpost = DummyEstimator()
-    m = mocker.patch('energymodel.utils.parse_coeffs', return_value=EnergyParameterModelCoefficients(99, [99,],None))
+    m = mocker.patch('changepointmodel.utils.parse_coeffs', return_value=EnergyParameterModelCoefficients(99, [99,],None))
     l = loads.EnergyChangepointLoadsAggregator(object())
     mocker.patch.object(l, 'aggregate', return_value=loads.Load(42., 43., 44.))
 

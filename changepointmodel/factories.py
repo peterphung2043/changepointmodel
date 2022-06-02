@@ -9,7 +9,7 @@ These Factory objects do not make any assumptions about workflow and should be w
 in even higher order functions or classes on in application (i.e. an RPC service or batch processing script). 
 """
 
-from energymodel.predsum import PredictedSumCalculator
+from changepointmodel.predsum import PredictedSumCalculator
 from .savings import AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator
 from . import utils
 

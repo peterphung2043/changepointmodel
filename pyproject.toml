@@ -1,7 +1,13 @@
 [tool.poetry]
+<<<<<<< HEAD
 name = "energymodel"
 version = "0.4.0"
 description = "changepoint analysis library for energy modeling"
+=======
+name = "changepointmodel"
+version = "1.0.0"
+description = "Energy changepoint modeling and related methodologies"
+>>>>>>> development
 authors = ["cunybpl <dev@cunybpl.org>"]
 
 [tool.poetry.dependencies]

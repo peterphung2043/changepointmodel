@@ -1,10 +1,10 @@
-from energymodel import pmodels as models
-from energymodel import loads
-from energymodel.scoring import Scorer, R2, Cvrmse, ScoreEval 
-from energymodel.schemas import CurvefitEstimatorDataModel
-from energymodel import factories
+from changepointmodel import pmodels as models
+from changepointmodel import loads
+from changepointmodel.scoring import Scorer, R2, Cvrmse, ScoreEval 
+from changepointmodel.schemas import CurvefitEstimatorDataModel
+from changepointmodel import factories
 import numpy as np
-from energymodel import calc
+from changepointmodel import calc
 
 def test_energymodelfactory_integration_with_2p(generated_2p_data):
     Xdata = np.array(generated_2p_data['x']) 
