@@ -1,4 +1,4 @@
-# energymodel 
+# changepointmodel 
 
 Changepoint modeling, load disaggregation and savings methodologies consistent with ashrae guidelines. 
 
@@ -12,11 +12,3 @@ Meant to replace `bema` python library package in future production environments
 - an `Estimator` interface this is interoperability with sklearn APIs including `cross_val_score` and `GridSearchCV` 
 - `pydantic` models and factory methods for high level schema validation 
 - a loosely coupled and extensible API to allow for new non-linear function fitting with `CurvefitEstimator`
-
-### todo 
-
-- [x] CI github
-- [x] Integration tests for all modules 
-- [ ] docstrings + documentation 
-- [ ] live testing QA with real data.
-- [ ] publishing 
