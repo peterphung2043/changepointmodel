@@ -1,6 +1,6 @@
 import pytest  
 import numpy as np
-from energymodel.calc import metrics as energymodelmetrics
+from changepointmodel.calc import metrics as energymodelmetrics
 
 def test_r2_score_forwards_arguments(mocker): 
 

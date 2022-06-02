@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "energymodel"
-version = "0.3.0"
-description = "changepoint analysis library for energy modeling"
+name = "changepointmodel"
+version = "1.0.0"
+description = "Energy changepoint modeling and related methodologies"
 authors = ["cunybpl <dev@cunybpl.org>"]
 
 [tool.poetry.dependencies]

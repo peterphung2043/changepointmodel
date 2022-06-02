@@ -1,6 +1,6 @@
 
 import numpy as np  
-from energymodel.calc import loads
+from changepointmodel.calc import loads
 
 
 def test_baseload_calculation(): 

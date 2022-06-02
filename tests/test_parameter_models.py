@@ -1,4 +1,4 @@
-from energymodel.pmodels import FiveParameterCoefficientsParser, \
+from changepointmodel.pmodels import FiveParameterCoefficientsParser, \
     FiveParameterModel, FourParameterCoefficientsParser, \
         FourParameterModel, ModelFunction, ParameterModelFunction, \
             ThreeParameterCoefficientsParser, ThreeParameterModel, TwoParameterCoefficientParser, \

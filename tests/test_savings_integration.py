@@ -1,11 +1,11 @@
-from energymodel import pmodels as models
-from energymodel import loads
-from energymodel.scoring import Scorer, R2, Cvrmse, ScoreEval 
-from energymodel.schemas import CurvefitEstimatorDataModel
-from energymodel import factories
+from changepointmodel import pmodels as models
+from changepointmodel import loads
+from changepointmodel.scoring import Scorer, R2, Cvrmse, ScoreEval 
+from changepointmodel.schemas import CurvefitEstimatorDataModel
+from changepointmodel import factories
 import numpy as np
-from energymodel import calc
-from energymodel import savings
+from changepointmodel import calc
+from changepointmodel import savings
 
 
 
