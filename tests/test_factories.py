@@ -97,7 +97,7 @@ def test_savingsresultfactory_correctly_configures_schema(mocker):
     adjcalc = AshraeAdjustedSavingsCalculator()
     mocker.patch.object(adjcalc, 'save', return_value=AdjustedSavingsResult(np.array([42.,]), 42., 42., 42., 42.))
 
-    normcalc = AshraeNormalizedSavingsCalculator(X_norms=np.array([[100.],]))
+    normcalc = AshraeNormalizedSavingsCalculator(X_norms=np.array([[100.],]*12))
     mocker.patch.object(normcalc, 'save', return_value=NormalizedSavingsResult(np.array([42.,]),np.array([42.,]),42., 42., 42., 42.))
     
 
