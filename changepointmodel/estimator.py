@@ -9,11 +9,6 @@ from sklearn.utils.validation import check_is_fitted
 from .utils import argsort_1d
 from sklearn.base import BaseEstimator, RegressorMixin
 
-# support skl regressor interface -> need to test interop with GridsearchCV and cross val score. 
-# class methods support working without cross validation 
-import logging 
-logger = logging.getLogger(__name__)
-
 from sklearn.exceptions import NotFittedError
 
 def check_not_fitted(method): 
@@ -59,7 +54,6 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
                 yield est.name, est.fit(X, y, sigma, absolute_sigma, **estimator_kwargs)
             except Exception: # XXX this is bad... need to figure out exactly what to catch here .. prob LinAlgError? or something from skl...
                 if fail_silently:
-                    logger.warning(f'{m.name} failed to model.')
                     yield m.name, None
                 else:
                     raise 
@@ -92,7 +86,6 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
             return est.name, est.fit(X, y, sigma, absolute_sigma, **estimator_kwargs)
         except Exception: # XXX  same as above... Note I can't really combine these methods or we'd be sorting the multiple times for no reason
             if fail_silently:
-                logger.warning(f'{model.name} failed to model.')
                 return model.name, None 
             raise
 

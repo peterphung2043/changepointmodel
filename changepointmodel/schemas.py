@@ -1,21 +1,11 @@
 """Defines types to use as inputs to CurvefitEstimator. This is agnostic of function since 
 NumpyArray can be n-dimensional
 """
-
-from dataclasses import dataclass
-from datetime import datetime
-from .predsum import PredictedSum
 import numpy as np
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import pydantic
-
-from .scoring import Score
-from .savings import AdjustedSavingsResult, NormalizedSavingsResult
-from .pmodels import EnergyParameterModelCoefficients
-from .loads import Load
-
-from .nptypes import AnyByAnyNDArrayField, NByOneNDArrayField, OneDimNDArrayField, AnyByAnyNDArray
+from .nptypes import AnyByAnyNDArrayField, OneDimNDArrayField, AnyByAnyNDArray
 
 
 class NpConfig: 

@@ -125,7 +125,7 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
         """
         super().__init__(confidence_interval=confidence_interval)
     
-        
+        assert len(X_norms) == 12, 'Normalized Savings should only work with 12 points (implies 1 year monthly data).'
         self._X_norms = X_norms
 
     @property 
@@ -135,7 +135,7 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
     def save(self, 
         pre: EnergyChangepointEstimator, 
         post: EnergyChangepointEstimator,  
-        ) -> NormalizedSavingsResult:  # X is an array of normalized temperature data
+        ) -> NormalizedSavingsResult:  
         """The controller method for the normalized savings calculation.
 
         Args:
