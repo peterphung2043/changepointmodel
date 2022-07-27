@@ -124,8 +124,6 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
             ValueError: Raised if X_pre and X_post are not the same length.
         """
         super().__init__(confidence_interval=confidence_interval)
-    
-        assert len(X_norms) == 12, 'Normalized Savings should only work with 12 points (implies 1 year monthly data).'
         self._X_norms = X_norms
 
     @property 
