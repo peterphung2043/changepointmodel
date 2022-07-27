@@ -77,3 +77,6 @@ def test_normalized_savings_calls_weather_normalzied_correctly(mocker):
     mock.assert_called_once_with(1200.0, 1200.0, 0.42, 0.43, 1, 1, 2, 3, 12, .8)
 
 
+def test_normalized_savings_raises():
+    with pytest.raises(AssertionError):
+        calc = AshraeNormalizedSavingsCalculator(np.array([100.,]))
