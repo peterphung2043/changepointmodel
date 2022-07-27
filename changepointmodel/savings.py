@@ -114,14 +114,11 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
     
     def __init__(self, X_norms: NByOneNDArray, confidence_interval: float=0.80):
         """The Normalized savings calculations provide pre and post X arrays. These are used within the context
-        of weather normalized savings for option-c retrofits 
+        of weather normalized savings for option-c retrofits.
 
         Args:
             X_norms (NByOneNDArray): Normalized X data for pre-retrofit and post-retrofit related normalized calculation.
             confidence_interval (float, optional): The confidence interval for the uncertainity calculations. Defaults to 0.80.
-
-        Raises:
-            ValueError: Raised if X_pre and X_post are not the same length.
         """
         super().__init__(confidence_interval=confidence_interval)
         self._X_norms = X_norms
