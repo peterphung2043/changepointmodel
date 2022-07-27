@@ -51,7 +51,7 @@ def test_savings_integration_with_pre_and_post(generated_3pc_data, generated_4p_
     adjusted_saving = savings.AshraeAdjustedSavingsCalculator()
     
     norms = np.array([ i+1 for i in Xdata])
-    normalized_saving = savings.AshraeNormalizedSavingsCalculator(norms.reshape(-1, 1), norms.reshape(-1, 1))
+    normalized_saving = savings.AshraeNormalizedSavingsCalculator(norms.reshape(-1, 1))
 
     threepcload = threepc.create_load_aggregator()
     fourpload = fourp.create_load_aggregator()

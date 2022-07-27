@@ -177,8 +177,8 @@ class SavingsResultFactory(object):
         if normcalc: 
             result = normcalc.save(pre, post)
             norm = schemas.NormalizedSavingsResultData(
-                X_pre=normcalc.X_pre, 
-                X_post=normcalc.X_post, 
+                X_pre=normcalc.X_norms, 
+                X_post=normcalc.X_norms, 
                 confidence_interval=normcalc.confidence_interval, 
                 result=result)
         else: 
