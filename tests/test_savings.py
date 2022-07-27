@@ -69,11 +69,10 @@ def test_normalized_savings_calls_weather_normalzied_correctly(mocker):
     mocker.patch('changepointmodel.savings._get_adjusted', return_value=np.array([42.,]))
     mock = mocker.patch('changepointmodel.calc.savings.weather_normalized', return_value=(1,1,1,1,))
 
-    Xnorm = np.array([100.,])
+    Xnorm = np.array([100.,]*12)
 
     calc = AshraeNormalizedSavingsCalculator(Xnorm)
     calc.save(pre, post)
 
-    mock.assert_called_once_with(100, 100, 0.42, 0.43, 1, 1, 2, 3, 1, .8)
-
+    mock.assert_called_once_with(1200.0, 1200.0, 0.42, 0.43, 1, 1, 2, 3, 12, .8)
 
