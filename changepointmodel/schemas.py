@@ -64,44 +64,44 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
 # NOTE output data schemas are now just plain wrappers around internal dataclasses as per issue-12
 # pydantic is only used as input validation for this lib... 
 
-class NormalizedSavingsResultData(pydantic.BaseModel): 
+# class NormalizedSavingsResultData(pydantic.BaseModel): 
 
-    X_pre: NByOneNDArrayField
-    X_post: NByOneNDArrayField
-    confidence_interval: float
-    result: NormalizedSavingsResult
+#     X_pre: NByOneNDArrayField
+#     X_post: NByOneNDArrayField
+#     confidence_interval: float
+#     result: NormalizedSavingsResult
 
-    class Config(NpConfig): ... 
-
-
-
-class AdjustedSavingsResultData(pydantic.BaseModel): 
-    confidence_interval: float
-    result: AdjustedSavingsResult
-
-    class Config(NpConfig): ... 
+#     class Config(NpConfig): ... 
 
 
 
-class EnergyChangepointModelResult(pydantic.BaseModel): 
-    name: str 
-    coeffs: EnergyParameterModelCoefficients
-    pred_y: OneDimNDArrayField
-    load: Optional[Load]=None
-    scores: Optional[List[Score]]=None
-    input_data: Optional[CurvefitEstimatorDataModel]=None
-    nac: Optional[PredictedSum]=None
+# class AdjustedSavingsResultData(pydantic.BaseModel): 
+#     confidence_interval: float
+#     result: AdjustedSavingsResult
 
-    class Config(NpConfig): ... 
+#     class Config(NpConfig): ... 
+
+
+
+# class EnergyChangepointModelResult(pydantic.BaseModel): 
+#     name: str 
+#     coeffs: EnergyParameterModelCoefficients
+#     pred_y: OneDimNDArrayField
+#     load: Optional[Load]=None
+#     scores: Optional[List[Score]]=None
+#     input_data: Optional[CurvefitEstimatorDataModel]=None
+#     nac: Optional[PredictedSum]=None
+
+#     class Config(NpConfig): ... 
 
 
         
-class SavingsResult(pydantic.BaseModel): 
+# class SavingsResult(pydantic.BaseModel): 
 
-    pre: EnergyChangepointModelResult 
-    post: EnergyChangepointModelResult
-    adjusted_savings: AdjustedSavingsResultData
-    normalized_savings: Optional[NormalizedSavingsResultData]=None
+#     pre: EnergyChangepointModelResult 
+#     post: EnergyChangepointModelResult
+#     adjusted_savings: AdjustedSavingsResultData
+#     normalized_savings: Optional[NormalizedSavingsResultData]=None
 
-    class Config(NpConfig): ... 
+#     class Config(NpConfig): ... 
         
