@@ -27,7 +27,7 @@ def adjusted(gross_adjusted_pred_y: float,
     assert pre_n == post_n, 'pre_n and post_n must be equal'
 
     total_savings = gross_adjusted_pred_y - gross_post_y 
-    percent_savings = total_savings - gross_post_y
+    percent_savings = total_savings / gross_post_y
 
     fractional_savings = np.absolute(uncertainties.fractional_avoided_energy_use(
         gross_adjusted_pred_y, 
