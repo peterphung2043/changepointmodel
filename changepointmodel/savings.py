@@ -49,7 +49,7 @@ class ISavingsCalculator(abc.ABC):
 
 class AbstractSavings(abc.ABC):
 
-    def __init__(self, confidence_interval: float=0.80):
+    def __init__(self, confidence_interval: float=0.80, scalar: float=None):
         """A Savings model calculates either adjusted or weather normalized savings 
         based on ashrae formulas and methodology. Should be used in the context of option-c 
         reporting with changepoint models.
@@ -58,6 +58,7 @@ class AbstractSavings(abc.ABC):
             confidence_interval (float, optional): The confidence interval to be used for the calculations. Defaults to 0.80.
         """
         self._confidence_interval = confidence_interval
+        self._scalar = scalar 
 
     @property 
     def confidence_interval(self): 
@@ -96,7 +97,8 @@ class AshraeAdjustedSavingsCalculator(AbstractSavings, ISavingsCalculator):
             pre_p, 
             pre_n, 
             post_n, 
-            self._confidence_interval)
+            self._confidence_interval, 
+            self._scalar)
 
         total_savings, average_savings, percent_savings, percent_savings_uncertainty = savings
         return AdjustedSavingsResult(
@@ -112,7 +114,7 @@ class AshraeAdjustedSavingsCalculator(AbstractSavings, ISavingsCalculator):
 
 class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator): 
     
-    def __init__(self, X_norms: NByOneNDArray, confidence_interval: float=0.80):
+    def __init__(self, X_norms: NByOneNDArray, confidence_interval: float=0.80, scalar: float=None):
         """The Normalized savings calculations provide pre and post X arrays. These are used within the context
         of weather normalized savings for option-c retrofits.
 
@@ -120,7 +122,7 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
             X_norms (NByOneNDArray): Normalized X data for pre-retrofit and post-retrofit related normalized calculation.
             confidence_interval (float, optional): The confidence interval for the uncertainity calculations. Defaults to 0.80.
         """
-        super().__init__(confidence_interval=confidence_interval)
+        super().__init__(confidence_interval=confidence_interval, scalar=scalar)
         self._X_norms = X_norms
 
     @property 
@@ -169,7 +171,8 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
             pre_p, 
             post_p, 
             n_norm,
-            self._confidence_interval)
+            self._confidence_interval, 
+            self._scalar)
         
         total_savings, average_savings, percent_savings, percent_savings_uncertainty = savings
 
