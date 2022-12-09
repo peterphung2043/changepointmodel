@@ -98,8 +98,7 @@ class AshraeAdjustedSavingsCalculator(AbstractSavings, ISavingsCalculator):
             pre_p, 
             pre_n, 
             post_n, 
-            self._confidence_interval, 
-            self._scalar)
+            self._confidence_interval)
 
         total_savings, average_savings, percent_savings, percent_savings_uncertainty = savings
         return AdjustedSavingsResult(
@@ -172,8 +171,7 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
             pre_p, 
             post_p, 
             n_norm,
-            self._confidence_interval, 
-            self._scalar)
+            self._confidence_interval)
         
         total_savings, average_savings, percent_savings, percent_savings_uncertainty = savings
 

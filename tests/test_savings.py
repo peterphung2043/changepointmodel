@@ -37,7 +37,7 @@ def test_adjusted_savings_calls_adjusted_correctly(mocker):
     calc = AshraeAdjustedSavingsCalculator()
     calc.save(pre, post)
 
-    mock.assert_called_once_with(42, 30, 0.42, 2, 1, 1, 0.8, 1)
+    mock.assert_called_once_with(42, 30, 0.42, 2, 1, 1, 0.8)
 
 
 def test_adjusted_savings_calls_adjusted_correctly_with_kwargs(mocker): 
@@ -72,7 +72,7 @@ def test_adjusted_savings_calls_adjusted_correctly_with_kwargs(mocker):
     calc = AshraeAdjustedSavingsCalculator(confidence_interval=0.75, scalar=2)
     calc.save(pre, post)
 
-    mock.assert_called_once_with(84, 60, 0.42, 2, 1, 1, 0.75, 2)
+    mock.assert_called_once_with(84, 60, 0.42, 2, 1, 1, 0.75)
 
 
 def test_normalized_savings_calls_weather_normalzied_correctly(mocker): 
@@ -111,7 +111,7 @@ def test_normalized_savings_calls_weather_normalzied_correctly(mocker):
     calc = AshraeNormalizedSavingsCalculator(Xnorm)
     calc.save(pre, post)
 
-    mock.assert_called_once_with(1200.0, 1200.0, 0.42, 0.43, 1, 1, 2, 3, 12, .8, 1)
+    mock.assert_called_once_with(1200.0, 1200.0, 0.42, 0.43, 1, 1, 2, 3, 12, .8)
 
 
 def test_normalized_savings_calls_weather_normalzied_correctly_with_kwargs(mocker): 
@@ -151,5 +151,5 @@ def test_normalized_savings_calls_weather_normalzied_correctly_with_kwargs(mocke
     calc = AshraeNormalizedSavingsCalculator(Xnorm, confidence_interval=0.95, scalar=2)
     calc.save(pre, post)
 
-    mock.assert_called_once_with(2400.0, 2400.0, 0.42, 0.43, 1, 1, 2, 3, 12, .95, 2)
+    mock.assert_called_once_with(2400.0, 2400.0, 0.42, 0.43, 1, 1, 2, 3, 12, .95)
 
