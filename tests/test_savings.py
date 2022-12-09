@@ -14,7 +14,8 @@ def test_adjusted_savings_calls_adjusted_correctly(mocker):
 
         def total_y(self): 
             return sum(self.y)
-
+                
+    
     pre = DummyEstimator()
 
     pre.X = np.array([1.,])
@@ -26,6 +27,7 @@ def test_adjusted_savings_calls_adjusted_correctly(mocker):
 
     post.X = np.array([10.,])
     post.y = np.array([20.,])
+    post.pred_y = np.array([30.,])
     post.coeffs = (1,1,1,)
 
     mocker.patch.object(_cvrmse_score, 'calc', return_value=0.42)
@@ -35,7 +37,7 @@ def test_adjusted_savings_calls_adjusted_correctly(mocker):
     calc = AshraeAdjustedSavingsCalculator()
     calc.save(pre, post)
 
-    mock.assert_called_once_with(42, 20, 0.42, 2, 1, 1, 0.8, None)
+    mock.assert_called_once_with(42, 30, 0.42, 2, 1, 1, 0.8, 1)
 
 
 def test_adjusted_savings_calls_adjusted_correctly_with_kwargs(mocker): 
@@ -48,6 +50,7 @@ def test_adjusted_savings_calls_adjusted_correctly_with_kwargs(mocker):
         def total_y(self): 
             return sum(self.y)
 
+        
     pre = DummyEstimator()
 
     pre.X = np.array([1.,])
@@ -59,21 +62,17 @@ def test_adjusted_savings_calls_adjusted_correctly_with_kwargs(mocker):
 
     post.X = np.array([10.,])
     post.y = np.array([20.,])
+    post.pred_y = np.array([30.,])
     post.coeffs = (1,1,1,)
 
     mocker.patch.object(_cvrmse_score, 'calc', return_value=0.42)
     mocker.patch('changepointmodel.savings._get_adjusted', return_value=np.array([42.,]))
     mock = mocker.patch('changepointmodel.calc.savings.adjusted', return_value=(1,1,1,1,))
 
-    # calc = AshraeAdjustedSavingsCalculator()
-    # calc.save(pre, post)
-
-    # mock.assert_called_once_with(42, 20, 0.42, 2, 1, 1, 0.8, None)
-
-    calc = AshraeAdjustedSavingsCalculator(confidence_interval=0.75, scalar=30.473)
+    calc = AshraeAdjustedSavingsCalculator(confidence_interval=0.75, scalar=2)
     calc.save(pre, post)
 
-    mock.assert_called_once_with(42, 20, 0.42, 2, 1, 1, 0.75, 30.473)
+    mock.assert_called_once_with(84, 60, 0.42, 2, 1, 1, 0.75, 2)
 
 
 def test_normalized_savings_calls_weather_normalzied_correctly(mocker): 
@@ -112,18 +111,19 @@ def test_normalized_savings_calls_weather_normalzied_correctly(mocker):
     calc = AshraeNormalizedSavingsCalculator(Xnorm)
     calc.save(pre, post)
 
-    mock.assert_called_once_with(1200.0, 1200.0, 0.42, 0.43, 1, 1, 2, 3, 12, .8, None)
+    mock.assert_called_once_with(1200.0, 1200.0, 0.42, 0.43, 1, 1, 2, 3, 12, .8, 1)
 
 
 def test_normalized_savings_calls_weather_normalzied_correctly_with_kwargs(mocker): 
 
     class DummyEstimator(object):
-
+        
         def len_y(self):
             return len(self.y)
 
         def total_y(self): 
             return sum(self.y)
+        
 
         def predict(self, X): 
             return X
@@ -148,8 +148,8 @@ def test_normalized_savings_calls_weather_normalzied_correctly_with_kwargs(mocke
 
     Xnorm = np.array([100.,]*12)
 
-    calc = AshraeNormalizedSavingsCalculator(Xnorm, confidence_interval=0.95, scalar=30.473)
+    calc = AshraeNormalizedSavingsCalculator(Xnorm, confidence_interval=0.95, scalar=2)
     calc.save(pre, post)
 
-    mock.assert_called_once_with(1200.0, 1200.0, 0.42, 0.43, 1, 1, 2, 3, 12, .95, 30.473)
+    mock.assert_called_once_with(2400.0, 2400.0, 0.42, 0.43, 1, 1, 2, 3, 12, .95, 2)
 

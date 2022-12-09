@@ -58,7 +58,7 @@ class AbstractSavings(abc.ABC):
             confidence_interval (float, optional): The confidence interval to be used for the calculations. Defaults to 0.80.
         """
         self._confidence_interval = confidence_interval
-        self._scalar = scalar 
+        self._scalar = 1 if scalar is None else scalar 
 
     @property 
     def confidence_interval(self): 
@@ -80,15 +80,16 @@ class AshraeAdjustedSavingsCalculator(AbstractSavings, ISavingsCalculator):
             AdjustedSavingsResult: The AdjustedSavings result.
         """
 
-        adjusted_pred_y = _get_adjusted(pre, post) # XXX this is expensive... :/ 
-        pre_cvrmse = _cvrmse_score(pre.y, pre.pred_y) # XXX this is expensive... :/ 
+        # adding scalar ... only pred_y gets adjusted by scalar here... not in cvrmse
+        adjusted_pred_y = _get_adjusted(pre, post) * self._scalar
+        gross_adjusted_y = np.sum(adjusted_pred_y) 
+        gross_post_y = np.sum(post.pred_y * self._scalar)
+            
+        pre_cvrmse = _cvrmse_score(pre.y, pre.pred_y) 
         pre_p = len(pre.coeffs)
         
         pre_n = pre.len_y()
         post_n = post.len_y() 
-                 
-        gross_adjusted_y = np.sum(adjusted_pred_y)  
-        gross_post_y = post.total_y()      
 
         savings = libsavings.adjusted(
             gross_adjusted_y, 
@@ -144,14 +145,14 @@ class AshraeNormalizedSavingsCalculator(AbstractSavings, ISavingsCalculator):
         """
 
         # setup
-        normalized_pred_y_pre = pre.predict(self._X_norms)   # XXX expensive :(
-        normalized_pred_y_post = post.predict(self._X_norms)
+        normalized_pred_y_pre = pre.predict(self._X_norms) * self._scalar 
+        normalized_pred_y_post = post.predict(self._X_norms) * self._scalar
         
-        gross_normalized_pred_y_pre = np.sum(normalized_pred_y_pre)
+        gross_normalized_pred_y_pre = np.sum(normalized_pred_y_pre) 
         gross_normalized_pred_y_post = np.sum(normalized_pred_y_post)
 
-        pre_cvrmse = _cvrmse_score(pre.y, pre.pred_y)  # XXX expensive :( -- NOTE also this is from the original model on the actual X
-        post_cvrmse = _cvrmse_score(post.y, post.pred_y)
+        pre_cvrmse = _cvrmse_score(pre.y, pre.pred_y)  
+        post_cvrmse = _cvrmse_score(post.y, post.pred_y) 
 
         pre_n = pre.len_y()
         post_n = post.len_y() 
