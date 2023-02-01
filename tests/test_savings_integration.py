@@ -1,11 +1,11 @@
-from changepointmodel import pmodels as models
-from changepointmodel import loads
-from changepointmodel.scoring import Scorer, R2, Cvrmse, ScoreEval 
-from changepointmodel.schemas import CurvefitEstimatorDataModel
-from changepointmodel import factories
+from changepointmodel.core import pmodels as models
+from changepointmodel.core import loads
+from changepointmodel.core.scoring import Scorer, R2, Cvrmse, ScoreEval 
+from changepointmodel.core.schemas import CurvefitEstimatorDataModel
+from changepointmodel.core import factories
 import numpy as np
-from changepointmodel import calc
-from changepointmodel import savings
+from changepointmodel.core import calc
+from changepointmodel.core import savings
 from .conftest import SavingsResultFactory
 
 

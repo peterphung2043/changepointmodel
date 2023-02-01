@@ -1,5 +1,5 @@
-from changepointmodel.pmodels import EnergyParameterModelCoefficients
-from changepointmodel import estimator, scoring, schemas, savings, loads, predsum, utils
+from changepointmodel.core.pmodels import EnergyParameterModelCoefficients
+from changepointmodel.core import estimator, scoring, schemas, savings, loads, predsum, utils
 import pytest 
 import numpy as np
 import json

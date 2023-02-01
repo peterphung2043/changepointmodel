@@ -1,9 +1,9 @@
 import pytest
 import numpy as np
-from changepointmodel.savings import AshraeAdjustedSavingsCalculator, \
+from changepointmodel.core.savings import AshraeAdjustedSavingsCalculator, \
     AshraeNormalizedSavingsCalculator, AdjustedSavingsResult, NormalizedSavingsResult, _cvrmse_score
 
-from changepointmodel.calc.savings import adjusted, weather_normalized
+from changepointmodel.core.calc.savings import adjusted, weather_normalized
 
 def test_adjusted_savings_calls_adjusted_correctly(mocker): 
 
@@ -31,8 +31,8 @@ def test_adjusted_savings_calls_adjusted_correctly(mocker):
     post.coeffs = (1,1,1,)
 
     mocker.patch.object(_cvrmse_score, 'calc', return_value=0.42)
-    mocker.patch('changepointmodel.savings._get_adjusted', return_value=np.array([42.,]))
-    mock = mocker.patch('changepointmodel.calc.savings.adjusted', return_value=(1,1,1,1,))
+    mocker.patch('changepointmodel.core.savings._get_adjusted', return_value=np.array([42.,]))
+    mock = mocker.patch('changepointmodel.core.calc.savings.adjusted', return_value=(1,1,1,1,))
 
     calc = AshraeAdjustedSavingsCalculator()
     calc.save(pre, post)
@@ -66,8 +66,8 @@ def test_adjusted_savings_calls_adjusted_correctly_with_kwargs(mocker):
     post.coeffs = (1,1,1,)
 
     mocker.patch.object(_cvrmse_score, 'calc', return_value=0.42)
-    mocker.patch('changepointmodel.savings._get_adjusted', return_value=np.array([42.,]))
-    mock = mocker.patch('changepointmodel.calc.savings.adjusted', return_value=(1,1,1,1,))
+    mocker.patch('changepointmodel.core.savings._get_adjusted', return_value=np.array([42.,]))
+    mock = mocker.patch('changepointmodel.core.calc.savings.adjusted', return_value=(1,1,1,1,))
 
     calc = AshraeAdjustedSavingsCalculator(confidence_interval=0.75, scalar=2)
     calc.save(pre, post)
@@ -103,8 +103,8 @@ def test_normalized_savings_calls_weather_normalzied_correctly(mocker):
     post.coeffs = (1,1,1,)
 
     mocker.patch.object(_cvrmse_score, 'calc', side_effect=[0.42, 0.43])
-    mocker.patch('changepointmodel.savings._get_adjusted', return_value=np.array([42.,]))
-    mock = mocker.patch('changepointmodel.calc.savings.weather_normalized', return_value=(1,1,1,1,))
+    mocker.patch('changepointmodel.core.savings._get_adjusted', return_value=np.array([42.,]))
+    mock = mocker.patch('changepointmodel.core.calc.savings.weather_normalized', return_value=(1,1,1,1,))
 
     Xnorm = np.array([100.,]*12)
 
@@ -143,8 +143,8 @@ def test_normalized_savings_calls_weather_normalzied_correctly_with_kwargs(mocke
     post.coeffs = (1,1,1,)
 
     mocker.patch.object(_cvrmse_score, 'calc', side_effect=[0.42, 0.43])
-    mocker.patch('changepointmodel.savings._get_adjusted', return_value=np.array([42.,]))
-    mock = mocker.patch('changepointmodel.calc.savings.weather_normalized', return_value=(1,1,1,1,))
+    mocker.patch('changepointmodel.core.savings._get_adjusted', return_value=np.array([42.,]))
+    mock = mocker.patch('changepointmodel.core.calc.savings.weather_normalized', return_value=(1,1,1,1,))
 
     Xnorm = np.array([100.,]*12)
 

@@ -1,6 +1,6 @@
 
-from changepointmodel import utils as energymodelutils 
-from changepointmodel.pmodels import EnergyParameterModelCoefficients, FourParameterModel, ParameterModelFunction, FourParameterCoefficientsParser
+from changepointmodel.core import utils as energymodelutils 
+from changepointmodel.core.pmodels import EnergyParameterModelCoefficients, FourParameterModel, ParameterModelFunction, FourParameterCoefficientsParser
 import numpy as np
 
 def test_argsort_1d(): 
