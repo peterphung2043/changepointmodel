@@ -1,7 +1,7 @@
 import logging
 from typing import List 
 from .base import BemaChangepointResultContainers, BemaChangepointResultContainer
-from ...models.enums import FilterHowEnum, FilterWhichEnum
+from .models import FilterHowEnum, FilterWhichEnum
 from . import extras
 
 

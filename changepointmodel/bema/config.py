@@ -1,9 +1,9 @@
-from changepointmodel import pmodels, loads
-from changepointmodel.calc import models as cpmodels 
-from changepointmodel.calc import bounds as cpbounds
-from changepointmodel.estimator import EnergyChangepointEstimator 
-from changepointmodel.loads import EnergyChangepointLoadsAggregator
-from changepointmodel.factories import EnergyModelFactory
+from changepointmodel.core import pmodels, loads
+from changepointmodel.core.calc import models as cpmodels 
+from changepointmodel.core.calc import bounds as cpbounds
+from changepointmodel.core.estimator import EnergyChangepointEstimator 
+from changepointmodel.core.loads import EnergyChangepointLoadsAggregator
+from changepointmodel.core.factories import EnergyModelFactory
 from typing import List, Tuple
 
 

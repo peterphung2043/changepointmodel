@@ -1,12 +1,11 @@
-""" Exception wrapper for bplrpc. fastapi will register an exception handler to deal specifically with BplrpcException classes to reraise as a 409 http error.
+""" Exception wrapper for bema changepoint. fastapi will register an exception handler to deal specifically with BemaChangepointException classes to reraise as a 409 http error.
 """
-
 from typing import Dict
 import sys
 import traceback 
 
 
-class BplrpcException(Exception): 
+class BemaChangepointException(Exception): 
 
     def __init__(self, 
         info: Dict[str, str]=None, 
@@ -24,7 +23,7 @@ class BplrpcException(Exception):
 
 
 
-def bplrpc_exception_wrapper(err: Exception, message: str, **info_kwargs) -> BplrpcException: 
+def bema_changepoint_exception_wrapper(err: Exception, message: str, **info_kwargs) -> BemaChangepointException: 
 
     exc_type, exc_value, exc_traceback = sys.exc_info()
     info = {
@@ -33,7 +32,7 @@ def bplrpc_exception_wrapper(err: Exception, message: str, **info_kwargs) -> Bpl
         'tb': repr(traceback.format_exception(exc_type, exc_value, exc_traceback))
     }
 
-    e = BplrpcException(info=info, message=message)
+    e = BemaChangepointException(info=info, message=message)
     return e
 
 

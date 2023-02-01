@@ -1,25 +1,25 @@
 from typing import List, Optional, Tuple, Union
 import numpy as np
 
-from changepointmodel import nptypes
-from changepointmodel import scoring
-from changepointmodel.utils import argsort_1d
-from changepointmodel.schemas import CurvefitEstimatorDataModel
-from changepointmodel.predsum import PredictedSumCalculator
-from changepointmodel.estimator import EnergyChangepointEstimator
-from changepointmodel.savings import AshraeAdjustedSavingsCalculator,AshraeNormalizedSavingsCalculator
+from changepointmodel.core import nptypes, scoring
+from changepointmodel.core.utils import argsort_1d
+from changepointmodel.core.schemas import CurvefitEstimatorDataModel
+from changepointmodel.core.predsum import PredictedSumCalculator
+from changepointmodel.core.estimator import EnergyChangepointEstimator
+from changepointmodel.core.savings import AshraeAdjustedSavingsCalculator,AshraeNormalizedSavingsCalculator
 
 from . import config
 from .filter_ import ChangepointEstimatorFilter
 from .results import BemaChangepointResult, BemaSavingsResult
 
 from .base import BemaChangepointResultContainer, BemaChangepointResultContainers
-from ...models.cpmodel import BaselineChangepointModelRequest, EnergyChangepointModelResponse, FilterConfig, SavingsRequest, SavingsResponse
+
+from .models import BaselineChangepointModelRequest, EnergyChangepointModelResponse, FilterConfig, SavingsRequest, SavingsResponse
 
 import logging 
 logger = logging.getLogger(__name__)
 
-from ...exc import BplrpcException, bplrpc_exception_wrapper
+from .exc import BemaChangepointException, bema_changepoint_exception_wrapper
 
 
 CpModelXArray = Union[nptypes.OneDimNDArrayField, nptypes.AnyByAnyNDArrayField]
@@ -105,7 +105,7 @@ class BemaChangepointModeler(object):
                 self._fit(estimator)
             except Exception as err: 
                 logger.exception(err)
-                e = bplrpc_exception_wrapper(
+                e = bema_changepoint_exception_wrapper(
                     err, 
                     "A calculation error occurred during modeling.", 
                     model=model)
@@ -115,7 +115,7 @@ class BemaChangepointModeler(object):
                 result = BemaChangepointResult().create(estimator, loads, self._scorer, self._nac_calc) # XXX TODO error handling -- math could fail
             except Exception as err: 
                 logger.exception(err)
-                e = bplrpc_exception_wrapper(
+                e = bema_changepoint_exception_wrapper(
                     err, 
                     "A calculation error occurred during post-model calculations.", 
                     model=model)
@@ -204,8 +204,8 @@ def run_optionc(req: SavingsRequest) -> SavingsResponse:
             norms=req.norms, 
             model_filter= pre_req.model_config.model_filter
         )
-    except BplrpcException as err: 
-        e = BplrpcException(info={ 'batch': 'pre', **err.info},  message=err.message)
+    except BemaChangepointException as err: 
+        e = BemaChangepointException(info={ 'batch': 'pre', **err.info},  message=err.message)
         raise e from err
 
     try: 
@@ -218,8 +218,8 @@ def run_optionc(req: SavingsRequest) -> SavingsResponse:
             norms=req.norms,
             model_filter= post_req.model_config.model_filter
         )
-    except BplrpcException as err: 
-        e = BplrpcException(info={ 'batch': 'post', **err.info},  message=err.message)
+    except BemaChangepointException as err: 
+        e = BemaChangepointException(info={ 'batch': 'post', **err.info},  message=err.message)
         raise e from err
 
     # NOTE if we don't have pre or post from modeling via a filter we will 
@@ -231,7 +231,7 @@ def run_optionc(req: SavingsRequest) -> SavingsResponse:
                 result = BemaSavingsResult().create(pre, post, adjcalc, normcalc)
             except Exception as err: 
                 logger.exception(err)
-                e = bplrpc_exception_wrapper(
+                e = bema_changepoint_exception_wrapper(
                     err, 
                     "An error occurred while calculating savings.", 
                     pre_model=pre.result.json(), 

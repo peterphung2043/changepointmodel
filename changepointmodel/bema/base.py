@@ -1,6 +1,6 @@
 from typing import List 
-from ...models.cpmodel import EnergyChangepointModelResult
-from changepointmodel.estimator import EnergyChangepointEstimator 
+from .models import EnergyChangepointModelResult
+from changepointmodel.core.estimator import EnergyChangepointEstimator 
 
 from dataclasses import dataclass
 

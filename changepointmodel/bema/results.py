@@ -1,18 +1,18 @@
 import logging
 from typing import List, Optional
-from changepointmodel.utils import parse_coeffs
-from ...models.cpmodel import EnergyChangepointModelResult, AdjustedSavingsResultData,\
+from changepointmodel.core.utils import parse_coeffs
+from .models import EnergyChangepointModelResult, AdjustedSavingsResultData,\
     SavingsResult, NormalizedSavingsResultData, AdjustedSavingsResult
-from changepointmodel.estimator import EnergyChangepointEstimator
-from changepointmodel.loads import EnergyChangepointLoadsAggregator
-from changepointmodel.scoring import Scorer
-from changepointmodel.schemas import CurvefitEstimatorDataModel
+from changepointmodel.core.estimator import EnergyChangepointEstimator
+from changepointmodel.core.loads import EnergyChangepointLoadsAggregator
+from changepointmodel.core.scoring import Scorer
+from changepointmodel.core.schemas import CurvefitEstimatorDataModel
 
-from changepointmodel.predsum import PredictedSumCalculator
-from changepointmodel.savings import AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator
+from changepointmodel.core.predsum import PredictedSumCalculator
+from changepointmodel.core.savings import AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator
 
 from .base import BemaChangepointResultContainer
-from changepointmodel import nptypes
+from changepointmodel.core import nptypes
 import numpy as np
 
 

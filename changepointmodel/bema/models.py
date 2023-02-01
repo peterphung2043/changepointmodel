@@ -1,14 +1,23 @@
-from changepointmodel.nptypes import OneDimNDArrayField, NByOneNDArrayField, AnyByAnyNDArrayField
+from changepointmodel.core.nptypes import OneDimNDArrayField, NByOneNDArrayField, AnyByAnyNDArrayField
 import pydantic 
 from typing import List, Optional, Union, Any
 import numpy as np
-from changepointmodel.schemas import NpConfig, CurvefitEstimatorDataModel
+from changepointmodel.core.schemas import NpConfig, CurvefitEstimatorDataModel
 from pydantic import Field
-from .enums import FilterHowEnum, FilterWhichEnum
+import enum
 
 
 SklScoreReturnType =  Union[float, AnyByAnyNDArrayField, Any]
 
+# can be moved into a separate module when we have main bema model package or something
+class FilterHowEnum(enum.Enum): 
+    best_score = 'best_score'
+    threshold_ok = 'threshold_ok'
+    threshold_ok_first_is_best = 'threshold_ok_first_is_best'
+
+class FilterWhichEnum(enum.Enum): 
+    r2 = 'r2'
+    cvrmse = 'cvrmse'
 
 class UsageTemperatureData(pydantic.BaseModel): 
     oat: List[float]=Field(..., description='Outside air temperature for changepoint regression. Should be same len as usage.')

@@ -8,7 +8,6 @@ They will filter out any models silently that do not conform to these conditions
 import numpy as np 
 from typing import Iterator, List, Tuple
 from .base import BemaChangepointResultContainers, BemaChangepointResultContainer
-from ...models.cpmodel import EnergyChangepointModelResult
 
 def dpop(results: BemaChangepointResultContainers) -> Iterator[BemaChangepointResultContainer]: 
     """Checks if a models heating and cooling are within an established threshold that makes 
