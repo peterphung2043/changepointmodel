@@ -550,3 +550,47 @@ def dummy_t_test_bad():
     result_container_5p = DummyResultContainer(result=result_5p)
 
     return [result_container_2p, result_container_3pc, result_container_3ph, result_container_4p, result_container_5p]
+
+
+#response for parsing
+@pytest.fixture
+def changepointmodel_response_fixture():
+    return {'results': [{"name":"2P","coeffs":{"yint":1156.3440318420405,
+        "slopes":[40.34016591248294],"changepoints":None},
+        "pred_y":[2429.2756712384726,2786.3480938745406,2791.949219053383,2828.9425287783106,
+        3003.3637643327074,3127.113421778019,3558.135685224518,3835.461091718066,
+        4074.730916737977,4080.5727188710407,4359.9460338727495,4407.110407081814],
+        "load":{"base":13876.128382104485,"heating":0.0,"cooling":27406.821170457108},
+        "scores":[{"name":"r2","value":0.9233878584644406,"threshold":0.75,"ok":True},
+        {"name":"cvrmse","value":0.05562198622757366,"threshold":0.5,"ok":True}],
+        "input_data":{"X":[31.5549430847168,40.40647888183594,40.545326232910156,
+        41.46236038208008,45.7861213684082,48.85377502441406,59.53846740722656,
+        66.41313934326172,72.34444427490234,72.4892578125,79.4146957397461,80.5838623046875],
+        "y":[2771.7328796075267,2866.628408060809,2862.490733376347,2778.9696134985625,2841.454855450504,
+        2887.0038965747117,3386.2120536070365,3553.987575239154,4136.844967333332,3980.2125375555543,
+        4595.253582350758,4622.158449907303],"sigma":None,"absolute_sigma":None},"nac":None}]}
+
+
+@pytest.fixture
+def adjusted_savings_fixture():
+    adjusted_savings_result = {'adjusted_y': [1.0]*12,
+        'total_savings': 1.0,
+        'average_savings': 1.0, 'percent_savings': 1.0, 'percent_savings_uncertainty': 1.0}
+    return {'confidence_interval': 0.8, 'result': adjusted_savings_result}
+
+@pytest.fixture
+def normalized_saving_fixture():
+    normalized_saving_result = {'normalized_y_pre': [1.0]*12,
+        'normalized_y_post': [1.0]*12,
+        'total_savings': 1.0,
+        'average_savings': 1.0, 'percent_savings': 1.0, 'percent_savings_uncertainty': 1.0}
+
+    return {'X_pre': [1.0]*12, 'X_post': [1.0]*12,
+                'confidence_interval': 0.8, 'result': normalized_saving_result}
+
+@pytest.fixture
+def savings_fixture(changepointmodel_response_fixture, adjusted_savings_fixture, normalized_saving_fixture):
+    cp_model = changepointmodel_response_fixture['results'][0]
+    return {'results': [{'pre': cp_model, 'post': cp_model,
+            'adjusted_savings': adjusted_savings_fixture,
+            'normalized_savings': normalized_saving_fixture}]}
