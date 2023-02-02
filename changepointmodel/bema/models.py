@@ -323,9 +323,13 @@ class EnergyChangepointModelResult(pydantic.BaseModel):
 
 
     # call this for database to get measurements
-    def get_cpmodelmeasurements(self) -> List[Dict[str, Union[float, str]]]: 
+    def get_cpmodelmeasurements(self, add_model_type: bool = False) -> List[Dict[str, Union[float, str]]]:
         """Parse and merge all valid cpmodelmeasurements for this result. 
-            Can be used for writing output into bemadb changepointmodelmeasurement table 
+            Can be used for writing output into bemadb changepointmodelmeasurement table. For writing output
+            directly to db, set add_model_type to False.
+
+        Args:
+            add_model_type (bool, optional): Add model type to measurements result. Defaults to False.
 
         Returns:
             List[Dict[str, Union[float, str]]]: dict representation of changepointmodelmeasurement db schemas
@@ -335,6 +339,8 @@ class EnergyChangepointModelResult(pydantic.BaseModel):
         out.extend(self.coeffs.parse(self.name)) # cps + sensitivities
         if self.nac is not None: # just in case we don't have nac for some reason... 
             out.append(self.nac.parse())
+        if add_model_type: #add modeltype for the most public
+            return [{**i, 'model_type': self.name} for i in out]
         return out
 
     def _flatten_cp_model_measurements(self):
@@ -546,11 +552,11 @@ class EnergyChangepointModelResponse(pydantic.BaseModel):
     class Config(NpConfig): ...
 
     #XXX could be problematic for the case that it is more than one model cause we are not storing model type for measurements
-    def parse_cp_measurements(self):
+    def parse_cp_measurements(self) -> List[Dict[str, Any]]:
         """parse rpc changepoint model results list to prodcue cp measurements form for bemadb"""
         out = []
         for res in self.results: #should be one but also could be more than one
-            out.extend(res.get_cpmodelmeasurements())
+            out.extend(res.get_cpmodelmeasurements(add_model_type=True))
         return out
 
     def parse_results_for_csv(self) -> Tuple[List[Dict[str, Any]]]:

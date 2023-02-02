@@ -36,11 +36,27 @@ def test_EnergyChangepointModelResult_parse(changepointmodel_response_fixture):
     #changed nac
     data['nac'] = {'value': 600}
     result = models.EnergyChangepointModelResult(**data)
-
-    #the model is 2P
     flat_cp_result = result.assemble_full_cp_model_result()
     assert flat_cp_result['normalized_annual_consumption'] == 600
 
+def test_EnergyChangepointModelResult_parse_for_db(changepointmodel_response_fixture):
+    data = changepointmodel_response_fixture['results'][0]
+    result = models.EnergyChangepointModelResult(**data)
+
+    cpmodel_result = result.make_cp_model_result()
+    assert 'r2' in cpmodel_result
+    assert 'cvrmse' in cpmodel_result
+    assert 'result' in cpmodel_result
+
+    assert cpmodel_result['r2'] > 0
+    assert cpmodel_result['cvrmse'] > 0
+
+    assert 'input_data' in cpmodel_result['result']['cpmodel']
+    assert 'oat' in cpmodel_result['result']['cpmodel']['input_data']
+    assert 'usage' in cpmodel_result['result']['cpmodel']['input_data']
+
+    assert len(cpmodel_result['result']['cpmodel']['input_data']['oat']) != 0
+    assert len(cpmodel_result['result']['cpmodel']['input_data']['usage']) != 0
 
 def test_SavingsResult_parse(savings_fixture):
     data = savings_fixture['results'][0]
@@ -111,7 +127,8 @@ def test_EnergyChangepointModelResponse_parsing(changepointmodel_response_fixtur
 
     #XXX see the functions for comments; just testing it here for completeness
     parsed_measurements = result.parse_cp_measurements()
-
+    for i in parsed_measurements:
+        assert 'model_type' in i
 
 def test_SavingsResponse_parsing(savings_fixture):
     data = savings_fixture
