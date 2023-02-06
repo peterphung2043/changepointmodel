@@ -1,8 +1,8 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional
 import numpy as np
 
 from changepointmodel.core import nptypes, scoring
-from changepointmodel.core.utils import argsort_1d
+from changepointmodel.core.utils import argsort_1d_idx
 from changepointmodel.core.schemas import CurvefitEstimatorDataModel
 from changepointmodel.core.predsum import PredictedSumCalculator
 from changepointmodel.core.estimator import EnergyChangepointEstimator
@@ -20,29 +20,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 from .exc import BemaChangepointException, bema_changepoint_exception_wrapper
-
-
-CpModelXArray = Union[nptypes.OneDimNDArrayField, nptypes.AnyByAnyNDArrayField]
-Ordering = List[int]
-ArgSortRetType = Tuple[nptypes.AnyByAnyNDArrayField, nptypes.OneDimNDArrayField, Ordering]
-
-
-
-def argsort_1d_idx(
-    X: CpModelXArray, 
-    y: nptypes.OneDimNDArrayField) -> ArgSortRetType: 
-    """Sort a numpy array and return an ordering to be used later to unorder arrays.
-
-    Args:
-        X (CpModelXArray): _description_
-        y (nptypes.OneDimNDArrayField): _description_
-
-    Returns:
-        ArgSortRetType: _description_
-    """
-    order = np.argsort(X.squeeze())
-    return X[order], y[order], order
-
 
 
 

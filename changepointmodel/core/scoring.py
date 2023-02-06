@@ -99,11 +99,11 @@ class ScoreEval(IEval):
 
 class Scorer(object): 
 
-    def __init__(self, evals: List[IEval]):
+    def __init__(self, evals: List[ScoreEval]):
         """Executes a series of ScoreEvals.
 
         Args:
-            evals (List[IEval]): _description_
+            evals (List[ScoreEval]): _description_
         """
         self._evals = evals
 
