@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "changepointmodel"
-version = "2.0.dev0"
+version = "2.0.dev1"
 description = "Energy changepoint modeling and related methodologies"
 authors = [ "cunybpl <dev@cunybpl.org>",]
 
@@ -18,15 +18,13 @@ nptyping = "^1.4.3"
 pytest = "^7.2.1"
 pytest-cov = "^4.0.0"
 pytest-mock = "^3.10.0"
-coverage = [
-    { extras = [
-        "toml",
-    ], version = "^6.0", python = ">=3.6,<3.7" },
-    { extras = [
-        "toml",
-    ], version = ">=6.5", python = ">=3.7" },
-]
+[[tool.poetry.dev-dependencies.coverage]]
+extras = [ "toml",]
+version = "^6.0"
+python = ">=3.6,<3.7"
 
-# [tool.poetry.dependencies.curvefit-estimator]
-# git = "https://github.com/cunybpl/curvefit-estimator.git"
-# tag = "v0.2.0"
+[[tool.poetry.dev-dependencies.coverage]]
+extras = [ "toml",]
+version = ">=6.5"
+python = ">=3.7"
+
