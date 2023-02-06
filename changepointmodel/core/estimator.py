@@ -3,7 +3,7 @@ import numpy as np
 
 from .nptypes import NByOneNDArray, OneDimNDArray
 from .pmodels import ModelFunction 
-from .utils import argsort_1d
+from .utils import argsort_1d_idx
 
 import numpy as np
 
@@ -147,7 +147,8 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
 
     @classmethod
     def sort_X_y(cls, X: NByOneNDArray, y: OneDimNDArray): 
-        return argsort_1d(X, y)
+        X, y, _ = argsort_1d_idx(X, y)
+        return X, y
 
     @classmethod 
     def fit_many(cls, 

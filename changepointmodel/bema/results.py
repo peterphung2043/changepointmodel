@@ -1,34 +1,15 @@
-import logging
-from typing import List, Optional
-from changepointmodel.core.utils import parse_coeffs
+from changepointmodel.core.utils import parse_coeffs, unargsort_1d_idx
 from .models import EnergyChangepointModelResult, AdjustedSavingsResultData,\
-    SavingsResult, NormalizedSavingsResultData, AdjustedSavingsResult
+    SavingsResult, NormalizedSavingsResultData
 from changepointmodel.core.estimator import EnergyChangepointEstimator
 from changepointmodel.core.loads import EnergyChangepointLoadsAggregator
 from changepointmodel.core.scoring import Scorer
-from changepointmodel.core.schemas import CurvefitEstimatorDataModel
 
 from changepointmodel.core.predsum import PredictedSumCalculator
 from changepointmodel.core.savings import AshraeAdjustedSavingsCalculator, AshraeNormalizedSavingsCalculator
 
 from .base import BemaChangepointResultContainer
-from changepointmodel.core import nptypes
-import numpy as np
 
-
-def unargsort_1d_idx(arr: nptypes.AnyByAnyNDArrayField, original_order: List[int]) -> nptypes.OneDimNDArrayField:
-    """flattens and resorts numpy array back to its original order.
-
-    Args:
-        arr (nptypes.AnyByAnyNDArrayField): _description_
-        original_order (List[int]): _description_
-
-    Returns:
-        nptypes.OneDimNDArrayField: _description_
-    """
-    out = arr.flatten()  # this would flatten X (oat)
-    unsort_index = np.argsort(original_order)
-    return out[unsort_index]
 
 
 class BemaChangepointResult(object): 
