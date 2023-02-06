@@ -1,4 +1,4 @@
-from changepointmodel.pmodels import FiveParameterCoefficientsParser, \
+from changepointmodel.core.pmodels import FiveParameterCoefficientsParser, \
     FiveParameterModel, FourParameterCoefficientsParser, \
         FourParameterModel, ModelFunction, ParameterModelFunction, \
             ThreeParameterCoefficientsParser, ThreeParameterModel, TwoParameterCoefficientParser, \

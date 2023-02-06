@@ -1,6 +1,6 @@
 
 import numpy as np  
-from changepointmodel.calc import loads
+from changepointmodel.core.calc import loads
 
 
 def test_baseload_calculation(): 

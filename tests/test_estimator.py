@@ -1,10 +1,10 @@
 from sklearn.exceptions import NotFittedError
-from changepointmodel.pmodels import ModelFunction
-from changepointmodel.estimator import CurvefitEstimator
+from changepointmodel.core.pmodels import ModelFunction
+from changepointmodel.core.estimator import CurvefitEstimator
 import numpy as np
 
 from numpy.testing import assert_almost_equal, assert_array_almost_equal, assert_array_equal
-from changepointmodel.estimator import EnergyChangepointEstimator 
+from changepointmodel.core.estimator import EnergyChangepointEstimator 
 import pytest 
 
 from numpy.testing import assert_array_almost_equal

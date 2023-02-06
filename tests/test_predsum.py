@@ -1,5 +1,5 @@
-from changepointmodel.predsum import PredictedSum, PredictedSumCalculator 
-from changepointmodel.estimator import EnergyChangepointEstimator
+from changepointmodel.core.predsum import PredictedSum, PredictedSumCalculator 
+from changepointmodel.core.estimator import EnergyChangepointEstimator
 
 import numpy as np
 

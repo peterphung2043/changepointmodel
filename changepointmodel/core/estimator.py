@@ -212,7 +212,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin):
         **estimator_kwargs) -> 'EnergyChangepointEstimator':
         """This is wrapper around CurvefitEstimator.fit and allows interoperability with sklearn
         NOTE: THIS METHOD DOES NOT SORT THE DATA! Input data should be sorted appropriately beforehand. You can 
-        use changepointmodel.utils.argsort_1d for standard changepoint model data.
+        use changepointmodel.core.utils.argsort_1d for standard changepoint model data.
 
         Args:
             data (CurvefitEstimatorInputData): [description]

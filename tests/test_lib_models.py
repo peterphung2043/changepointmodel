@@ -1,5 +1,5 @@
 
-from changepointmodel.calc import models 
+from changepointmodel.core.calc import models 
 import numpy as np
 from numpy.testing import assert_array_equal
 

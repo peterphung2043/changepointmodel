@@ -54,11 +54,16 @@ class AbstractSavings(abc.ABC):
         based on ashrae formulas and methodology. Should be used in the context of option-c 
         reporting with changepoint models.
 
+        Scalar should be used if your data is in avg per day per month and you need to scale it back out. 
+        For this scenario set scalar to 30.437. 
+
         Args:
             confidence_interval (float, optional): The confidence interval to be used for the calculations. Defaults to 0.80.
+            scalar (float, optional): Value to scale by. Use 30.437 to scale from per-day to total month!!
         """
         self._confidence_interval = confidence_interval
-        self._scalar = 1 if scalar is None else scalar 
+        self._scalar = 1 if scalar is None else scalar
+         
 
     @property 
     def confidence_interval(self): 

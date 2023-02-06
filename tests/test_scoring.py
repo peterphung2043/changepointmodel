@@ -1,11 +1,11 @@
-from changepointmodel import scoring 
+from changepointmodel.core import scoring 
 import numpy as np
 
 def test_r2_forwards_call(mocker): 
     
     y = np.array([1.,2.,3.])
     y_pred = np.array([4.,5.,6.])
-    mock = mocker.patch('changepointmodel.calc.metrics.r2_score')
+    mock = mocker.patch('changepointmodel.core.calc.metrics.r2_score')
 
     method = scoring.R2()
     method(y, y_pred)
@@ -16,7 +16,7 @@ def test_rmse_forwards_call(mocker):
     
     y = np.array([1.,2.,3.])
     y_pred = np.array([4.,5.,6.])
-    mock = mocker.patch('changepointmodel.calc.metrics.rmse')
+    mock = mocker.patch('changepointmodel.core.calc.metrics.rmse')
     
     method = scoring.Rmse()
     method(y, y_pred)
@@ -27,7 +27,7 @@ def test_cvrmse_forwards_call(mocker):
     
     y = np.array([1.,2.,3.])
     y_pred = np.array([4.,5.,6.])
-    mock = mocker.patch('changepointmodel.calc.metrics.cvrmse')
+    mock = mocker.patch('changepointmodel.core.calc.metrics.cvrmse')
 
     method = scoring.Cvrmse()
     method(y, y_pred)

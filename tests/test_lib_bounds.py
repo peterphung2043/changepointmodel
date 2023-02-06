@@ -1,5 +1,5 @@
 import numpy as np
-from changepointmodel.calc import bounds
+from changepointmodel.core.calc import bounds
 
 def test_twop_bounds(): 
 
