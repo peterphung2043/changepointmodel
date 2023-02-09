@@ -1,6 +1,6 @@
 from changepointmodel.bema import models
 import pytest
-
+import json
 
 def test_EnergyChangepointModelResult_parse(changepointmodel_response_fixture):
     
@@ -58,6 +58,9 @@ def test_EnergyChangepointModelResult_parse_for_db(changepointmodel_response_fix
     assert len(cpmodel_result['result']['cpmodel']['input_data']['oat']) != 0
     assert len(cpmodel_result['result']['cpmodel']['input_data']['usage']) != 0
 
+    jsonstr = json.dumps(cpmodel_result)
+    json_dict = json.loads(jsonstr) #load correctly
+
 def test_SavingsResult_parse(savings_fixture):
     data = savings_fixture['results'][0]
 
@@ -113,6 +116,16 @@ def test_SavingsResult_parse(savings_fixture):
         assert month == pre_months[index_]
         assert month == post_months[index_] 
 
+
+def test_SavingsResult_parse_json_test(savings_fixture):
+    data = savings_fixture['results'][0]
+
+    result = models.SavingsResult(**data)
+    
+    #test cp parsing
+    cp_models = result.parse_prepost_cp_model_results()
+    jsonstr = json.dumps(cp_models)
+    json_dict = json.loads(jsonstr) 
 
 def test_EnergyChangepointModelResponse_parsing(changepointmodel_response_fixture):
     data = changepointmodel_response_fixture

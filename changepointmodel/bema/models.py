@@ -267,10 +267,10 @@ class EnergyChangepointModelInputData(pydantic.BaseModel):
     X: OneDimNDArrayField
     y: OneDimNDArrayField
 
-    def get_Xy_as_oat_usage(self): 
+    def get_Xy_as_oat_usage(self) -> Dict[str, List[float]]:
         return {
-            'oat': self.X,
-            'usage': self.y
+            'oat': self.X.tolist(),
+            'usage': self.y.tolist()
         }
 
 
@@ -285,9 +285,8 @@ class EnergyChangepointModelResult(pydantic.BaseModel):
 
     class Config(NpConfig): ... 
 
-    def parse_input_data(self): 
+    def parse_input_data(self) -> Dict[str, List[float]]: 
         return self.input_data.get_Xy_as_oat_usage()
-
 
     def get_scores(self) -> Dict[str, float]: # {r2: 42, cvrmse: 42}
         """Needed for top level changepointmodel result.
@@ -315,7 +314,8 @@ class EnergyChangepointModelResult(pydantic.BaseModel):
         Returns:
             _type_: dict representation of changepointmodelresult db schemas
         """        
-        cpmodel = self.dict(exclude={'input_data'})
+        cpmodel = self.dict(exclude={'input_data', 'pred_y'})
+        cpmodel['pred_y'] = self.pred_y.tolist() #manual conversion to list here since it may not be properly serialized to JSON in some cases
         cpmodel['input_data'] = self.parse_input_data()
         return {**self.get_scores(),
                 'modeltype': self.name,
