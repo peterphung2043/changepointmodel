@@ -5,13 +5,16 @@ conform to the specs for that interface.
 """
 
 from ..nptypes import NByOneNDArray, OneDimNDArray
+import numpy as np
 
 
-def twop(X:NByOneNDArray, yint: float, m: float) -> OneDimNDArray: 
+def twop(
+    X: NByOneNDArray[np.float64], yint: float, m: float
+) -> OneDimNDArray[np.float64]:
     """A two parameter (linear) model.
 
     Args:
-        X (NByOneNDArray): The X array 
+        X (NByOneNDArray): The X array
         yint (float): The yintercept
         m (float): The slope
 
@@ -21,9 +24,10 @@ def twop(X:NByOneNDArray, yint: float, m: float) -> OneDimNDArray:
     return (m * X + yint).squeeze()
 
 
-
-def threepc(X: NByOneNDArray, yint: float, m: float, cp: float) -> OneDimNDArray:
-    """A three parameter changepoint function that models cooling. 
+def threepc(
+    X: NByOneNDArray[np.float64], yint: float, m: float, cp: float
+) -> OneDimNDArray[np.float64]:
+    """A three parameter changepoint function that models cooling.
 
     Args:
         X (NByOneNDArray): The X array.
@@ -34,12 +38,12 @@ def threepc(X: NByOneNDArray, yint: float, m: float, cp: float) -> OneDimNDArray
     Returns:
         OneDimNDArray: The y array of calculated values.
     """
-    return (
-        (X < cp) * (yint) +
-        (X >= cp) * (m * (X - cp) + yint)).squeeze()
+    return ((X < cp) * (yint) + (X >= cp) * (m * (X - cp) + yint)).squeeze()
 
 
-def threeph(X: NByOneNDArray, yint: float, m: float, cp:float) -> OneDimNDArray: 
+def threeph(
+    X: NByOneNDArray[np.float64], yint: float, m: float, cp: float
+) -> OneDimNDArray[np.float64]:
     """A three parameter changepoint function that models heating.
 
     Args:
@@ -51,13 +55,13 @@ def threeph(X: NByOneNDArray, yint: float, m: float, cp:float) -> OneDimNDArray:
     Returns:
         OneDimNDArray: The y array of calculated values.
     """
-    return(
-        (X < cp) * (m * (X - cp) + yint) +
-        (X >= cp) * (yint)).squeeze()
+    return ((X < cp) * (m * (X - cp) + yint) + (X >= cp) * (yint)).squeeze()  # type: ignore
 
 
-def fourp(X: NByOneNDArray, yint: float, m1: float, m2: float, cp: float) -> OneDimNDArray: 
-    """A four parameter changepoint function that models simultaneous heating and cooling with a 
+def fourp(
+    X: NByOneNDArray[np.float64], yint: float, m1: float, m2: float, cp: float
+) -> OneDimNDArray[np.float64]:
+    """A four parameter changepoint function that models simultaneous heating and cooling with a
     single point of inflection and no zero slope.
 
     Args:
@@ -70,13 +74,20 @@ def fourp(X: NByOneNDArray, yint: float, m1: float, m2: float, cp: float) -> One
     Returns:
         OneDimNDArray: The y array of calculated values.
     """
-    return(
-        (X < cp) * (m1 * (X - cp) + yint) +
-        (X >= cp) * (m2 * (X - cp) + yint)).squeeze()
+    return (  # type: ignore
+        (X < cp) * (m1 * (X - cp) + yint) + (X >= cp) * (m2 * (X - cp) + yint)
+    ).squeeze()
 
 
-def fivep(X: NByOneNDArray, yint: float, m1: float, m2: float, cp1: float, cp2: float) -> OneDimNDArray: 
-    """A five parameter changepoint function that models simultaneous heating and cooling with both 
+def fivep(
+    X: NByOneNDArray[np.float64],
+    yint: float,
+    m1: float,
+    m2: float,
+    cp1: float,
+    cp2: float,
+) -> OneDimNDArray[np.float64]:
+    """A five parameter changepoint function that models simultaneous heating and cooling with both
     a heating and cooling changepoint.
 
     Args:
@@ -90,8 +101,8 @@ def fivep(X: NByOneNDArray, yint: float, m1: float, m2: float, cp1: float, cp2: 
     Returns:
         OneDimNDArray: The y array of calculated values.
     """
-    return(
-        (X < cp1) * (m1 * (X - cp1) + yint) +
-        ((X < cp2) & (X >= cp1)) * (yint) +
-        (X >= cp2) * (m2 * (X - cp2) + yint)).squeeze()
-
+    return (  # type: ignore
+        (X < cp1) * (m1 * (X - cp1) + yint)
+        + ((X < cp2) & (X >= cp1)) * (yint)
+        + (X >= cp2) * (m2 * (X - cp2) + yint)
+    ).squeeze()
