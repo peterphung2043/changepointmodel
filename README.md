@@ -1,8 +1,6 @@
 # changepointmodel 
 --- 
-[![pytest](https://github.com/cunybpl/changepointmodel/actions/workflows/pytest.yaml/badge.svg)](https://github.com/cunybpl/changepointmodel/actions/workflows/pytest.yaml) 
-
-![pybadge](./pybadge.svg)
+[![pytest](https://github.com/cunybpl/changepointmodel/actions/workflows/pytest.yaml/badge.svg)](https://github.com/cunybpl/changepointmodel/actions/workflows/pytest.yaml) ![pybadge](./pybadge.svg)
 
 
 Changepoint modeling, load disaggregation and savings methodologies consistent with ashrae guidelines. 
