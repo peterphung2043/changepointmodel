@@ -2,12 +2,11 @@ import numpy as np
 from utils import _get_array_left, _get_array_right, _std_error
 from typing import Tuple
 from app.base import ChangepointResultContainer
-from changepointmodel.core.pmodels import EnergyParameterModelT, ParamaterModelCallableT
 
 
 def twop(result: ChangepointResultContainer) -> float:
     # What gets returned here?
-    ...
+    return 0
 
 
 def threepc(result: ChangepointResultContainer) -> float:
