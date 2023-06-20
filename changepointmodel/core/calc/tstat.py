@@ -1,45 +1,8 @@
 import numpy as np
-import numpy.typing as npt
+from utils import _get_array_left, _get_array_right, _std_error
 from typing import Tuple
 from app.base import ChangepointResultContainer
 from changepointmodel.core.pmodels import EnergyParameterModelT, ParamaterModelCallableT
-
-
-def _std_error(
-    x: npt.NDArray[np.float64],
-    y: npt.NDArray[np.float64],
-    y_pred: npt.NDArray[np.float64],
-) -> float:
-    sse = np.sum((y - y_pred) ** 2)
-    n = np.sqrt(sse / (len(y) - 2))
-    d = np.sqrt(np.sum((x - np.mean(x)) ** 2))
-    return n / d  # type: ignore
-
-
-def _get_array_right(
-    x: npt.NDArray[np.float64],
-    y: npt.NDArray[np.float64],
-    y_pred: npt.NDArray[np.float64],
-    cp: float,
-) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    position = np.where(x >= cp)
-    y_out = y[position]
-    y_pred_out = y_pred[position]
-    x_out = x[position]
-    return x_out, y_out, y_pred_out
-
-
-def _get_array_left(
-    x: npt.NDArray[np.float64],
-    y: npt.NDArray[np.float64],
-    y_pred: npt.NDArray[np.float64],
-    cp: float,
-) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    position = np.where(x <= cp)
-    y_out = y[position]
-    y_pred_out = y_pred[position]
-    x_out = x[position]
-    return x_out, y_out, y_pred_out
 
 
 def twop(result: ChangepointResultContainer) -> float:
