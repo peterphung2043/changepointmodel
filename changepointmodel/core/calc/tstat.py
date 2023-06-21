@@ -47,6 +47,7 @@ def _get_array_left(
     return x_out, y_out, y_pred_out
 
 
+# Main functions
 def twop(
     X: OneDimNDArrayField,
     Y: OneDimNDArrayField,
@@ -63,7 +64,6 @@ def threepc(
     slope: float,
     changepoint: float,
 ) -> SingleSlopeTStat:
-    assert changepoint is not None
     _x, _y, _pred_y = _get_array_right(
         np.array(X),
         np.array(Y),
@@ -80,7 +80,6 @@ def threeph(
     slope: float,
     changepoint: float,
 ) -> SingleSlopeTStat:
-    assert changepoint is not None
     _x, _y, _pred_y = _get_array_left(
         np.array(X),
         np.array(Y),
@@ -97,8 +96,6 @@ def fourp(
     slopes: List[float],
     changepoint: float,
 ) -> DoubleSlopeTStat:
-    assert changepoint is not None
-    assert len(slopes) >= 2
     xl, yl, pred_yl = _get_array_left(
         np.array(X),
         np.array(Y),
@@ -122,8 +119,6 @@ def fivep(
     slopes: List[float],
     changepoints: List[float],
 ) -> DoubleSlopeTStat:
-    assert len(changepoints) >= 2
-    assert len(slopes) >= 2
     xl, yl, pred_yl = _get_array_left(
         np.array(X),
         np.array(Y),
