@@ -3,13 +3,18 @@ from utils import _get_array_left, _get_array_right, _std_error
 from typing import Tuple, List
 from changepointmodel.core.nptypes import OneDimNDArrayField
 
+# Return types
+
+SingleSlopeTStat = float
+DoubleSlopeTStat = Tuple[float, float]
+
 
 def twop(
     X: OneDimNDArrayField,
     Y: OneDimNDArrayField,
     pred_y: OneDimNDArrayField,
     slope: float,
-) -> float:
+) -> SingleSlopeTStat:
     return slope / _std_error(X, Y, pred_y)
 
 
@@ -19,7 +24,7 @@ def threepc(
     pred_y: OneDimNDArrayField,
     slope: float,
     changepoint: float,
-) -> float:
+) -> SingleSlopeTStat:
     assert changepoint is not None
     _x, _y, _pred_y = _get_array_right(
         np.array(X),
@@ -36,7 +41,7 @@ def threeph(
     pred_y: OneDimNDArrayField,
     slope: float,
     changepoint: float,
-) -> float:
+) -> SingleSlopeTStat:
     assert changepoint is not None
     _x, _y, _pred_y = _get_array_left(
         np.array(X),
@@ -53,7 +58,7 @@ def fourp(
     pred_y: OneDimNDArrayField,
     slopes: List[float],
     changepoint: float,
-) -> Tuple[float, float]:
+) -> DoubleSlopeTStat:
     assert changepoint is not None
     assert len(slopes) >= 2
     xl, yl, pred_yl = _get_array_left(
@@ -78,7 +83,7 @@ def fivep(
     pred_y: OneDimNDArrayField,
     slopes: List[float],
     changepoints: List[float],
-) -> Tuple[float, float]:
+) -> DoubleSlopeTStat:
     assert len(changepoints) >= 2
     assert len(slopes) >= 2
     xl, yl, pred_yl = _get_array_left(
