@@ -1,5 +1,5 @@
 import numpy as np
-from utils import _get_array_left, _get_array_right, _std_error
+from .utils import _get_array_left, _get_array_right, _std_error
 from typing import Tuple, List
 from changepointmodel.core.nptypes import OneDimNDArrayField
 
