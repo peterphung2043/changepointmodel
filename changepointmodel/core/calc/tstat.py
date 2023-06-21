@@ -1,73 +1,100 @@
 import numpy as np
 from utils import _get_array_left, _get_array_right, _std_error
-from typing import Tuple
-from app.base import ChangepointResultContainer
+from typing import Tuple, List
+from changepointmodel.core.nptypes import OneDimNDArrayField
 
 
-def twop(result: ChangepointResultContainer) -> float:
-    # What gets returned here?
-    return 0
+def twop(
+    X: OneDimNDArrayField,
+    Y: OneDimNDArrayField,
+    pred_y: OneDimNDArrayField,
+    slope: float,
+) -> float:
+    return slope / _std_error(X, Y, pred_y)
 
 
-def threepc(result: ChangepointResultContainer) -> float:
-    assert result.coeffs.changepoints is not None
-    x, y, y_pred = _get_array_right(
-        np.array(result.input_data.X),
-        np.array(result.input_data.y),
-        np.array(result.pred_y),
-        result.coeffs.changepoints[0],
+def threepc(
+    X: OneDimNDArrayField,
+    Y: OneDimNDArrayField,
+    pred_y: OneDimNDArrayField,
+    slope: float,
+    changepoint: float,
+) -> float:
+    assert changepoint is not None
+    _x, _y, _pred_y = _get_array_right(
+        np.array(X),
+        np.array(Y),
+        np.array(pred_y),
+        changepoint,
     )
-    return result.coeffs.slopes[0] / _std_error(x, y, y_pred)
+    return slope / _std_error(_x, _y, _pred_y)
 
 
-def threeph(result: ChangepointResultContainer) -> float:
-    assert result.coeffs.changepoints is not None
-    x, y, y_pred = _get_array_left(
-        np.array(result.input_data.X),
-        np.array(result.input_data.y),
-        np.array(result.pred_y),
-        result.coeffs.changepoints[0],
+def threeph(
+    X: OneDimNDArrayField,
+    Y: OneDimNDArrayField,
+    pred_y: OneDimNDArrayField,
+    slope: float,
+    changepoint: float,
+) -> float:
+    assert changepoint is not None
+    _x, _y, _pred_y = _get_array_left(
+        np.array(X),
+        np.array(Y),
+        np.array(pred_y),
+        changepoint,
     )
-    return result.coeffs.slopes[0] / _std_error(x, y, y_pred)
+    return slope / _std_error(_x, _y, _pred_y)
 
 
-def fourp(result: ChangepointResultContainer) -> Tuple[float, float]:
-    assert result.coeffs.changepoints is not None
-    xl, yl, y_predl = _get_array_left(
-        np.array(result.input_data.X),
-        np.array(result.input_data.y),
-        np.array(result.pred_y),
-        result.coeffs.changepoints[0],
+def fourp(
+    X: OneDimNDArrayField,
+    Y: OneDimNDArrayField,
+    pred_y: OneDimNDArrayField,
+    slopes: List[float],
+    changepoint: float,
+) -> Tuple[float, float]:
+    assert changepoint is not None
+    assert len(slopes) >= 2
+    xl, yl, pred_yl = _get_array_left(
+        np.array(X),
+        np.array(Y),
+        np.array(pred_y),
+        changepoint,
     )
 
-    xr, yr, y_predr = _get_array_right(
-        np.array(result.input_data.X),
-        np.array(result.input_data.y),
-        np.array(result.pred_y),
-        result.coeffs.changepoints[0],
+    xr, yr, pred_yr = _get_array_right(
+        np.array(X), np.array(Y), np.array(pred_y), changepoint
     )
 
-    tl = result.coeffs.slopes[0] / _std_error(xl, yl, y_predl)
-    tr = result.coeffs.slopes[1] / _std_error(xr, yr, y_predr)
+    tl = slopes[0] / _std_error(xl, yl, pred_yl)
+    tr = slopes[1] / _std_error(xr, yr, pred_yr)
     return tl, tr
 
 
-def fivep(result: ChangepointResultContainer) -> Tuple[float, float]:
-    assert result.coeffs.changepoints is not None
-    xl, yl, y_predl = _get_array_left(
-        np.array(result.input_data.X),
-        np.array(result.input_data.y),
-        np.array(result.pred_y),
-        result.coeffs.changepoints[0],
+def fivep(
+    X: OneDimNDArrayField,
+    Y: OneDimNDArrayField,
+    pred_y: OneDimNDArrayField,
+    slopes: List[float],
+    changepoints: List[float],
+) -> Tuple[float, float]:
+    assert len(changepoints) >= 2
+    assert len(slopes) >= 2
+    xl, yl, pred_yl = _get_array_left(
+        np.array(X),
+        np.array(Y),
+        np.array(pred_y),
+        changepoints[0],
     )
 
-    xr, yr, y_predr = _get_array_right(
-        np.array(result.input_data.X),
-        np.array(result.input_data.y),
-        np.array(result.pred_y),
-        result.coeffs.changepoints[1],
+    xr, yr, pred_yr = _get_array_right(
+        np.array(X),
+        np.array(Y),
+        np.array(pred_y),
+        changepoints[1],
     )
 
-    tl = result.coeffs.slopes[0] / _std_error(xl, yl, y_predl)
-    tr = result.coeffs.slopes[1] / _std_error(xr, yr, y_predr)
+    tl = slopes[0] / _std_error(xl, yl, pred_yl)
+    tr = slopes[1] / _std_error(xr, yr, pred_yr)
     return (tl, tr)
