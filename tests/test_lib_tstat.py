@@ -2,7 +2,7 @@ from changepointmodel.core.calc import tstat
 import numpy as np
 
 
-def test_tstat_good(dummy_t_test_bad):
+def test_tstat_bad(dummy_t_test_bad):
     data = dummy_t_test_bad
 
     twop_data = data[0]
@@ -61,7 +61,7 @@ def test_tstat_good(dummy_t_test_bad):
     assert result == (-0.24494897427831785, 0.31622776601683794)
 
 
-def test_tstat_bad(dummy_t_test_good):
+def test_tstat_good(dummy_t_test_good):
     data = dummy_t_test_good
 
     twop_data = data[0]
