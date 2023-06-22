@@ -8,23 +8,21 @@ def twop():
     ...
 
 
-def threepc(
-    X: OneDimNDArrayField, changepoint: float, threshold: Optional[float] = None
-) -> bool:
-    if threshold is None:
-        threshold = len(X) / 4
+def threepc(X: OneDimNDArrayField, changepoint: float) -> float:
+    return sum(X >= changepoint)
 
+
+def threeph(X: OneDimNDArrayField, changepoint: float) -> float:
+    return sum(X <= changepoint)
+
+
+def fourp(X: OneDimNDArrayField, changepoint: float) -> Tuple[float, float]:
     heatnum = sum(X <= changepoint)
-    return heatnum >= threshold and len(X) - heatnum >= threshold
+    coolnum = sum(X > changepoint)
+    return coolnum, heatnum
 
 
-def threeph():
-    ...
-
-
-def fourp():
-    ...
-
-
-def fivep():
-    ...
+def fivep(X: OneDimNDArrayField, changepoints: List[float]) -> Tuple[float, float]:
+    heatnum = sum(X <= changepoints[0])
+    coolnum = sum(X >= changepoints[1])
+    return coolnum, heatnum
