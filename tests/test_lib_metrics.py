@@ -35,6 +35,46 @@ def test_cvrmse_score_forwards_arguments(mocker):
     mock.assert_called_once_with(y, y_pred, sample_weight=sample_weight, squared=False)
 
 
+def test_adjusted_r2_score():
+    y_pred = np.array(
+        [
+            1279.60425108,
+            1213.54261136,
+            1118.12024288,
+            1081.41933192,
+            1021.4745107,
+            935.8390518,
+            906.74142535,
+            998.81156387,
+            1074.1416772,
+            1080.83768728,
+            1156.16780061,
+            1186.29984595,
+        ]
+    )
+
+    y = np.array(
+        [
+            1314.0,
+            1117.0,
+            1123.0,
+            1205.0,
+            976.0,
+            915.0,
+            975.0,
+            916.0,
+            1088.0,
+            1045.0,
+            1112.0,
+            1267.0,
+        ]
+    )
+
+    adj_r2 = energymodelmetrics.adjusted_r2_score(y=y, y_pred=y_pred, p=4)
+
+    assert adj_r2 == 0.6324037889660822
+
+
 # XXX removed this private method ...
 # def test_cvrmse_from_rmse():
 #     rmse = 2
