@@ -1,12 +1,22 @@
 from typing import Generator, List, Optional, Tuple, Callable, Any, Union, Dict, Generic
 import numpy as np
 
-from .nptypes import NByOneNDArray, OneDimNDArray, AnyByAnyNDArray, Ordering
+from .nptypes import (
+    NByOneNDArray,
+    OneDimNDArray,
+    AnyByAnyNDArray,
+    Ordering,
+    SklScoreReturnType,
+)
 from .pmodels import (
     ParameterModelFunction,
     ParamaterModelCallableT,
     EnergyParameterModelT,
+    Load,
 )
+
+from .calc import dpop, tstat
+
 from .utils import argsort_1d_idx
 
 import numpy as np
@@ -46,24 +56,30 @@ def check_not_fitted(method: Callable[..., Any]) -> Callable[..., Any]:
     return inner
 
 
+import numpy as np
+
+
 class CurvefitEstimator(BaseEstimator, RegressorMixin):  # type: ignore
     def __init__(
         self,
         model_func: Optional[Callable[..., Any]] = None,
         p0: Optional[List[float]] = None,
-        bounds: Union[Bounds, OpenBoundCallable, None] = None,
+        bounds: Union[Bounds, OpenBoundCallable, Tuple[float, float], None] = (
+            -np.inf,
+            np.inf,
+        ),
         method: str = "trf",
         jac: Union[
             str, Callable[[npt.NDArray[np.float64], Any], npt.NDArray[np.float64]], None
         ] = None,
-        lsq_kwargs: Optional[Dict[str, Any]] = None,
+        lsq_kwargs: Optional[Dict[str, Any]] = {},
     ) -> None:
         self.model_func = model_func
         self.p0 = p0
         self.bounds = bounds
         self.method = method
         self.jac = jac
-        self.lsq_kwargs = lsq_kwargs if lsq_kwargs else {}
+        self.lsq_kwargs = lsq_kwargs  # if lsq_kwargs else {}
 
     def fit(
         self,
@@ -384,3 +400,40 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin, Generic[Paramate
     @original_ordering.setter
     def original_ordering(self, o: Ordering) -> None:
         self._original_ordering = o
+
+    # --- added below methods for 3.1
+    # TODO need types
+    @check_not_fitted
+    def r2(self) -> SklScoreReturnType:
+        assert self.model is not None
+        return self.model.r2(self.y, self.pred_y)
+
+    @check_not_fitted
+    def rmse(self) -> SklScoreReturnType:
+        assert self.model is not None
+        return self.model.rmse(self.y, self.pred_y)
+
+    @check_not_fitted
+    def cvrmse(self) -> SklScoreReturnType:
+        assert self.model is not None
+        return self.model.cvrmse(self.y, self.pred_y)
+
+    @check_not_fitted
+    def dpop(self) -> dpop.HeatingCoolingPoints:
+        assert self.model is not None
+        return self.model.dpop(self.X, self.coeffs)
+
+    @check_not_fitted
+    def tstat(self) -> tstat.HeatingCoolingTStatResult:
+        assert self.model is not None
+        return self.model.tstat(self.X, self.y, self.pred_y, self.coeffs)
+
+    @check_not_fitted
+    def shape(self) -> bool:
+        assert self.model is not None
+        return self.model.shape(self.coeffs)
+
+    @check_not_fitted
+    def load(self) -> Load:
+        assert self.model is not None
+        return self.model.load(self.X, self.pred_y, self.coeffs)
