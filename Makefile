@@ -20,7 +20,7 @@ clean-test:
 
 
 test: clean-test
-	-pytest --cov=changepointmodel --cov-report=term-missing tests/ -v -s
+	-coverage run --source=changepointmodel/ -m pytest -s -v && coverage report -m --fail-under=90
 	mypy changepointmodel --strict
 
 test-single-module: clean-test

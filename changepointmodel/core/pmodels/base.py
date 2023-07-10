@@ -44,7 +44,7 @@ ParamaterModelCallableT = TypeVar(
 class BoundCallable(Protocol):
     def __call__(
         self, X: Union[OneDimNDArray[np.float64], NByOneNDArray[np.float64]]
-    ) -> Bound:
+    ) -> Bound:  # pragma: no cover
         ...
 
 
@@ -72,51 +72,71 @@ class YinterceptMixin(object):
 
 class ICoefficientParser(object):
     @abc.abstractmethod
-    def parse(self, coeffs: Tuple[float, ...]) -> EnergyParameterModelCoefficients:
+    def parse(
+        self, coeffs: Tuple[float, ...]
+    ) -> EnergyParameterModelCoefficients:  # pragma: no cover
         ...
 
 
 class ISingleSlopeModel(abc.ABC):
     @abc.abstractmethod
-    def slope(self, coeffs: EnergyParameterModelCoefficients) -> float:
+    def slope(
+        self, coeffs: EnergyParameterModelCoefficients
+    ) -> float:  # pragma: no cover
         ...
 
 
 class ISingleChangepointModel(abc.ABC):
     @abc.abstractmethod
-    def changepoint(self, coeffs: EnergyParameterModelCoefficients) -> float:
+    def changepoint(
+        self, coeffs: EnergyParameterModelCoefficients
+    ) -> float:  # pragma: no cover
         ...
 
 
 class IDualSlopeModel(abc.ABC):
     @abc.abstractmethod
-    def left_slope(self, coeffs: EnergyParameterModelCoefficients) -> float:
+    def left_slope(
+        self, coeffs: EnergyParameterModelCoefficients
+    ) -> float:  # pragma: no cover
         ...
 
     @abc.abstractmethod
-    def right_slope(self, coeffs: EnergyParameterModelCoefficients) -> float:
+    def right_slope(
+        self, coeffs: EnergyParameterModelCoefficients
+    ) -> float:  # pragma: no cover
         ...
 
 
 class IDualChangepointModel(abc.ABC):
     @abc.abstractmethod
-    def left_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> float:
+    def left_changepoint(
+        self, coeffs: EnergyParameterModelCoefficients
+    ) -> float:  # pragma: no cover
         ...
 
     @abc.abstractmethod
-    def right_changepoint(self, coeffs: EnergyParameterModelCoefficients) -> float:
+    def right_changepoint(
+        self, coeffs: EnergyParameterModelCoefficients
+    ) -> float:  # pragma: no cover
         ...
 
 
-class ISingleSlopeSingleChangepointModel(ISingleSlopeModel, ISingleChangepointModel):
+class ISingleSlopeSingleChangepointModel(
+    ISingleSlopeModel, ISingleChangepointModel
+):  # pragma: no cover
     ...
 
 
-class IDualSlopeSingleChangepointModel(IDualSlopeModel, ISingleChangepointModel):
+class IDualSlopeSingleChangepointModel(
+    IDualSlopeModel, ISingleChangepointModel
+):  # pragma: no cover
     ...
 
 
-class IDualSlopeDualChangepointModel(IDualSlopeModel, IDualChangepointModel):
+class IDualSlopeDualChangepointModel(
+    IDualSlopeModel, IDualChangepointModel
+):  # pragma: no cover
     ...
 
 
@@ -128,7 +148,7 @@ class ITStatMixin(abc.ABC):
         y: OneDimNDArray[np.float64],
         pred_y: OneDimNDArray[np.float64],
         coeffs: EnergyParameterModelCoefficients,
-    ) -> tstat.HeatingCoolingTStatResult:
+    ) -> tstat.HeatingCoolingTStatResult:  # pragma: no cover
         ...
 
 
@@ -139,14 +159,16 @@ class IDataPopMixin(abc.ABC):
         self,
         X: OneDimNDArray[np.float64],
         coeffs: EnergyParameterModelCoefficients,
-    ) -> dpop.HeatingCoolingPoints:
+    ) -> dpop.HeatingCoolingPoints:  # pragma: no cover
         ...
 
 
 # Shape test has... 4 arg implementations ...  1 return type (bool) ...
 class IShapeTestMixin(abc.ABC):
     @abc.abstractmethod
-    def shape(self, coeffs: EnergyParameterModelCoefficients) -> bool:
+    def shape(
+        self, coeffs: EnergyParameterModelCoefficients
+    ) -> bool:  # pragma: no cover
         ...
 
 
@@ -230,7 +252,7 @@ class ILoad(abc.ABC):
         X: OneDimNDArray[np.float64],
         pred_y: OneDimNDArray[np.float64],
         coeffs: EnergyParameterModelCoefficients,
-    ) -> Load:
+    ) -> Load:  # pragma: no cover
         ...
 
 
@@ -239,7 +261,7 @@ class AllMetricsMixin(
     CvRmseMetricMixin,
     RmseMetricMixin,
     AdjR2MetricMixin,
-):
+):  # pragma: no cover
     ...
 
 
@@ -250,7 +272,7 @@ class AbstractEnergyParameterModel(
     ITStatMixin,
     YinterceptMixin,
     ILoad,
-):
+):  # pragma: no cover
     ...
 
 

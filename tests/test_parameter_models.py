@@ -113,3 +113,56 @@ def test_modelfunction():
     assert model.parse_coeffs((42, 99)) == EnergyParameterModelCoefficients(
         42, [99], []
     )
+
+
+from changepointmodel.core.pmodels import (
+    factories as pmodel_factories,
+    parameter_model as pm,
+    coeffs_parser as cpar,
+)
+from changepointmodel.core.calc import models as cpmodels, bounds as cpbounds
+
+
+def test_parameter_model_factories():
+    # new for 3.1
+    # check these were properly configured
+
+    m = pmodel_factories.twop()
+
+    assert m.name == "2P"
+    assert m.f is cpmodels.twop
+    assert m.bounds is cpbounds.twop
+    assert isinstance(m._parameter_model, pm.TwoParameterModel)
+    assert isinstance(m._coefficients_parser, cpar.TwoParameterCoefficientParser)
+
+    m = pmodel_factories.threepc()
+
+    assert m.name == "3PC"
+    assert m.f is cpmodels.threepc
+    assert m.bounds is cpbounds.threepc
+    assert isinstance(m._parameter_model, pm.ThreeParameterCoolingModel)
+    assert isinstance(m._coefficients_parser, cpar.ThreeParameterCoefficientsParser)
+
+    m = pmodel_factories.threeph()
+
+    assert m.name == "3PH"
+    assert m.f is cpmodels.threeph
+    assert m.bounds is cpbounds.threeph
+    assert isinstance(m._parameter_model, pm.ThreeParameterHeatingModel)
+    assert isinstance(m._coefficients_parser, cpar.ThreeParameterCoefficientsParser)
+
+    m = pmodel_factories.fourp()
+
+    assert m.name == "4P"
+    assert m.f is cpmodels.fourp
+    assert m.bounds is cpbounds.fourp
+    assert isinstance(m._parameter_model, pm.FourParameterModel)
+    assert isinstance(m._coefficients_parser, cpar.FourParameterCoefficientsParser)
+
+    m = pmodel_factories.fivep()
+
+    assert m.name == "5P"
+    assert m.f is cpmodels.fivep
+    assert m.bounds is cpbounds.fivep
+    assert isinstance(m._parameter_model, pm.FiveParameterModel)
+    assert isinstance(m._coefficients_parser, cpar.FiveParameterCoefficientsParser)
