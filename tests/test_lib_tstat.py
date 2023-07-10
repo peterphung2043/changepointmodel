@@ -124,3 +124,17 @@ def test_tstat_good(dummy_t_test_good):
         rcp=fivep_data.result.coeffs.changepoints[1],
     )
     assert result == (-np.inf, np.inf)
+
+
+def test_tstat_twop_alt_case(dummy_t_test_good):
+    data = dummy_t_test_good
+
+    twop_data = data[0]
+
+    result = tstat.twop(
+        X=np.array(twop_data.result.input_data.X),
+        y=np.array(twop_data.result.input_data.y),
+        pred_y=np.array(twop_data.result.pred_y),
+        slope=-twop_data.result.coeffs.slopes[0],
+    )
+    assert result == (-np.inf, None)
