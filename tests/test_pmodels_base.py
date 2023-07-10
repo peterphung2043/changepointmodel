@@ -98,13 +98,13 @@ def test_load_interface_private_methods(mocker):
     load = MockLoad()
 
     load._base(42.0, 43.0, 44.0)
-    assert base.called_once_with(42.0, 43.0, 44.0)
+    base.assert_called_once_with(42.0, 43.0, 44.0)
 
     load._heating(X, pred_y, slope, yint, changepoint)
-    assert heat.called_once_with(X, pred_y, yint, changepoint)
+    heat.assert_called_once_with(X, pred_y, yint, changepoint)
 
-    load._cooling(X, pred_y, slope, yint, changepoint)
-    assert cool.called_once_with(X, pred_y, yint, changepoint)
+    load._cooling(X, pred_y, abs(slope), yint, changepoint)
+    cool.assert_called_once_with(X, pred_y, yint, changepoint)
 
 
 def test_iload_private_method_branch_arms(mocker):
@@ -150,7 +150,7 @@ def test_iload_private_method_branch_arms(mocker):
     changepoint = None
 
     load._cooling(X, pred_y, 42.0, yint, changepoint)
-    assert cool.called_once_with(X, pred_y, yint, -np.inf)
+    cool.assert_called_with(X, pred_y, yint, -np.inf)
 
     load._heating(X, pred_y, -42.0, yint, changepoint)
-    assert heat.called_once_with(X, pred_y, yint, np.inf)
+    heat.assert_called_with(X, pred_y, yint, np.inf)
