@@ -72,7 +72,7 @@ class CurvefitEstimator(BaseEstimator, RegressorMixin):  # type: ignore
         jac: Union[
             str, Callable[[npt.NDArray[np.float64], Any], npt.NDArray[np.float64]], None
         ] = None,
-        lsq_kwargs: Optional[Dict[str, Any]] = {},
+        lsq_kwargs: Optional[Dict[Any, Any]] = {},
     ) -> None:
         self.model_func = model_func
         self.p0 = p0
@@ -402,11 +402,15 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin, Generic[Paramate
         self._original_ordering = o
 
     # --- added below methods for 3.1
-    # TODO need types
     @check_not_fitted
     def r2(self) -> SklScoreReturnType:
         assert self.model is not None
         return self.model.r2(self.y, self.pred_y)
+
+    @check_not_fitted
+    def adjusted_r2(self) -> SklScoreReturnType:
+        assert self.model is not None
+        return self.model.adjusted_r2(self.y, self.pred_y, self.coeffs)
 
     @check_not_fitted
     def rmse(self) -> SklScoreReturnType:
