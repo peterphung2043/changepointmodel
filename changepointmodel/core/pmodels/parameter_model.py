@@ -354,7 +354,7 @@ class ParameterModelFunction(
         y: OneDimNDArray[np.float64],
         y_pred: OneDimNDArray[np.float64],
     ) -> Union[float, OneDimNDArray[np.float64]]:
-        return self._parameter_model.rmse(y, y_pred)
+        return self._parameter_model.cvrmse(y, y_pred)
 
     def adjusted_r2(
         self,

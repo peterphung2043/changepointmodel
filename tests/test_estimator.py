@@ -196,6 +196,28 @@ def test_estimator_fit_many_fail_silently(mocker):
         counter += 1
 
 
+def test_estimator_fit_many_fail_silently_False(mocker):
+    bounds = ((0, -np.inf), (np.inf, np.inf))
+
+    X = np.linspace(1, 10, 10).reshape(-1, 1)
+    y = np.linspace(1, 10, 10)
+
+    models = [
+        ParameterModelFunction(
+            f"{i}", twop, bounds, TwoParameterModel(), TwoParameterCoefficientParser()
+        )
+        for i in range(5)
+    ]
+
+    mocker.patch.object(CurvefitEstimator, "fit", side_effect=Exception("boo"))
+
+    with pytest.raises(Exception):
+        for name, est in EnergyChangepointEstimator.fit_many(
+            models, X, y, fail_silently=False
+        ):
+            pass
+
+
 def test_estimator_adjust_calls_predict_with_other_x(mocker):
     bounds = ((0, -np.inf), (np.inf, np.inf))
     mymodel = ParameterModelFunction(
@@ -217,3 +239,31 @@ def test_estimator_adjust_calls_predict_with_other_x(mocker):
     mock = mocker.spy(est1, "predict")
     est1.adjust(est2)
     assert_array_equal(mock.call_args_list[0][0][0], X1)
+
+
+def test_estimator_for_methods(mocker):
+    bounds = ((0, -np.inf), (np.inf, np.inf))
+    mymodel = ParameterModelFunction(
+        "2P", twop, bounds, TwoParameterModel(), TwoParameterCoefficientParser()
+    )
+
+    est = EnergyChangepointEstimator(model=mymodel)
+    mock = mocker.spy(est, "fit")
+
+    X = np.linspace(1, 10, 10).reshape(-1, 1)
+    y = np.linspace(1, 10, 10)
+
+    est.fit(X, y)
+    mock.assert_called_once()
+
+    assert_almost_equal(est.predict(X), y, decimal=1)
+    assert_almost_equal(est.r2(), 1, decimal=1)
+    assert_almost_equal(est.adjusted_r2(), 1, decimal=1)
+    assert_almost_equal(est.rmse(), 2.32678e-05, decimal=1)
+    assert_almost_equal(est.cvrmse(), 4.23051e-06, decimal=1)
+    assert est.dpop() == (0, 10)
+    assert_almost_equal(est.tstat()[1], 349150.818, decimal=1)
+    assert est.shape() == True
+    load_ = est.load()
+    assert_almost_equal(load_.cooling, 549.99605, decimal=1)
+    assert_almost_equal(load_.base, sum(X) - load_.cooling, decimal=1)
