@@ -42,7 +42,6 @@ The core APIs are a loosely coupled set of classes that work together to build c
 _Deprecated from 3.1_
 
 * `loads` - Load calculations for various ParameterModels
-* `savings` - High level interfaces for savings calculations.
 * `scoring` - Standard statistical reporting for model validation.
 * `factories` - Helper classes for combining Estimators and LoadAggregators
 
