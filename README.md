@@ -190,13 +190,15 @@ class MyCustomExperimentalSavingsCalculator(AbstractAdjustedSavingsCalculator):
 
 ```
 
-## Deprecations 
+## Deprecations and Removals
 
 In order to provide a better user experience with this package, some modules have been deprecated and some features out right removed. While we try our best to maintain backwards compatibility unfortunately it is sometimes unavoidable to make the product better. 
 
-The modules that are deprecated will still work in 3.1 but might be removed in 3.2
+The modules listed above are deprecated will still work in 3.1 but might be removed in 3.2 so please don't develop anything new with them. They were left in to make the transition a little easier for us to deal with on our servers. In the case of deprecation we have placed a warning out module scope.
 
 It was decided to completely remove `app` package since it relied mainly on these modules that are being deprecated and really had no use outside of our servers. We hope the `core` API was made more intuitive in 3.1 and can be used to be build applications in a simpler manner. 
+
+Certain class methods on `EnergyChangepointEstimator` were removed (`fit_one`, `fit_many`, etc). These were intended for batch running but proved to be a bit to inflexible for practical use. Methods for sorting data were moved to the `schemas` pydnatic data model as outlined above. 
 
 
 ## Demos and training

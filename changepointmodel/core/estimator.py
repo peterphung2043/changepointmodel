@@ -174,13 +174,25 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin, Generic[Paramate
         sigma: Optional[OneDimNDArray[np.float64]] = None,
         absolute_sigma: bool = False,
     ) -> "EnergyChangepointEstimator[ParamaterModelCallableT, EnergyParameterModelT]":
-        """This is wrapper around CurvefitEstimator.fit and allows interoperability with sklearn
+        """
+
+        This is wrapper around CurvefitEstimator.fit and allows interoperability with sklearn
+
         NOTE: THIS METHOD DOES NOT SORT THE DATA! Input data should be sorted appropriately beforehand. You can
         use changepointmodel.core.utils.argsort_1d for standard changepoint model data.
 
+        _From 3.1_ use schemas.CurvefitEstimatorDataModel.sorted_X_y to guarantee correct shapes and sorts.
+
+        This method is interoperable with scikit learns API and returns a fit version of itself.
+
         Args:
-            data (CurvefitEstimatorInputData): [description]
-            reshape (Optional[Tuple[int]], optional): [description]. Defaults to None.
+            X (NByOneNDArray[np.float64]): The X array. Should be N X 1 dimensions.
+            y (OneDimNDArray[np.float64]): The y array. Should be 1 dimension.
+            sigma (Optional[OneDimNDArray[np.float64]], optional): An array of weights. Defaults to None.
+            absolute_sigma (bool, optional): Whether to use absolute_sigma in fit. Defaults to False.
+
+        Returns:
+            EnergyChangepointEstimator[ParamaterModelCallableT, EnergyParameterModelT]: A fit model.
         """
 
         self.estimator_ = CurvefitEstimator(
@@ -229,6 +241,14 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin, Generic[Paramate
 
     @property
     def name(self) -> str:
+        """The name given to this model. Our default energy models are 2P, 3PC, 3PH, 4P and 5P.
+
+        Raises:
+            ValueError: _description_
+
+        Returns:
+            str: _description_
+        """
         if self.model is None:
             raise ValueError("Cannot access name of model that is not set.")
         return self.model.name
@@ -236,56 +256,122 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin, Generic[Paramate
     @property
     @check_not_fitted
     def X(self) -> NByOneNDArray[np.float64]:
+        """Original X array usef for fit.
+
+        Returns:
+            NByOneNDArray[np.float64]: _description_
+        """
         return self.X_
 
     @property
     @check_not_fitted
     def y(self) -> Optional[OneDimNDArray[np.float64]]:
+        """Original y array used for fit.
+
+        Returns:
+            Optional[OneDimNDArray[np.float64]]: _description_
+        """
         return self.y_
 
     @property
     @check_not_fitted
     def coeffs(self) -> Tuple[float, ...]:  # tuple
+        """The fit model coefficients. This is returned by
+        scipy.optimize.curve_fit popt variable
+
+        Returns:
+            Tuple[float, ...]: _description_
+        """
         return self.estimator_.popt_  # type: ignore
 
     @property
     @check_not_fitted
     def cov(self) -> Tuple[float, ...]:
+        """The covariance of the fit. Returned by
+        scipy.optimize.curve_fit pcov variable.
+
+        Returns:
+            Tuple[float, ...]: _description_
+        """
         return self.estimator_.pcov_  # type: ignore
 
     @property
     @check_not_fitted
     def pred_y(self) -> OneDimNDArray[np.float64]:
+        """The predicted y values. We automatically generate these on fit
+        to make this accessible.
+
+        Returns:
+            OneDimNDArray[np.float64]: _description_
+        """
         return self.pred_y_
 
     @property
     @check_not_fitted
     def sigma(self) -> Optional[OneDimNDArray[np.float64]]:
+        """Reference to the sigma array (weights) if used in model fitting.
+
+        Returns:
+            Optional[OneDimNDArray[np.float64]]: _description_
+        """
         return self.sigma_
 
     @property
     @check_not_fitted
     def absolute_sigma(self) -> Optional[bool]:
+        """Reference to the absolute sigma if this was used in model fitting.
+
+        Returns:
+            Optional[bool]: _description_
+        """
         return self.absolute_sigma_
 
     @check_not_fitted
     def n_params(self) -> int:
+        """The number of model coefficients.
+
+        Returns:
+            int: _description_
+        """
         return len(self.coeffs)
 
     @check_not_fitted
     def total_pred_y(self) -> float:
+        """The sum of the predicted y value generated
+        generated after fit.
+
+        Returns:
+            float: _description_
+        """
         return np.sum(self.pred_y_)  # type: ignore
 
     @check_not_fitted
     def total_y(self) -> float:
+        """The sum of the y array.
+
+        Returns:
+            float: _description_
+        """
         return np.sum(self.estimator_.y_)  # type: ignore
 
     @check_not_fitted
     def len_y(self) -> int:
+        """The length of the y array.
+
+        Returns:
+            int: _description_
+        """
         return len(self.estimator_.y_)  # type: ignore
 
     @property
     def original_ordering(self) -> Optional[Ordering]:
+        """A place to append the original ordering of the X, y
+        data for this model if needed. Can be used with `unargsort` method
+        found in utils for reversing joined sort.
+
+        Returns:
+            Optional[Ordering]: An order index given by utils.argsort_1d_idx
+        """
         return self._original_ordering
 
     @original_ordering.setter
@@ -295,40 +381,85 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin, Generic[Paramate
     # --- added below methods for 3.1
     @check_not_fitted
     def r2(self) -> SklScoreReturnType:
+        """The r2 of the model. Determines goodness of fit.
+
+        Returns:
+            SklScoreReturnType: The score (usually a float)
+        """
         assert self.model is not None
         return self.model.r2(self.y, self.pred_y)
 
     @check_not_fitted
     def adjusted_r2(self) -> SklScoreReturnType:
+        """The adjusted_r2 of the model. Determines goodness of fit.
+
+        Returns:
+            SklScoreReturnType: The score (usually a float)
+        """
         assert self.model is not None
         return self.model.adjusted_r2(self.y, self.pred_y, self.coeffs)
 
     @check_not_fitted
     def rmse(self) -> SklScoreReturnType:
+        """The rmse of the model. The amount error in the model.
+
+        Returns:
+            SklScoreReturnType: The score (usually a float)
+        """
         assert self.model is not None
         return self.model.rmse(self.y, self.pred_y)
 
     @check_not_fitted
     def cvrmse(self) -> SklScoreReturnType:
+        """The cvrmse of the model. The amount of error in the model.
+
+        Returns:
+            SklScoreReturnType: The score (usually a float)
+        """
         assert self.model is not None
         return self.model.cvrmse(self.y, self.pred_y)
 
     @check_not_fitted
     def dpop(self) -> dpop.HeatingCoolingPoints:
+        """Returns the number of heating and cooling points for the
+        given energy model.
+
+        Returns:
+            dpop.HeatingCoolingPoints: The heating and cooling points.
+        """
         assert self.model is not None
         return self.model.dpop(self.X, self.coeffs)
 
     @check_not_fitted
     def tstat(self) -> tstat.HeatingCoolingTStatResult:
+        """A tstat that can be used to determine if a model's heating
+        and/or cooling slopes are statistcally significant.
+
+        Returns:
+            tstat.HeatingCoolingTStatResult: The heating and cooling tstat
+        """
         assert self.model is not None
         return self.model.tstat(self.X, self.y, self.pred_y, self.coeffs)
 
     @check_not_fitted
     def shape(self) -> bool:
+        """Assert whether this model fits a proper "shape" of an energy model.
+        This is often only needed to determine certain inconsistencies between
+        4P and 5P models that curve_fit bounds cannot mathematically ascertain in edge
+        case data.
+
+        Returns:
+            bool: True if it passes the shape test.
+        """
         assert self.model is not None
         return self.model.shape(self.coeffs)
 
     @check_not_fitted
     def load(self) -> Load:
+        """Calculate the load for this energy model.
+
+        Returns:
+            Load: The baseload, heating and cooling load.
+        """
         assert self.model is not None
         return self.model.load(self.X, self.pred_y, self.coeffs)
