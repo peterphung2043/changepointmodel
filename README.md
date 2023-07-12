@@ -32,14 +32,19 @@ __core__
 ----
 The core APIs are a loosely coupled set of classes that work together to build changepoint models, load aggregations and savings calculations.
 
+
 * `estimator` - Wrapper classes around `scipy.optimize.curve_fit` with some bells and whistles. 
     * These classes interop with scikit learn and can be incorporated into the sklearn API (`cross_val_score`, `GridSearchCV` etc.) for ML projects.
-* `pmodels` - Interfaces for defining types around parameter model functions. 
-* `loads` - Load calculations for various ParameterModels
+
 * `predsum` - Predicted Sum (used for nac calculations)
-* `savings` - High level interfaces for savings calculations.
 * `schemas` - Input validation 
+
+_Deprecated from 3.1_
+
+* `loads` - Load calculations for various ParameterModels
+* `savings` - High level interfaces for savings calculations.
 * `scoring` - Standard statistical reporting for model validation.
+* `factories` - Helper classes for combining Estimators and LoadAggregators
 
 __core.calc__ 
 ----
@@ -52,17 +57,49 @@ Model dependent calculations and ashrae savings formulas.
 * `savings` - ashrae savings formulas for monthly data 
 * `uncertainties` - ashrae uncertainty calculations for savings 
 
-__app__ 
---- 
+_Added in 3.1_ 
+* tstat - perform a tstat on the slopes of your model for statistical significance 
+* dpop - return the heating and cooling points from your model based on slope/changepoint 
 
-This is application level code that is provided as a convenience for batch processing data. 
 
-* `main` - Run an option-c or baseline set of models. 
-* `config` - A standard configuration of the `core` components 
-* `filter_` - A module we use for filtering data based on procedural constraints 
-* `extras` - Extra model filtering
-* `models` - Pydantic model validators and parsers 
+__core.pmodels__
+_Since 3.1_ 
 
+This was moved into its own package. We consider these private but accessible for anyone wishing to extend the library APIs. 
+
+For most cases you will want to simply use the `factories` provided to create an appropriate changepoint model that can be 
+used with our EnergyChangepointEstimator class. These and other useful types are exposed in the top level package.
+
+
+## Example
+
+From 3.1, we went to great lengths to simplfy the use of the core library. 
+
+I will walk through a simple example to show how to estimate a single model and get its load and some statistical scores.
+
+Here is the data we want to model...
+```python 
+
+oat = [66.0, 92.0, 98.0, 17.0, 83.0, 57.0, 86.0, 97.0, 96.0, 47.0, 73.0, 32.0]
+usage = [834.311, 1992.275, 2304.786, 193.692, 1699.326, 257.449, 1720.430, 2271.0722, 2396.914, 345.639, 1166.869, 225.720]
+```
+
+
+
+
+
+
+
+tpc = pmodels.threepc_factory(name='3PC')
+
+estimator = EnergyChangepointmodelEstimator(model=tpc)
+
+sX, sy, _ = argsort_1d_idx(X, y)
+
+est.fit(X, y)   
+
+
+```
 
 
 

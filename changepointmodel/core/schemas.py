@@ -5,7 +5,14 @@ import numpy as np
 from typing import Any, Dict, Optional, Union
 
 import pydantic
-from .nptypes import AnyByAnyNDArrayField, OneDimNDArrayField, AnyByAnyNDArray
+from .nptypes import (
+    AnyByAnyNDArrayField,
+    OneDimNDArrayField,
+    AnyByAnyNDArray,
+    ArgSortRetType,
+)
+
+from .utils import argsort_1d_idx
 
 
 class NpConfig:
@@ -14,9 +21,7 @@ class NpConfig:
 
 class CurvefitEstimatorDataModel(pydantic.BaseModel):
     X: Union[OneDimNDArrayField, AnyByAnyNDArrayField]
-    y: Optional[
-        OneDimNDArrayField
-    ]  # NOTE this is optional so that different X values may be passed to a fit model
+    y: OneDimNDArrayField
     sigma: Optional[OneDimNDArrayField] = None
     absolute_sigma: Optional[bool] = None
 
@@ -47,6 +52,14 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
                     raise ValueError("X, y and sigma lengths to not match.")
 
         return values
+
+    def sorted_X_y(self) -> ArgSortRetType:
+        """Helper to sort y in terms of X together for changepoint modeling.
+
+        Returns:
+            ArgSortRetType: The reordered X and y plus the original index needed to reverse the sort if needed
+        """
+        return argsort_1d_idx(self.X, self.y)
 
     class Config(NpConfig):
         ...
