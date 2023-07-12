@@ -142,4 +142,4 @@ def test_schema_returns_sorted_X_y():
 
     assert [list(x) for x in X] == [[1.0], [2.0], [3.0], [4.0], [5.0]]
     assert list(y) == [3.0, 4.0, 1.0, 5.0, 2.0]
-    assert idx == [2, 3, 0, 4, 1]
+    assert list(idx) == [2, 3, 0, 4, 1]
