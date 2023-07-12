@@ -127,7 +127,7 @@ def test_parameter_model_factories():
     # new for 3.1
     # check these were properly configured
 
-    m = pmodel_factories.twop()
+    m = pmodel_factories.twop_factory()
 
     assert m.name == "2P"
     assert m.f is cpmodels.twop
@@ -135,7 +135,7 @@ def test_parameter_model_factories():
     assert isinstance(m._parameter_model, pm.TwoParameterModel)
     assert isinstance(m._coefficients_parser, cpar.TwoParameterCoefficientParser)
 
-    m = pmodel_factories.threepc()
+    m = pmodel_factories.threepc_factory()
 
     assert m.name == "3PC"
     assert m.f is cpmodels.threepc
@@ -143,7 +143,7 @@ def test_parameter_model_factories():
     assert isinstance(m._parameter_model, pm.ThreeParameterCoolingModel)
     assert isinstance(m._coefficients_parser, cpar.ThreeParameterCoefficientsParser)
 
-    m = pmodel_factories.threeph()
+    m = pmodel_factories.threeph_factory()
 
     assert m.name == "3PH"
     assert m.f is cpmodels.threeph
@@ -151,7 +151,7 @@ def test_parameter_model_factories():
     assert isinstance(m._parameter_model, pm.ThreeParameterHeatingModel)
     assert isinstance(m._coefficients_parser, cpar.ThreeParameterCoefficientsParser)
 
-    m = pmodel_factories.fourp()
+    m = pmodel_factories.fourp_factory()
 
     assert m.name == "4P"
     assert m.f is cpmodels.fourp
@@ -159,7 +159,7 @@ def test_parameter_model_factories():
     assert isinstance(m._parameter_model, pm.FourParameterModel)
     assert isinstance(m._coefficients_parser, cpar.FourParameterCoefficientsParser)
 
-    m = pmodel_factories.fivep()
+    m = pmodel_factories.fivep_factory()
 
     assert m.name == "5P"
     assert m.f is cpmodels.fivep

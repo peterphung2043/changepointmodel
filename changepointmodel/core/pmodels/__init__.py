@@ -1,9 +1,9 @@
 from .factories import (
-    threepc,
-    twop,
-    threeph,
-    fourp,
-    fivep,
+    threepc_factory,
+    twop_factory,
+    threeph_factory,
+    fourp_factory,
+    fivep_factory,
 )
 
 from .parameter_model import (
@@ -26,11 +26,11 @@ from .base import (
 
 
 __all__ = (
-    "threepc",
-    "twop",
-    "threeph",
-    "fourp",
-    "fivep",
+    "threepc_factory",
+    "twop_factory",
+    "threeph_factory",
+    "fourp_factory",
+    "fivep_factory",
     "ParameterModelFunction",
     "ParamaterModelCallableT",
     "EnergyParameterModelT",

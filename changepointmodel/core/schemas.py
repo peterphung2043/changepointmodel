@@ -5,7 +5,14 @@ import numpy as np
 from typing import Any, Dict, Optional, Union
 
 import pydantic
-from .nptypes import AnyByAnyNDArrayField, OneDimNDArrayField, AnyByAnyNDArray
+from .nptypes import (
+    AnyByAnyNDArrayField,
+    OneDimNDArrayField,
+    AnyByAnyNDArray,
+    ArgSortRetType,
+)
+
+from .utils import argsort_1d_idx
 
 
 class NpConfig:
@@ -14,11 +21,12 @@ class NpConfig:
 
 class CurvefitEstimatorDataModel(pydantic.BaseModel):
     X: Union[OneDimNDArrayField, AnyByAnyNDArrayField]
-    y: Optional[
-        OneDimNDArrayField
-    ]  # NOTE this is optional so that different X values may be passed to a fit model
+    y: OneDimNDArrayField
     sigma: Optional[OneDimNDArrayField] = None
     absolute_sigma: Optional[bool] = None
+
+    class Config(NpConfig):
+        ...
 
     @pydantic.validator("X")
     def validate_X(cls, v: AnyByAnyNDArray[np.float64]) -> AnyByAnyNDArray[np.float64]:
@@ -48,5 +56,11 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
 
         return values
 
-    class Config(NpConfig):
-        ...
+    def sorted_X_y(self) -> ArgSortRetType:
+        """Helper to sort X and y. Also returns the original idx ordering to reverse.
+        X will be reshaped as 2D array in order to work with sklearn dimenisonality.
+
+        Returns:
+            ArgSortRetType: Sorted X, y and original ordering index
+        """
+        return argsort_1d_idx(self.X, self.y)

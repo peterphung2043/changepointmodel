@@ -68,12 +68,11 @@ def test_savings_integration_with_pre_and_post(
 
     # X, y = estimator.sort_X_y(input_data.X, input_data.y)
     # # fit the changepoint model
-    name_pre, fitted_est_pre = estimator_pre.fit_one(
-        estimator_pre.model, input_data.X, input_data.y
-    )
-    name_post, fitted_est_post = estimator_post.fit_one(
-        estimator_post.model, input_data_post.X, input_data_post.y
-    )
+
+    X_pre, y_pre, o_pre = input_data.sorted_X_y()
+    fitted_est_pre = estimator_pre.fit(X_pre, y_pre)
+    X_post, y_post, o_post = input_data.sorted_X_y()
+    fitted_est_post = estimator_post.fit(X_post, y_post)
 
     adjusted_saving = savings.AshraeAdjustedSavingsCalculator()
 
