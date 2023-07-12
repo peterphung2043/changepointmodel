@@ -2,7 +2,7 @@ from . import base, parameter_model as pm, coeffs_parser as cpar
 from ..calc import models, bounds
 
 
-def twop(
+def twop_factory(
     name: str = "2P",
 ) -> pm.ParameterModelFunction[base.TwoParameterCallable, pm.TwoParameterModel]:
     """Since v3.1 Default factory method for a twop energy model.
@@ -22,7 +22,7 @@ def twop(
     )
 
 
-def threepc(
+def threepc_factory(
     name: str = "3PC",
 ) -> pm.ParameterModelFunction[
     base.ThreeParameterCallable, pm.ThreeParameterCoolingModel
@@ -44,7 +44,7 @@ def threepc(
     )
 
 
-def threeph(
+def threeph_factory(
     name: str = "3PH",
 ) -> pm.ParameterModelFunction[
     base.ThreeParameterCallable, pm.ThreeParameterHeatingModel
@@ -66,7 +66,7 @@ def threeph(
     )
 
 
-def fourp(
+def fourp_factory(
     name: str = "4P",
 ) -> pm.ParameterModelFunction[base.FourParameterCallable, pm.FourParameterModel]:
     """Since v3.1 Default factory method for a fourp energy model.
@@ -86,7 +86,7 @@ def fourp(
     )
 
 
-def fivep(
+def fivep_factory(
     name: str = "5P",
 ) -> pm.ParameterModelFunction[base.FiveParameterCallable, pm.FiveParameterModel]:
     """Since v3.1 Default factory method for a fivep energy model.
