@@ -41,9 +41,9 @@ def test_energymodelfactory_integration_with_2p(generated_2p_data):
     )
     estimator = twop.create_estimator()
 
-    # X, y = estimator.sort_X_y(input_data.X, input_data.y)
+    X, y, o = input_data.sorted_X_y()
     # # fit the changepoint model
-    name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y)
+    fitted_est = estimator.fit(X, y)
     load = twop.create_load_aggregator()
     result = EnergyChangepointModelResultFactory.create(fitted_est, load, scorer)
 
@@ -101,7 +101,9 @@ def test_integration_with_3pc(generated_3pc_data):
     )
     estimator = threepc.create_estimator()
 
-    name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y)
+    X, y, o = input_data.sorted_X_y()
+    # # fit the changepoint model
+    fitted_est = estimator.fit(X, y)
     load = threepc.create_load_aggregator()
     result = EnergyChangepointModelResultFactory.create(fitted_est, load, scorer)
 
@@ -159,7 +161,9 @@ def test_integration_with_3ph(generated_3ph_data):
     )
     estimator = threeph.create_estimator()
 
-    name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y)
+    X, y, o = input_data.sorted_X_y()
+    # # fit the changepoint model
+    fitted_est = estimator.fit(X, y)
     load = threeph.create_load_aggregator()
     result = EnergyChangepointModelResultFactory.create(fitted_est, load, scorer)
 
@@ -212,7 +216,9 @@ def test_integration_with_4p(generated_4p_data):
     )
     estimator = fourp.create_estimator()
 
-    name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y)
+    X, y, o = input_data.sorted_X_y()
+    # # fit the changepoint model
+    fitted_est = estimator.fit(X, y)
     load = fourp.create_load_aggregator()
     result = EnergyChangepointModelResultFactory.create(fitted_est, load, scorer)
 
@@ -265,7 +271,9 @@ def test_integration_with_5p(generated_4p_data):
     )
     estimator = fivep.create_estimator()
 
-    name, fitted_est = estimator.fit_one(estimator.model, input_data.X, input_data.y)
+    X, y, o = input_data.sorted_X_y()
+    # # fit the changepoint model
+    fitted_est = estimator.fit(X, y)
     load = fivep.create_load_aggregator()
     result = EnergyChangepointModelResultFactory.create(fitted_est, load, scorer)
 
