@@ -15,17 +15,20 @@ from changepointmodel.core.nptypes import (
 
 def test_curvefitestimatordatamodel_handles_1d_xdata():
     xdata = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    schemas.CurvefitEstimatorDataModel(X=xdata)
+    ydata = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+    schemas.CurvefitEstimatorDataModel(X=xdata, y=ydata)
 
 
 def test_curvefittestimatordatamodel_handles_2d_xdata():
     xdata = np.array([[1.0], [2.0], [3.0], [4.0], [5.0]])
-    schemas.CurvefitEstimatorDataModel(X=xdata)
+    ydata = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+    schemas.CurvefitEstimatorDataModel(X=xdata, y=ydata)
 
 
 def test_curvefittestimatordatamodel_transforms_1d_xdata_to_2d_xdata():
     xdata = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    d = schemas.CurvefitEstimatorDataModel(X=xdata)
+    ydata = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+    d = schemas.CurvefitEstimatorDataModel(X=xdata, y=ydata)
 
     test = np.array([[1.0], [2.0], [3.0], [4.0], [5.0]])
     assert test.shape == d.X.shape
@@ -65,14 +68,6 @@ def test_curvefitestimatordatamodel_raises_validationerror_on_len_mismatch():
         ydata = np.array([1.0, 2.0, 3.0, 4.0])
         sigma = np.array([1.0, 2.0, 3.0])
         schemas.CurvefitEstimatorDataModel(X=xdata, y=ydata, sigma=sigma)
-
-
-def test_curvefitestimatordatamodel_raises_validationerror_if_sigma_not_y():
-    xdata = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-    sigma = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-
-    with pytest.raises(pydantic.ValidationError):
-        schemas.CurvefitEstimatorDataModel(X=xdata, sigma=sigma)
 
 
 def test_curvefitestimatordatamodel_returns_valid_json():
@@ -135,3 +130,16 @@ def test_openapi_schemas_are_correctly_generated_for_custom_nptypes():
     assert schema["definitions"]["Check"]["properties"]["a"] == a
     assert schema["definitions"]["Check"]["properties"]["b"] == b
     assert schema["definitions"]["Check"]["properties"]["c"] == c
+
+
+def test_schema_returns_sorted_X_y():
+    xdata = np.array([3.0, 5.0, 1.0, 2.0, 4.0])
+    ydata = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+
+    d = schemas.CurvefitEstimatorDataModel(X=xdata, y=ydata)
+
+    X, y, idx = d.sorted_X_y()
+
+    assert [list(x) for x in X] == [[1.0], [2.0], [3.0], [4.0], [5.0]]
+    assert list(y) == [3.0, 4.0, 1.0, 5.0, 2.0]
+    assert idx == [2, 3, 0, 4, 1]

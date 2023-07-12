@@ -25,6 +25,9 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
     sigma: Optional[OneDimNDArrayField] = None
     absolute_sigma: Optional[bool] = None
 
+    class Config(NpConfig):
+        ...
+
     @pydantic.validator("X")
     def validate_X(cls, v: AnyByAnyNDArray[np.float64]) -> AnyByAnyNDArray[np.float64]:
         if v.ndim == 1:  # assure 1d is reshaped according skl spec
@@ -54,12 +57,10 @@ class CurvefitEstimatorDataModel(pydantic.BaseModel):
         return values
 
     def sorted_X_y(self) -> ArgSortRetType:
-        """Helper to sort y in terms of X together for changepoint modeling.
+        """Helper to sort X and y. Also returns the original idx ordering to reverse.
+        X will be reshaped as 2D array in order to work with sklearn dimenisonality.
 
         Returns:
-            ArgSortRetType: The reordered X and y plus the original index needed to reverse the sort if needed
+            ArgSortRetType: Sorted X, y and original ordering index
         """
         return argsort_1d_idx(self.X, self.y)
-
-    class Config(NpConfig):
-        ...
