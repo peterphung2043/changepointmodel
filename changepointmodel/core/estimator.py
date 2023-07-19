@@ -462,4 +462,4 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin, Generic[Paramate
             Load: The baseload, heating and cooling load.
         """
         assert self.model is not None
-        return self.model.load(self.X, self.pred_y, self.coeffs)
+        return self.model.load(self.X.squeeze(), self.pred_y, self.coeffs)
