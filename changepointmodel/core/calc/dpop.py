@@ -21,7 +21,7 @@ def threeph(X: OneDimNDArray[np.float64], changepoint: float) -> HeatingCoolingP
 def fourp(X: OneDimNDArray[np.float64], changepoint: float) -> HeatingCoolingPoints:
     heatnum = sum(X <= changepoint)
     coolnum = sum(X > changepoint)
-    return coolnum, heatnum
+    return heatnum, coolnum
 
 
 def fivep(
@@ -31,4 +31,4 @@ def fivep(
 ) -> HeatingCoolingPoints:
     heatnum = sum(X <= lcp)
     coolnum = sum(X >= rcp)
-    return coolnum, heatnum
+    return heatnum, coolnum

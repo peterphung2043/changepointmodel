@@ -41,11 +41,31 @@ def test_threeparametercoolingmodel():
     assert model.changepoint(coeffs) == 43
 
 
+def test_threeparametercoolingmodel_shape():
+    model = ThreeParameterCoolingModel()
+
+    coeffs = EnergyParameterModelCoefficients(42, [99], [43])
+    assert model.shape(coeffs)
+
+    coeffs = EnergyParameterModelCoefficients(42, [-99], [43])
+    assert model.shape(coeffs) == False
+
+
 def test_threeparameterheatingmodel():
     coeffs = EnergyParameterModelCoefficients(42, [99], [43])
     model = ThreeParameterHeatingModel()
     assert model.slope(coeffs) == 99
     assert model.changepoint(coeffs) == 43
+
+
+def test_threeparameterheatingmodel_shape():
+    model = ThreeParameterHeatingModel()
+
+    coeffs = EnergyParameterModelCoefficients(42, [-99], [43])
+    assert model.shape(coeffs)
+
+    coeffs = EnergyParameterModelCoefficients(42, [99], [43])
+    assert model.shape(coeffs) == False
 
 
 def test_fourparametermodel():
@@ -56,6 +76,25 @@ def test_fourparametermodel():
     assert model.changepoint(coeffs) == 43
 
 
+def test_fourparametermodel_shape():
+    model = FourParameterModel()
+
+    coeffs = EnergyParameterModelCoefficients(42, [98, 99], [43])
+    assert model.shape(coeffs) == False  # ls > 0
+
+    coeffs = EnergyParameterModelCoefficients(42, [98, -99], [43])
+    assert model.shape(coeffs) == False  # rs < 0
+
+    coeffs = EnergyParameterModelCoefficients(42, [-98, -99], [43])
+    assert model.shape(coeffs) == False  # rs < 0
+
+    coeffs = EnergyParameterModelCoefficients(42, [-98, 99], [43])
+    assert model.shape(coeffs) == False  # abs(ls) < abs(rs)
+
+    coeffs = EnergyParameterModelCoefficients(42, [-99, 98], [43])
+    assert model.shape(coeffs)  # abs(ls) > abs(rs)
+
+
 def test_fiveparametermodel():
     coeffs = EnergyParameterModelCoefficients(42, [98, 99], [43, 44])
     model = FiveParameterModel()
@@ -63,6 +102,25 @@ def test_fiveparametermodel():
     assert model.left_slope(coeffs) == 98
     assert model.right_changepoint(coeffs) == 44
     assert model.left_changepoint(coeffs) == 43
+
+
+def test_fiveparametermodel_shape():
+    model = FiveParameterModel()
+
+    coeffs = EnergyParameterModelCoefficients(42, [98, 99], [43, 45])
+    assert model.shape(coeffs) == False  # ls > 0
+
+    coeffs = EnergyParameterModelCoefficients(42, [98, -99], [43, 45])
+    assert model.shape(coeffs) == False  # rs < 0
+
+    coeffs = EnergyParameterModelCoefficients(42, [-98, -99], [43, 45])
+    assert model.shape(coeffs) == False  # rs < 0
+
+    coeffs = EnergyParameterModelCoefficients(42, [-98, 99], [43, 45])
+    assert model.shape(coeffs) == False  # abs(ls) < abs(rs)
+
+    coeffs = EnergyParameterModelCoefficients(42, [-99, 98], [43, 45])
+    assert model.shape(coeffs)  # abs(ls) > abs(rs)
 
 
 def test_linear_coefficient_parser():
