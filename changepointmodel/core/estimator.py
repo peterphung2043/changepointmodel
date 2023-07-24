@@ -428,7 +428,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin, Generic[Paramate
             dpop.HeatingCoolingPoints: The heating and cooling points.
         """
         assert self.model is not None
-        return self.model.dpop(self.X, self.coeffs)
+        return self.model.dpop(self.X.squeeze(), self.coeffs)
 
     @check_not_fitted
     def tstat(self) -> tstat.HeatingCoolingTStatResult:
@@ -439,7 +439,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin, Generic[Paramate
             tstat.HeatingCoolingTStatResult: The heating and cooling tstat
         """
         assert self.model is not None
-        return self.model.tstat(self.X, self.y, self.pred_y, self.coeffs)
+        return self.model.tstat(self.X.squeeze(), self.y, self.pred_y, self.coeffs)
 
     @check_not_fitted
     def shape(self) -> bool:

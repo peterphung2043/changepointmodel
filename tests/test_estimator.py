@@ -168,5 +168,5 @@ def test_estimator_for_methods(mocker):
     assert_almost_equal(est.tstat()[1], 349150.818, decimal=1)
     assert est.shape() == True
     load_ = est.load()
-    assert_almost_equal(load_.cooling, 549.99605, decimal=1)
+    assert_almost_equal(load_.cooling, 54.999605, decimal=1)
     assert_almost_equal(load_.base, sum(X) - load_.cooling, decimal=1)
