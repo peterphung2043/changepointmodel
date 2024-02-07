@@ -6,11 +6,7 @@ requires = ["poetry-core>=1.0.0"]
 authors = ["cunybpl <dev@cunybpl.org>"]
 description = "Energy changepoint modeling and related methodologies"
 name = "changepointmodel"
-<<<<<<< HEAD
 version = "3.3.2"
-=======
-version = "3.3.1"
->>>>>>> da59d9572dbf6ea97d5956dcab714d31c6f5122c
 
 [tool.poetry.dependencies]
 pydantic = "^2.3"
