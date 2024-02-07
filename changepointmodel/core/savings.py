@@ -1,5 +1,6 @@
 """ APIs for handling adjusted and normalized savings as per ashrae.
 """
+
 from dataclasses import dataclass
 import numpy as np
 from .nptypes import NByOneNDArray, OneDimNDArray
@@ -52,8 +53,7 @@ class IAdjustedSavingsCalculator(abc.ABC):
         post: EnergyChangepointEstimator[
             ParamaterModelCallableT, EnergyParameterModelT
         ],
-    ) -> AdjustedSavingsResult:
-        ...
+    ) -> AdjustedSavingsResult: ...
 
 
 class INormalizedSavingsCalculator(abc.ABC):
@@ -64,8 +64,7 @@ class INormalizedSavingsCalculator(abc.ABC):
         post: EnergyChangepointEstimator[
             ParamaterModelCallableT, EnergyParameterModelT
         ],
-    ) -> NormalizedSavingsResult:
-        ...
+    ) -> NormalizedSavingsResult: ...
 
 
 class AbstractAdjustedSavingsCalculator(IAdjustedSavingsCalculator):
@@ -137,7 +136,9 @@ class AbstractAdjustedSavingsCalculator(IAdjustedSavingsCalculator):
         # adding scalar ... only pred_y gets adjusted by scalar here... not in cvrmse
         adjusted_pred_y = _get_adjusted(pre, post) * self._scalar
         gross_adjusted_y = np.sum(adjusted_pred_y)
-        gross_post_y = np.sum(post.pred_y * self._scalar)
+        gross_post_y = np.sum(
+            post.y * self._scalar
+        )  # https://github.com/cunybpl/changepointmodel/issues/105
 
         pre_cvrmse = _cvrmse_score(pre.y, pre.pred_y)
         pre_p = len(pre.coeffs)
@@ -231,8 +232,7 @@ class AbstractNormalizedSavingsCalculator(INormalizedSavingsCalculator):
         post_p: int,
         n_norm: int,
         confidence_interval: float,
-    ) -> Tuple[float, float, float, float]:
-        ...
+    ) -> Tuple[float, float, float, float]: ...
 
     def save(
         self,

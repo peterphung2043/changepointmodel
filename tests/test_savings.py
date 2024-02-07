@@ -87,7 +87,8 @@ def test_adjusted_savings_calls_adjusted_correctly(mocker):
     calc = AshraeAdjustedSavingsCalculator()
     calc.save(pre, post)
 
-    mock.assert_called_once_with(42, 30, 0.42, 2, 1, 1, 0.8)
+    # https://github.com/cunybpl/changepointmodel/issues/105  changed for post.y
+    mock.assert_called_once_with(42, 20, 0.42, 2, 1, 1, 0.8)
 
 
 def test_adjusted_savings_calls_adjusted_correctly_with_kwargs(mocker):
@@ -165,7 +166,8 @@ def test_adjusted_savings_calls_adjusted_correctly_with_kwargs(mocker):
     calc = AshraeAdjustedSavingsCalculator(confidence_interval=0.75, scalar=2)
     calc.save(pre, post)
 
-    mock.assert_called_once_with(84, 60, 0.42, 2, 1, 1, 0.75)
+    # https://github.com/cunybpl/changepointmodel/issues/105  changed for post.y
+    mock.assert_called_once_with(84, 40, 0.42, 2, 1, 1, 0.75)
 
 
 def test_normalized_savings_calls_weather_normalzied_correctly(mocker):
