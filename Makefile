@@ -20,7 +20,7 @@ clean-test:
 
 
 test: clean-test
-	-coverage run --source=changepointmodel/ -m pytest -s -v && coverage report -m --fail-under=90
+	-python -m coverage run --source=changepointmodel/ -m pytest -s -v && coverage report -m --fail-under=90
 	mypy changepointmodel --strict
 
 test-single-module: clean-test

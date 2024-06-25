@@ -74,7 +74,7 @@ def fourp(
     Returns:
         OneDimNDArray: The y array of calculated values.
     """
-    return (  # type: ignore
+    return (
         (X < cp) * (m1 * (X - cp) + yint) + (X >= cp) * (m2 * (X - cp) + yint)
     ).squeeze()
 

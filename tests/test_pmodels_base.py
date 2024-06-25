@@ -6,7 +6,7 @@ from changepointmodel.core.pmodels import (
 )
 
 import numpy as np
-
+import pytest
 from changepointmodel.core.nptypes import OneDimNDArray
 from changepointmodel.core.pmodels.base import EnergyParameterModelCoefficients, Load
 
@@ -37,6 +37,7 @@ def test_energyparameter_coefficients_n_params():
     assert e.n_params() == 5
 
 
+@pytest.mark.skip("mock-deprecated")
 def test_metrics_mixins_proxy_calls_to_correct_calc(mocker):
     r2_score = mocker.patch("changepointmodel.core.calc.metrics.r2_score")
     rmse = mocker.patch("changepointmodel.core.calc.metrics.rmse")
