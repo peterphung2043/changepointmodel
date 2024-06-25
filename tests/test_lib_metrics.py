@@ -18,10 +18,10 @@ def test_rmse_score_forwards_arguments(mocker):
     y_pred = np.array([4.0, 5.0, 6.0])
     sample_weight = np.array([7.0, 8.0, 9.0])
 
-    mock = mocker.patch("sklearn.metrics.mean_squared_error")
+    mock = mocker.patch("sklearn.metrics.root_mean_squared_error")
     energymodelmetrics.rmse(y, y_pred, sample_weight=sample_weight)
     mock.assert_called_once_with(
-        y, y_pred, sample_weight=sample_weight, squared=False
+        y, y_pred, sample_weight=sample_weight
     )  # NOTE squared=False returns rmse according to skl docs
 
 
@@ -30,9 +30,9 @@ def test_cvrmse_score_forwards_arguments(mocker):
     y_pred = np.array([4.0, 5.0, 6.0])
     sample_weight = np.array([7.0, 8.0, 9.0])
 
-    mock = mocker.patch("sklearn.metrics.mean_squared_error")
+    mock = mocker.patch("sklearn.metrics.root_mean_squared_error")
     energymodelmetrics.cvrmse(y, y_pred, sample_weight=sample_weight)
-    mock.assert_called_once_with(y, y_pred, sample_weight=sample_weight, squared=False)
+    mock.assert_called_once_with(y, y_pred, sample_weight=sample_weight)
 
 
 def test_adjusted_r2_score():

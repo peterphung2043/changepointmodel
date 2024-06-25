@@ -72,7 +72,7 @@ def test_curvefitestimatordatamodel_returns_valid_json():
     ydata = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
 
     d = schemas.CurvefitEstimatorDataModel(X=xdata, y=ydata)
-    d.json()
+    d.model_dump_json()
 
 
 def test_openapi_schemas_are_correctly_generated_for_custom_nptypes():
