@@ -19,7 +19,6 @@ OpenBoundCallable = Callable[
     [Union[OneDimNDArray[np.float64], NByOneNDArray[np.float64]]], BoundTuple
 ]
 
-
 def twop(*args, **kwargs) -> Tuple[TwoParameterBoundary, TwoParameterBoundary]:  # type: ignore
     """Energy bound for a twop (linear) model. Essentially returns a constant but we need this to
     conform to the Bounds interface.
@@ -27,7 +26,7 @@ def twop(*args, **kwargs) -> Tuple[TwoParameterBoundary, TwoParameterBoundary]: 
     Returns:
         Tuple[TwoParameterBoundary, TwoParameterBoundary]: The returned bounds for scipy.optimize.curve_fit
     """
-    return ((0, -np.inf), (np.inf, np.inf))
+    return ((-np.inf, -np.inf), (np.inf, np.inf))
 
 
 def threepc(
@@ -42,9 +41,7 @@ def threepc(
         Tuple[ThreeParameterBoundary, ThreeParameterBoundary]: Resulting bounds tuples.
     """
     X = X.squeeze()
-    min_cp = X[int(len(X) / 4)]
-    max_cp = X[int(3 * len(X) / 4)]
-    return ((0, 0, min_cp), (np.inf, np.inf, max_cp))
+    return ((0, 0, X[2]), (np.inf, np.inf, max(X[-3], X[2] + 0.1)))
 
 
 def threeph(
@@ -59,15 +56,13 @@ def threeph(
         Tuple[ThreeParameterBoundary, ThreeParameterBoundary]: Resulting bounds tuples.
     """
     X = X.squeeze()
-    min_cp = X[int(len(X) / 4)]
-    max_cp = X[int(3 * len(X) / 4)]
-    return ((0, -np.inf, min_cp), (np.inf, 0, max_cp))
+    return ((0, -np.inf, X[2]), (np.inf, 0, max(X[-3], X[2] + 0.1)))
 
 
 def fourp(
     X: Union[OneDimNDArray[np.float64], NByOneNDArray[np.float64]]
 ) -> Tuple[FourParameterBoundary, FourParameterBoundary]:
-    """A fourp boundary for energy data
+    """A fourp boundary for energy data.
 
     Args:
         X (Union[OneDimNDArray,NByOneNDArray]): A numpy X array. NByOneNDArray's will be squeezed internally.
@@ -76,9 +71,7 @@ def fourp(
         Tuple[FourParameterBoundary, FourParameterBoundary]: Resulting bounds tuples.
     """
     X = X.squeeze()
-    min_cp = X[int(len(X) / 4)]
-    max_cp = X[int(3 * len(X) / 4)]
-    return ((0, -np.inf, -np.inf, min_cp), (np.inf, np.inf, np.inf, max_cp))
+    return ((0, -np.inf, 0, X[2]), (np.inf, 0, np.inf, max(X[-3], X[2] + 0.1)))
 
 
 def fivep(
@@ -93,8 +86,8 @@ def fivep(
         Tuple[FiveParameterBoundary, FiveParameterBoundary]: Resulting bounds tuples.
     """
     X = X.squeeze()
-    min_cp1 = X[int((2 / 8) * len(X))]
-    max_cp1 = X[int((3 / 8) * len(X))]
-    min_cp2 = X[int((5 / 8) * len(X))]
-    max_cp2 = X[int((6 / 8) * len(X))]
-    return ((0, -np.inf, 0, min_cp1, min_cp2), (np.inf, 0, np.inf, max_cp1, max_cp2))
+    return (
+        (0, -np.inf, 0, X[2], X[5]),
+        (np.inf, 0, np.inf, max(X[-6], X[2] + 0.1), max(X[-3], X[5] + 0.1)),
+    )
+
