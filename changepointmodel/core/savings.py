@@ -33,6 +33,11 @@ class AdjustedSavingsResult(object):
     average_savings: float
     percent_savings: float
     percent_savings_uncertainty: float
+    gross_adjusted_pred_y: float
+    gross_post_y: float
+    fractional_savings: float
+    rel_unc: float
+    absolute_uncertainty_of_total_savings: float
 
 
 @dataclass
@@ -99,7 +104,7 @@ class AbstractAdjustedSavingsCalculator(IAdjustedSavingsCalculator):
         pre_n: int,
         post_n: int,
         confidence_interval: float,
-    ) -> Tuple[float, float, float, float]:
+    ) -> Tuple[float, float, float, float, float, float, float, float, float]:
         """Override this method in a subclass to provide a savings calculation.
 
         Args:
@@ -112,7 +117,7 @@ class AbstractAdjustedSavingsCalculator(IAdjustedSavingsCalculator):
             confidence_interval: _description_
 
         Returns:
-            Tuple[float, float, float, float]: A tuple of total_savings, average_savings, percent_savings and percent_savings_uncertainity.
+            Tuple[float, float, float, float, float, float, float, float, float]: A tuple of total_savings, average_savings, percent_savings and percent_savings_uncertainity.
         """
         ...
 
@@ -161,6 +166,11 @@ class AbstractAdjustedSavingsCalculator(IAdjustedSavingsCalculator):
             average_savings,
             percent_savings,
             percent_savings_uncertainty,
+            gross_adjusted_pred_y, 
+            gross_post_y, 
+            fractional_savings, 
+            rel_unc, 
+            absolute_uncertainty_of_total_savings
         ) = savings
         return AdjustedSavingsResult(
             adjusted_pred_y,
@@ -168,6 +178,11 @@ class AbstractAdjustedSavingsCalculator(IAdjustedSavingsCalculator):
             average_savings,
             percent_savings,
             percent_savings_uncertainty,
+            gross_adjusted_pred_y, 
+            gross_post_y, 
+            fractional_savings, 
+            rel_unc, 
+            absolute_uncertainty_of_total_savings
         )
 
 
