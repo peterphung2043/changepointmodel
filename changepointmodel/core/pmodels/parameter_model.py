@@ -292,6 +292,7 @@ class ParameterModelFunction(
         f: base.ParamaterModelCallableT,
         bounds: Union[base.BoundCallable, base.Bound],
         parameter_model: base.EnergyParameterModelT,
+        p0: Union[base.InitialGuessCallable, base.InitialGuess],
         coefficients_parser: base.ICoefficientParser,
     ):
         """A Parameter model function for our changepoint modeling is composed
@@ -311,6 +312,11 @@ class ParameterModelFunction(
         self._bounds = bounds
         self._parameter_model = parameter_model
         self._coefficients_parser = coefficients_parser
+        self._p0 = p0
+
+    @property
+    def p0(self) -> Union[base.InitialGuessCallable, base.InitialGuess]:
+        return self._p0
 
     @property
     def name(self) -> str:

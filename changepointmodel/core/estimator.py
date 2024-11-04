@@ -109,6 +109,11 @@ class CurvefitEstimator(BaseEstimator, RegressorMixin):  # type: ignore
         else:
             bounds = self.bounds  # type: ignore
 
+        if callable(self.p0):
+            p0 = self.p0(X, y)
+        else:
+            p0 = self.p0
+
         self.X_ = X
         self.y_ = y
 
@@ -116,7 +121,7 @@ class CurvefitEstimator(BaseEstimator, RegressorMixin):  # type: ignore
             f=self.model_func,
             xdata=X,
             ydata=y,
-            p0=self.p0,
+            p0=p0,
             method=self.method,
             sigma=sigma,
             absolute_sigma=absolute_sigma,
@@ -193,7 +198,7 @@ class EnergyChangepointEstimator(BaseEstimator, RegressorMixin, Generic[Paramate
         """
 
         self.estimator_ = CurvefitEstimator(
-            model_func=self.model.f, bounds=self.model.bounds  # type: ignore
+            model_func=self.model.f, bounds=self.model.bounds, p0=self.model.p0  # type: ignore
         )
         self.pred_y_ = self.estimator_.fit(X, y, sigma, absolute_sigma).predict(X)
 

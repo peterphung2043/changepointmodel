@@ -16,6 +16,7 @@ import abc
 
 
 Bound = Tuple[Tuple[float, ...], Tuple[float, ...]]
+InitialGuess = Tuple[float, ...]
 
 TwoParameterCallable = Callable[
     [NByOneNDArray[np.float64], float, float], OneDimNDArray[np.float64]
@@ -41,10 +42,18 @@ ParamaterModelCallableT = TypeVar(
 )
 
 
+
 class BoundCallable(Protocol):
     def __call__(
         self, X: Union[OneDimNDArray[np.float64], NByOneNDArray[np.float64]]
     ) -> Bound:  # pragma: no cover
+        ...
+
+class InitialGuessCallable(Protocol):
+    def __call__(
+        self, X: Union[OneDimNDArray[np.float64], NByOneNDArray[np.float64]],
+        y: OneDimNDArray[np.float64]
+    ) -> InitialGuess:  # pragma: no cover
         ...
 
 
